@@ -1,0 +1,104 @@
+@use "sass:map";
+
+// ==============================================
+
+// Font
+
+// ==============================================
+
+$font-familys: (
+  base: "Pretendard",
+
+  en-base: "Manrope",
+  en-title: "Manrope",
+
+  ko-base: "Pretendard",
+  ko-title: "Pretendard",
+);
+
+@function font-family($key) {
+  @return #{var(--family-#{$key})}, sans-serif;
+}
+
+// ==============================================
+
+// Container
+
+// ==============================================
+
+$containers: (
+  3xl: 1920,
+
+  2xl: 1640,
+
+  xl: 1368,
+
+  lg: 1024,
+
+  md: 768,
+
+  sm: 544,
+
+  xs: 375,
+);
+
+@function container($key) {
+  @return map-get($containers, $key);
+}
+
+// ==============================================
+
+// Section
+
+// ==============================================
+
+// .section-xl: {padding-top: clamp(min, fluid, max); padding-bottom: clamp(min, fluid, max);}
+
+$sections: (
+  xl: (
+    min: 120,
+    max: 230,
+  ),
+
+  lg: (
+    min: 82,
+
+    max: 150,
+  ),
+
+  md: (
+    min: 54,
+
+    max: 120,
+  ),
+
+  sm: (
+    min: 41,
+
+    max: 82,
+  ),
+
+  footer: (
+    min: 48,
+
+    max: 64,
+  ),
+);
+
+// ==============================================
+
+// custom fluid
+
+// ==============================================
+
+// .content-module { height: clamp(min, fluid, max) }
+
+$fluid-customs: (
+  content-module: (
+    height: (
+      min: 493,
+
+      max: 692,
+    ),
+  ),
+);

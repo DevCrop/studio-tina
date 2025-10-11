@@ -1,0 +1,123 @@
+@use "../abstracts" as *;
+
+$theme-colors: $theme-colors-light;
+
+:root {
+  --base-font-size: #{fluid(12, 16)};
+
+  --base-line-height: 1.41;
+
+  --base-letter-spacing: -0.05rem;
+
+  --header-height: #{fluid(64, 80)};
+
+  --header-z-index: 10000;
+  --backdrop-z-index: 500;
+  --top-btn-z-index: 1000;
+
+  --gutter-lg: #{fluid(36, 72)};
+  --gutter-md: #{fluid(20, 48)};
+  --gutter-sm: #{fluid(12, 24)};
+
+  --input-height: #{fluid(40, 54)};
+
+  @each $key, $val in $font-familys {
+    --family-#{'#{$key}'}: #{$val}, sans-serif;
+  }
+
+  @each $key, $val in $theme-colors {
+    --clr-#{'#{$key}'}: #{$val};
+  }
+}
+
+html[data-theme="dark"] {
+  $theme-colors: $theme-colors-dark;
+
+  @each $key, $val in $theme-colors {
+    --clr-#{'#{$key}'}: #{$val};
+  }
+}
+
+// set colors ====================
+
+@each $key, $val in $theme-colors {
+  .clr-#{"#{$key}"} {
+    color: var(--clr-#{"#{$key}"});
+  }
+
+  .bg-#{"#{$key}"} {
+    background: var(--clr-#{"#{$key}"});
+  }
+}
+
+// set font familys ====================
+
+@each $key, $val in $font-familys {
+  .no-family-#{"#{$key}"} {
+    font-family: "#{$val}", sans-serif;
+  }
+}
+
+// set container =======================
+
+@each $key, $val in $containers {
+  .no-container-#{"#{$key}"} {
+    max-width: #{$val}px;
+
+    margin-left: auto;
+
+    margin-right: auto;
+
+    padding-left: fluid(20, 24);
+
+    padding-right: fluid(20, 24);
+  }
+}
+
+// set section ==========================
+
+@each $key, $val in $sections {
+  .no-section-#{"#{$key}"} {
+    @include section-fluid-by-map($val);
+  }
+}
+
+// set custom ==========================
+
+@each $key, $val in $fluid-customs {
+  .#{"#{$key}"} {
+    @include set-fluid($val);
+  }
+}
+
+// set heaidngs ========================
+
+@each $key, $val in $fluid-headings {
+  .f-heading-#{$key} {
+    @include fs-fluid-by-map($val);
+  }
+}
+
+@each $key, $val in $fluid-displays {
+  .f-display-#{$key} {
+    @include fs-fluid-by-map($val);
+  }
+}
+
+@each $key, $val in $fluid-bodys {
+  .f-body-#{$key} {
+    @include fs-fluid-by-map($val);
+  }
+}
+
+@each $key, $val in $static-headings {
+  .s-heading-#{$key} {
+    @include fs-static-by-map($val);
+  }
+}
+
+@each $key, $val in $static-bodys {
+  .s-body-#{$key} {
+    @include fs-static-by-map($val);
+  }
+}

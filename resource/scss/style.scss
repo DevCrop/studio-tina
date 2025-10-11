@@ -1,0 +1,249 @@
+@use './abstracts' as *;
+@use './vendors';
+@use './base';
+@use './layouts';
+@use './components';
+@use './pages';
+
+// project =====================================================
+// #project-modal {
+//     position: fixed;
+//     left: 0;
+//     right: 0;
+//     top: 0;
+//     bottom: 0;
+//     width: 100%;
+//     z-index: 1000;
+//     background: rgba(0, 0, 0, 0.6);
+//     overflow-y: auto;
+//     border: none;
+//     opacity: 0;
+//     visibility: hidden;
+//     transition: 0.3s ease-in-out;
+//     word-break: keep-all;
+//     height: 100dvh;
+
+//     .project-modal__inner {
+//         position: relative;
+//         padding: 4rem 2.4rem;
+//         max-width: 128rem;
+//         margin: 0 auto;
+//         transition: 0.3s ease-in-out;
+//         position: relative;
+//         @include mq(md) {
+//             padding: 0;
+//         }
+
+//         .project-modal__container {
+//             border-radius: 3rem;
+//             background: #fff;
+//             overflow: hidden;
+//             position: relative;
+//             opacity: 0;
+//             visibility: hidden;
+//             transform: translateY(15%);
+//             transition: 0.5s ease-in-out;
+
+//             @include mq(md) {
+//                 border-radius: 0;
+//             }
+//         }
+//     }
+
+//     &.active {
+//         opacity: 1;
+//         visibility: visible;
+
+//         .project-modal__container {
+//             opacity: 1;
+//             visibility: visible;
+//             transform: translateY(0);
+//         }
+//     }
+
+//     .project-modal__summary {
+//         padding: 6rem 0;
+//         display: flex;
+//         flex-direction: column;
+//         gap: 2.4rem;
+
+//         h4 {
+//             font-size: clamp(2.4rem, 1.5533980583vw + 1.8174757282rem, 4.8rem);
+//             font-weight: 600;
+//             text-align: center;
+//         }
+
+//         .project-modal__tags {
+//             display: flex;
+//             align-items: center;
+//             flex-wrap: wrap;
+//             gap: 0.8rem;
+//             justify-content: center;
+
+//             li {
+//                 background: #f7f7f7;
+//                 border-radius: 2.4rem;
+//                 font-size: 1.5rem;
+//                 padding: 0.7rem 1.4rem;
+//                 @include mq(md) {
+//                     font-size: 1.3rem;
+//                 }
+//             }
+//         }
+
+//         .project-modal__tabs {
+//             display: flex;
+//             justify-content: center;
+//             align-items: center;
+//             padding-top: 3.2rem;
+//             border-bottom: 1px solid #d7d7d7;
+//             width: 100%;
+
+//             .project-modal__tabs__inner {
+//                 display: inline-flex;
+//                 justify-content: center;
+//                 align-items: center;
+//                 width: 100%;
+
+//                 button {
+//                     display: inline-flex;
+//                     align-items: center;
+//                     justify-content: center;
+//                     max-width: 20rem;
+//                     width: 100%;
+//                     height: 4.8rem;
+//                     font-size: 1.6rem;
+//                     color: #999;
+//                     @include mq(md) {
+//                         font-size: 1.4rem;
+//                     }
+
+//                     &.active {
+//                         color: var(--color-primary-400);
+//                         font-weight: 600;
+//                         border-bottom: 2px solid var(--color-primary-400);
+//                     }
+//                 }
+//             }
+//         } /*== tabs ==*/
+//     }
+
+//     .project-modal__header {
+//         picture {
+//             display: block;
+//             height: 45rem;
+//             @include mq(md) {
+//                 height: 32rem;
+//             }
+
+//             img {
+//                 width: 100%;
+//                 height: 100%;
+//                 object-fit: cover;
+//             }
+//         }
+
+//         .project-modal__thumb {
+//             position: relative;
+//             font-size: 1.6rem;
+
+//             @include mq(md) {
+//                 font-size: 1.4rem;
+//             }
+
+//             .project-modal__extra {
+//                 position: absolute;
+//                 left: 2.4rem;
+//                 bottom: 2.4rem;
+//                 display: flex;
+//                 align-items: center;
+//                 justify-content: space-between;
+//                 width: calc(100% - 4.8rem);
+//                 gap: 0.8rem;
+
+//                 @include mq(md) {
+//                     flex-direction: column;
+//                     align-items: flex-start;
+//                 }
+
+//                 dl {
+//                     display: inline-flex;
+//                     align-items: center;
+//                     gap: 1.5rem;
+//                     border-radius: 2.4rem;
+
+//                     background: rgba(0, 0, 0, 0.65);
+//                     color: #fff;
+//                     padding: 0.8rem 1.6rem;
+
+//                     dd {
+//                         color: rgba(255, 255, 255, 0.7);
+//                     }
+//                 }
+
+//                 a {
+//                     display: inline-flex;
+//                     align-items: center;
+//                     justify-content: center;
+//                     gap: 0.8rem;
+//                     padding: 0.8rem 1.6rem;
+//                     color: #000;
+//                     background-color: #fff;
+//                     border: 1px solid rgba(0, 0, 0, 0.1);
+//                     border-radius: 5.5rem;
+
+//                     &:hover {
+//                         background: var(--color-primary-400);
+//                         color: #fff;
+//                     }
+//                 }
+//             }
+//         }
+//     } /*== header ==*/
+
+//     .project-modal__content {
+//         min-height: 0;
+//         font-size: 1.6rem;
+//         @include mq(md) {
+//             font-size: 1.5rem;
+//         }
+
+//         .project-modal__text {
+//             margin-bottom: 6rem;
+//         }
+
+//         .project-modal__detail {
+//             display: flex;
+//             flex-direction: column;
+//             gap: 2.4rem;
+//         }
+
+//         .project-modal__block {
+//             display: none;
+
+//             &.active {
+//                 display: block;
+//             }
+//         }
+
+//         .project-modal__block--iframe {
+//             margin-bottom: 4rem;
+//             outline: 1px solid #d7d7d7;
+//         }
+
+//         iframe {
+//             width: 100%;
+//             min-height: 65vh;
+//         }
+//     }
+// } /*== content ==*/
+
+// .project-modal__footer {
+//     .project-modal__footer__inner {
+//         padding: 4rem 0;
+//         display: flex;
+//         align-items: center;
+//         justify-content: space-between;
+//         gap: 1.5rem;
+//     }
+// } /*== footer ==*/

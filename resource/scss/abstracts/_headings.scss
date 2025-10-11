@@ -1,0 +1,160 @@
+@use "./functions" as func;
+
+// ============================================
+
+// Fluid Heading
+
+// ============================================
+
+// .f-heading-<key> [min, max, lh, fw, ls]
+
+$fluid-displays: (
+  1: (
+    min: 54,
+    max: 128,
+    lh: 1.2,
+    fw: 800,
+    ls: -1,
+    ff: "Manrope",
+  ),
+  2: (
+    min: 48,
+    max: 96,
+    lh: 1.2,
+    fw: 700,
+    ls: -1,
+    ff: "Manrope",
+  ),
+  3: (
+    min: 42,
+    max: 84,
+    lh: 1.2,
+    fw: 700,
+    ls: -0.5,
+    ff: "Manrope",
+  ),
+  4: (
+    min: 36,
+    max: 72,
+    lh: 1.41,
+    fw: 700,
+    ls: -0.5,
+    ff: "Manrope",
+  ),
+);
+$fluid-headings: (
+  1: (
+    // xl
+    min: 28,
+    max: 64,
+    lh: 1.41,
+    fw: 600,
+    ls: -0.04,
+    ff: "Manrope",
+  ),
+  2: (
+    // lg
+    min: 24,
+    max: 48,
+    lh: 1.41,
+    fw: 600,
+    ls: -0.04,
+    ff: "Manrope",
+  ),
+  3: (
+    // md
+    min: 20,
+    max: 36,
+    lh: 1.41,
+    fw: 600,
+    ls: 0.04,
+    ff: "Manrope",
+  ),
+  4: (
+    // sm
+    min: 18,
+    max: 24,
+    lh: 1.41,
+    fw: 600,
+    ls: 0.04,
+    ff: "Manrope",
+  ),
+);
+
+// .f-body-<key>
+
+$fluid-bodys: (
+  1: (
+    min: 15,
+    max: 20,
+    lh: 1.41,
+    fw: 500,
+    ls: -0.6,
+    ff: "Pretendard",
+  ),
+  2: (
+    min: 13,
+    max: 18,
+    lh: 1.618,
+    fw: 400,
+    ls: -0.6,
+    ff: "Pretendard",
+  ),
+  3: (
+    min: 12,
+    max: 16,
+    lh: 1.618,
+    fw: 400,
+    ls: -0.6,
+    ff: "Pretendard",
+  ),
+  4: (
+    min: 10,
+    max: 14,
+    lh: 1.618,
+    fw: 400,
+    ls: -0.6,
+    ff: "Pretendard",
+  ),
+);
+
+// ============================================
+
+// Static Heading
+
+// ============================================
+
+// .s-heading-<key>
+
+$static-headings: (
+  xl: (
+    base: 72,
+
+    lg: 48,
+
+    md: 32,
+
+    lh: 1.05,
+
+    fw: 700,
+
+    ls: -1,
+    ff: "Pretendard",
+  ),
+);
+
+// .s-body-<key>
+
+$static-bodys: (
+  l: (
+    base: 24,
+
+    md: 20,
+    ff: "Pretendard",
+  ),
+
+  s: (
+    base: 12,
+    ff: "Pretendard",
+  ),
+);

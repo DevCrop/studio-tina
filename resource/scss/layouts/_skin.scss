@@ -1,0 +1,129 @@
+@use '../abstracts' as *;
+
+.skin-gallery {
+    &__list {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2.4rem;
+        margin-top: minus-fluid(24, 48);
+
+        @include mq(lg) {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        @include mq(md) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &__item {
+        position: relative;
+        margin-top: fluid(24, 48);
+        &:hover .skin-gallery__title {
+            color: var(--clr-primary-700);
+        }
+
+        figure {
+            @include img-auto-cover();
+        }
+    }
+
+    &__title {
+        margin-top: 2rem;
+    }
+
+    &__date {
+        display: block;
+        margin-top: 1.5rem;
+    }
+}
+
+.skin-wz {
+    &__list {
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__item {
+        display: grid;
+        grid-template-columns: 5fr 7fr;
+        gap: fluid(24, 64);
+        padding: fluid(24, 32) 0;
+        border-bottom: 1px solid var(--clr-gray-900);
+        &:first-child {
+            border-top: 1px solid var(--clr-gray-900);
+        }
+
+        @include mq(lg) {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @include mq(md) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &__date {
+        color: var(--clr-gray-400);
+        display: block;
+        margin-bottom: fluid(16, 24);
+    }
+
+    &__content {
+        h4 {
+            margin-bottom: fluid(16, 24);
+        }
+        &__desc {
+            @include line-clamp(2);
+        }
+    }
+
+    &__btn {
+        margin-top: fluid(32, 48);
+    }
+
+    &__img {
+        figure {
+            @include img-auto-cover(62.5%);
+        }
+    }
+}
+
+.catalog {
+    &__list {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: fluid(20, 24);
+        margin-top: minus-fluid(24, 48);
+
+        @include mq(lg) {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        @include mq(md) {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    &__item {
+        margin-top: fluid(24, 48);
+
+        h4 {
+            font-weight: 500;
+        }
+    }
+
+    &__img {
+        @include img-auto-cover(150%);
+        margin-bottom: 1.5rem;
+    }
+
+    &__action {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-top: 1rem;
+
+        i {
+            font-size: 1.8rem;
+        }
+    }
+}

@@ -1,0 +1,29 @@
+@use "../abstracts" as *;
+
+.no-marquee {
+  overflow: hidden;
+
+  &__list {
+    display: flex;
+
+    width: fit-content;
+
+    flex: auto;
+
+    flex-direction: row;
+  }
+
+  &__item {
+    font-weight: 500;
+
+    display: flex;
+
+    align-items: center;
+
+    flex-shrink: 0;
+
+    padding: 0 2.4rem;
+
+    text-transform: uppercase;
+  }
+}

@@ -1,0 +1,13 @@
+# Apache 모듈 활성화 및 심볼릭 링크 허용
+<IfModule mod_rewrite.c>
+    Options +FollowSymLinks
+    RewriteEngine On
+
+    # 실제 존재하는 파일 또는 디렉토리는 그대로 처리
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # 나머지는 index.php로 라우팅
+    RewriteRule ^ index.php [L]
+</IfModule>

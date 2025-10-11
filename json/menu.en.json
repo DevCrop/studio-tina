@@ -1,0 +1,72 @@
+{
+  "site_name": "Everything About Video Production | Palette Inc.",
+  "seo_title": "Palette, Beyond Frame | Palette(KR)",
+  "seo_desc": "We lead a new era of video with artistic insight and cutting-edge technology. Beyond Frame",
+  "seo_keyword": "VideoTech, Startup, Baby Unicorn, Series A, Venture Company, Vision, Brand Awards",
+  "pages": [
+    {
+      "title": "Company",
+      "dirname": "company",
+      "pages": [
+        {
+          "title": "About",
+          "filename": "about",
+          "seo_title": "Palette Inc. | Palette(KR)",
+          "seo_desc": "We complete innovation by blending art with technology. Artful Craft, Colorful Tech",
+          "seo_keyword": "VideoTech, Startup, Baby Unicorn, Series A, Venture Company, Vision, Brand Awards"
+        },
+        {
+          "title": "News",
+          "board_no": "13",
+          "seo_title": "Palette Inc. | Palette(KR)",
+          "seo_desc": "Stay updated with the latest news from VideoTech company Palette.",
+          "seo_keyword": "AI Video Production, Video Production Tool, Corporate Promotional Video, Branding Video, Digital Marketing, Marketing Agency"
+        },
+        {
+          "title": "Contact",
+          "filename": "contact"
+        }
+      ]
+    },
+    {
+      "title": "AI Creative",
+      "dirname": "ai_creative",
+      "pages": [
+        {
+          "title": "Portfolio · Video",
+          "board_no": "14"
+        },
+	{
+          "title": "Portfolio · Image",
+          "board_no": "16"
+        }
+      ]
+    },
+    {
+      "title": "AI Platform",
+      "dirname": "ai_platform",
+      "pages": [
+        {
+          "title": "Palette AI",
+          "filename": "ai",
+          "seo_title": "AI Video Production Platform | Palette(KR)",
+          "seo_desc": "Experience revolutionary video production powered by AI. From text-to-video generation to automatic editing and voice synthesis, create content quickly and easily optimized for YouTube, Shorts, ads, and more.",
+          "seo_keyword": "AI Video Production, Automation Technology, Voice Synthesis, YouTube Optimization, Mass Content Production"
+        }
+      ]
+    },
+    {
+      "title": "Blog",
+      "dirname": "blog",
+      "pages": [
+        {
+          "title": "Blog",
+          "board_no": "12",
+          "seo_title": "Palette Inc. | Palette(KR)",
+          "seo_desc": "Discover the latest trends in video, AI video technology, marketing, and startups.",
+          "seo_keyword": "Video Production, Digital Marketing, AI, AI Technology, Startup, Performance Marketing, Content Marketing, Marketer, Latest News, Expert Articles"
+        }
+      ]
+    }
+  ]
+}

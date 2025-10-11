@@ -1,0 +1,199 @@
+{
+  "site_name": "팔레트 (Palette) | AI 커뮤니케이션 에이전시",
+  "seo_title": "팔레트, Beyond Frame | 팔레트(KR) ",
+  "seo_desc": "우리는 예술적 통찰과 첨단기술로 새로운 영상세계를 선도합니다. Beyond Frame",
+  "seo_keyword": "비디오테크, 스타트업, 아기유니콘, 시리즈A, 벤처기업, 비전, 브랜드대상",
+  "pages": [
+    {
+      "title": "Company",
+      "dirname": "company",
+      "pages": [
+        {
+          "title": "About",
+          "filename": "about",
+          "seo_title": "팔레트 주식회사 | 팔레트(KR)",
+          "seo_desc": "우리는 예술에 기술을 더하여 새로움을 완성합니다. Artful craft, Colorful Tech",
+          "seo_keyword": "비디오테크, 스타트업, 아기유니콘, 시리즈A, 벤처기업, 비전, 브랜드대상"
+        },
+        {
+          "title": "News",
+          "board_no": "9",
+          "seo_title": "팔레트 주식회사 | 팔레트(KR)",
+          "seo_desc": "비디오테크기업 팔레트의 최신 소식을 만나보세요.",
+          "seo_keyword": "AI 영상 제작, 영상 제작 툴, 기업 홍보 영상, 브랜딩 영상, 디지털마케팅, 마케팅대행사"
+        },
+        {
+          "title": "Contact",
+          "filename": "contact"
+        }
+      ]
+    },
+    {
+      "title": "Service",
+      "dirname": "service",
+      "pages": [
+        {
+          "title": "Palette AI",
+          "filename": "ai",
+          "seo_title": "AI영상제작 플랫폼 | 팔레트(KR)",
+          "seo_desc": "AI 기술로 혁신적인 영상 제작을 경험하세요. 텍스트로 영상생성, 자동 편집, 음성 합성 등 최신 기술을 활용해 유튜브, 쇼츠, 광고 등 다양한 플랫폼에 최적화된 콘텐츠를 쉽고 빠르게 제작합니다.",
+          "seo_keyword": "AI 영상 제작, 자동화 기술, 음성 합성, 유튜브 최적화, 대량 콘텐츠 제작"
+        },
+	{
+          "title": "Palette Link",
+          "filename": "link",
+          "seo_title": "영상 제작 협업 플랫폼 | 팔레트(KR)",
+          "seo_desc": "영상 제작 과정의 효율을 극대화하는 협업 서비스. 기획, 제작, 피드백까지 통합된 솔루션 제공! 클라우드 기반 협업 도구와 풍부한 인적 네트워크를 통해 완벽한 결과물을 제공합니다.",
+          "seo_keyword": "영상 제작 협업, 협업 플랫폼, 클라우드 기반 협업, 팀워크, 실시간 피드백, 글로벌 협업"
+        },
+        {
+          "title": "AI Creatives",
+          "filename": "video",
+          "seo_title": "전문 영상 제작 서비스 | 팔레트(KR) ",
+          "seo_desc": "최고의 영상 제작 서비스로 브랜딩 효과를 극대화하세요. 유튜브, 쇼츠, 홍보 영상 등 다양한 콘텐츠를 제작하며, 스타트업 등 맞춤 솔루션과 최신 기술로 성공적인 마케팅을 지원합니다.",
+          "seo_keyword": "영상 제작, 유튜브 영상, 쇼츠 제작, 기업 홍보 영상, 브랜딩 영상, 스타트업 마케팅, 바이럴 영상, 플랫폼 최적화, 영상 콘텐츠 제작, 드론 촬영, AI 영상 편집, 영상제작업체"
+        },
+        {
+          "title": "Digital Marketing",
+          "filename": "mk",
+          "seo_title": "디지털마케팅 | 팔레트(KR) ",
+          "seo_desc": "콘텐츠와 퍼포먼스로 성과를 이끄는 디지털 마케팅 서비스. 데이터 기반 전략과 맞춤형 캠페인으로 비즈니스 성장을 지원합니다.",
+          "seo_keyword": "디지털 마케팅, 콘텐츠 마케팅, 퍼포먼스 마케팅, SEO, ROI 최적화, 캠페인 최적화, 데이터 기반 마케팅"
+        }
+      ]
+    },
+    {
+      "title": "Works",
+      "dirname": "works",
+      "pages": [
+        {
+          "title": "Portfolio · Video",
+          "board_no": "10"
+        },
+	{
+          "title": "Portfolio · Image",
+          "board_no": "15"
+        }
+      ]
+    },
+    {
+      "title": "Blog",
+      "dirname": "blog",
+      "pages": [
+        {
+          "title": "Blog",
+          "board_no": "8",
+          "seo_title": "팔레트 주식회사 | 팔레트(KR)",
+          "seo_desc": "영상 트렌드, AI영상 최신소식, 마케팅 트렌드, 스타트업 최신 소식을 만나보세요.",
+          "seo_keyword": "영상제작, 디지털마케팅, AI, AI기술, 스타트업, 퍼포먼스마케팅, 콘텐츠마케팅, 마케터, 최신소식, 전문기사"
+        }
+      ]
+    }
+  ]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+{
+  "site_name": "Everything About Video Production | Palette Inc.",
+  "seo_title": "Palette, Beyond Frame | Palette(KR)",
+  "seo_desc": "We lead a new era of video with artistic insight and cutting-edge technology. Beyond Frame",
+  "seo_keyword": "VideoTech, Startup, Baby Unicorn, Series A, Venture Company, Vision, Brand Awards",
+  "pages": [
+    {
+      "title": "Company",
+      "dirname": "company",
+      "pages": [
+        {
+          "title": "About",
+          "filename": "about",
+          "seo_title": "Palette Inc. | Palette(KR)",
+          "seo_desc": "We complete innovation by blending art with technology. Artful Craft, Colorful Tech",
+          "seo_keyword": "VideoTech, Startup, Baby Unicorn, Series A, Venture Company, Vision, Brand Awards"
+        },
+        {
+          "title": "News",
+          "board_no": "13",
+          "seo_title": "Palette Inc. | Palette(KR)",
+          "seo_desc": "Stay updated with the latest news from VideoTech company Palette.",
+          "seo_keyword": "AI Video Production, Video Production Tool, Corporate Promotional Video, Branding Video, Digital Marketing, Marketing Agency"
+        },
+        {
+          "title": "Contact",
+          "filename": "contact"
+        }
+      ]
+    },
+    {
+      "title": "Service",
+      "dirname": "service",
+      "pages": [
+        {
+          "title": "Palette AI",
+          "filename": "ai",
+          "seo_title": "AI Video Production Platform | Palette(KR)",
+          "seo_desc": "Experience revolutionary video production powered by AI. From text-to-video generation to automatic editing and voice synthesis, create content quickly and easily optimized for YouTube, Shorts, ads, and more.",
+          "seo_keyword": "AI Video Production, Automation Technology, Voice Synthesis, YouTube Optimization, Mass Content Production"
+        },
+	{
+          "title": "Palette Link",
+          "filename": "link",
+          "seo_title": "Video Production Collaboration Platform | Palette (KR)",
+          "seo_desc": "A collaboration service that maximizes the efficiency of the video production process. Providing an integrated solution from planning and production to feedback! Delivering perfect results through cloud-based collaboration tools and a rich professional network.",
+          "seo_keyword": "video production collaboration, collaboration platform, cloud-based collaboration, teamwork, real-time feedback, global collaboration"
+        },
+        {
+          "title": "AI Creatives",
+          "filename": "video",
+          "seo_title": "Professional Video Production Services | Palette(KR)",
+          "seo_desc": "Maximize your branding impact with top-tier video production services. We produce a wide range of content including YouTube videos, Shorts, and promotional videos, supporting successful marketing with customized solutions and the latest technology.",
+          "seo_keyword": "Video Production, YouTube Videos, Shorts Production, Corporate Promotional Video, Branding Video, Startup Marketing, Viral Video, Platform Optimization, Content Production, Drone Filming, AI Video Editing, Video Production Company"
+        },
+        {
+          "title": "Digital Marketing",
+          "filename": "mk",
+          "seo_title": "Digital Marketing | Palette(KR)",
+          "seo_desc": "Digital marketing services that drive results through content and performance. We support business growth through data-driven strategies and tailored campaigns.",
+          "seo_keyword": "Digital Marketing, Content Marketing, Performance Marketing, SEO, ROI Optimization, Campaign Optimization, Data-Driven Marketing"
+        }
+      ]
+    },
+    {
+      "title": "Works",
+      "dirname": "works",
+      "pages": [
+        {
+          "title": "Portfolio · Video",
+          "board_no": "14"
+        },
+	{
+          "title": "Portfolio · Image",
+          "board_no": "16"
+        }
+      ]
+    },
+    {
+      "title": "Blog",
+      "dirname": "blog",
+      "pages": [
+        {
+          "title": "Blog",
+          "board_no": "12",
+          "seo_title": "Palette Inc. | Palette(KR)",
+          "seo_desc": "Discover the latest trends in video, AI video technology, marketing, and startups.",
+          "seo_keyword": "Video Production, Digital Marketing, AI, AI Technology, Startup, Performance Marketing, Content Marketing, Marketer, Latest News, Expert Articles"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,135 @@
+@use "../abstracts" as *;
+
+* {
+  margin: 0;
+
+  padding: 0;
+
+  box-sizing: border-box;
+
+  br {
+    @include mq(md) {
+      display: none;
+    }
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+
+  -webkit-tap-highlight-color: transparent;
+
+  -webkit-font-smoothing: antialiased;
+
+  -moz-osx-font-smoothing: grayscale;
+
+  text-rendering: optimizelegibility;
+
+  font-size: 62.5%;
+}
+
+body {
+  font-size: var(--base-font-size);
+
+  line-height: var(--base-line-height);
+
+  word-break: keep-all;
+
+  letter-spacing: var(--base-letter-spacing);
+
+  background: var(--clr-ui-surface);
+
+  color: var(--clr-ui-body);
+
+  font-family: var(--family-base);
+
+  font-weight: 400;
+}
+
+// ::selection {
+
+//     background: var(--clr-primary-def);
+
+//     color: var(--clr-on-white-high);
+
+// }
+
+// ::-webkit-scrollbar {
+
+//     background-color: var(--clr-ui-black);
+
+//     width: 8px;
+
+// }
+
+// ::-webkit-scrollbar-thumb {
+
+//     background-color: var(--clr-ui-white);
+
+// }
+
+a,
+button,
+select,
+input,
+textarea,
+option {
+  color: var(--clr-ui-body);
+
+  font-family: var(--family-base);
+
+  font-size: var(--base-font-size);
+
+  line-height: var(--base-line-height);
+}
+
+[lang="ko-kr"] {
+  body {
+    font-family: var(--family-ko-base);
+  }
+}
+
+ul,
+ol,
+li {
+  list-style: none;
+}
+
+img {
+  width: 100%;
+  object-fit: cover;
+}
+
+a {
+  text-decoration: none;
+}
+
+em,
+address {
+  font-style: normal;
+}
+
+button {
+  background: none;
+
+  border: none;
+
+  cursor: pointer;
+}
+
+label {
+  cursor: pointer;
+}
+
+textarea {
+  resize: none;
+}
+
+input,
+textarea,
+select,
+option {
+  border: none;
+
+  outline: none;
+}

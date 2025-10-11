@@ -1,0 +1,81 @@
+{
+  "site_name": "스튜디오 티나",
+  "seo_title": "티나 seo ",
+  "seo_desc": "티나 desc",
+  "seo_keyword": "비디오테크, 스타트업, 아기유니콘, 시리즈A, 벤처기업, 비전, 브랜드대상",
+  "pages": [
+    {
+      "title": "ABOUT US",
+      "dirname": "about",
+      "pages": [
+        {
+          "title": "COMPANY",
+          "filename": "company",
+          "seo_title": "스튜디오 티나 | 티나(KR)",
+          "seo_desc": "티나 desc",
+          "seo_keyword": "티나 keyword"
+        },
+        {
+          "title": "HISTORY",
+          "filename": "history",
+          "seo_title": "스튜디오 티나 | 티나(KR)",
+          "seo_desc": "티나 desc",
+          "seo_keyword": "티나 keyword"
+        },
+        {
+          "title": "PARTNERS",
+          "filename": "partners",
+          "seo_title": "스튜디오 티나 | 티나(KR)",
+          "seo_desc": "티나 desc",
+          "seo_keyword": "티나 keyword"
+        }
+      ]
+    },
+    {
+      "title": "WORKS",
+      "dirname": "works",
+      "pages": [
+        {
+          "title": "PORTFOLIO",
+          "filename": "portfolio",
+          "seo_title": "스튜디오 티나 | 티나(KR)",
+          "seo_desc": "티나 desc",
+          "seo_keyword": "티나 keyword"
+        },
+        {
+          "title": "CREATOR",
+          "filename": "creator",
+          "seo_title": "스튜디오 티나 | 티나(KR)",
+          "seo_desc": "티나 desc",
+          "seo_keyword": "티나 keyword"
+        }
+      ]
+    },
+    {
+      "title": "NEWS",
+      "dirname": "news",
+      "pages": [
+        {
+          "title": "NEWS",
+          "filename": "news",
+          "seo_title": "스튜디오 티나 | 티나(KR)",
+          "seo_desc": "티나 desc",
+          "seo_keyword": "티나 keyword"
+        }
+      ]
+    },
+    {
+      "title": "CONTACT",
+      "dirname": "contact",
+      "pages": [
+        {
+          "title": "contact",
+          "filename": "contact",
+          "seo_title": "스튜디오 티나 | 티나(KR)",
+          "seo_desc": "티나 desc",
+          "seo_keyword": "티나 keyword"
+        }
+      ]
+    }
+  ]
+}

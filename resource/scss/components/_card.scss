@@ -1,0 +1,37 @@
+@use "../abstracts" as *;
+
+.no-card {
+  border-radius: fluid(24, 40);
+
+  padding: fluid(24, 48);
+
+  overflow: hidden;
+
+  background: var(--clr-ui-surface);
+
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.no-card-gray {
+  border-radius: fluid(12, 16);
+
+  padding: fluid(24, 40) fluid(24, 60);
+
+  overflow: hidden;
+
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+
+  background: #f9f9f9;
+}
+
+.no-card-light {
+  border-radius: fluid(10, 20);
+
+  padding: fluid(24, 48) fluid(24, 64);
+
+  overflow: hidden;
+
+  background: var(--clr-ui-surface);
+
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+}

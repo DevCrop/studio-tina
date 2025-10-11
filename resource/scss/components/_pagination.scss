@@ -1,0 +1,37 @@
+@use "../abstracts" as *;
+
+.no-pagination {
+  display: flex;
+  margin-top: fluid(32, 64);
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 0.8rem;
+
+  a {
+    width: fluid(24, 36);
+
+    height: fluid(24, 36);
+    border-radius: 4rem;
+    @include flex-center();
+
+    border: 1px solid #ddd;
+
+    transition: 0.15s;
+
+    &:hover {
+      background: #fafafa;
+      color: var(--clr-ui-bg-lg);
+    }
+
+    &.active {
+      background-color: #222;
+      color: #fff;
+    }
+
+    &.--arrow {
+      border: none;
+    }
+  }
+}
