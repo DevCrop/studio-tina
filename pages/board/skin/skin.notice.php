@@ -1,35 +1,38 @@
+<div class="no-container">
+    <div class="no-components mb30">
 
-    <div class="no-container">
-     	<div class="no-components mb30">
-
-          <div class="no-sub__title " <?=$aos_title?>>
-			<span>NOTICE</span>
+        <div class="no-sub__title " <?=$aos_title?>>
+            <span>NOTICE</span>
             <h2>공지 사항</h2>
-          </div>
-		  
-		  <!--search bar-->
-			<div class="no-search__box">
-			 <input type="search" placeholder="Search"  name="searchKeyword" id="searchKeyword" title="search" value="<?=$searchKeyword?>">
-			  <button type="button" aria-label="search" onClick="doSearch();">
-				<i class="bx bx-search"></i>
-			  </button>
-			</div>
-		</div>
+        </div>
 
-		  
+        <!--search bar-->
+        <div class="no-search__box">
+            <input type="search" placeholder="Search" name="searchKeyword" id="searchKeyword" title="search"
+                value="<?=$searchKeyword?>">
+            <button type="button" aria-label="search" onClick="doSearch();">
+                <i class="bx bx-search"></i>
+            </button>
+        </div>
+    </div>
 
-		  <div class="no-fac__inner">
-            <!---게시판-->
-            <div class="no_list-tbl" <?=$aos_middle?>>
-              <p class="no-list-head">
+
+
+    <div class="no-fac__inner">
+        <!---게시판-->
+        <div class="no_list-tbl" <?=$aos_middle?>>
+            <p class="no-list-head">
                 <span style="width: 7%">번호</span>
                 <span style="width: 59%">제목</span>
                 <span style="width: 12%">작성자</span>
                 <span style="width: 12%">등록일</span>
-              </p>
-				<?
+            </p>
+            <?
 					$rn = 1;
 					foreach($arrResultSet as $k=>$v){ 
+
+						show($v);
+						exit;
 
 					$title = $v[title];
 
@@ -62,31 +65,31 @@
 					if($v[comment_cnt])
 						$commentCnt = "<span class=\"no_w_list_sign\">(".$v[comment_cnt].")</span>";
 				?>
-              <div class="no-list-row notice-row clearfix">
+            <div class="no-list-row notice-row clearfix">
                 <div class="no-list-col no-block"><?=$rn?></div>
 
                 <div class="no-list-col no-title">
-                  <a href="<?=$link?>">
-                    <div class="no-title-link">
-                      <span class="no_new_icon"></span><strong class="no-title-notice"><?=$title?></strong>
-                    </div>
-                  </a>
+                    <a href="<?=$link?>">
+                        <div class="no-title-link">
+                            <span class="no_new_icon"></span><strong class="no-title-notice"><?=$title?></strong>
+                        </div>
+                    </a>
                 </div>
 
                 <div class="no-list-col no-inline" data-label="작성자">
-                  <?=$v[write_name]?>
+                    <?=$v[write_name]?>
                 </div>
 
                 <div class="no-list-col no-inline" data-label="등록일">
-                 <?=getChangeDate($v[regdate], "Y.m.d")?>
+                    <?=getChangeDate($v[regdate], "Y.m.d")?>
                 </div>
-              </div>
-			  <?
+            </div>
+            <?
 					$rn++;
 					}
 				?>
-              <!-- no-list-row-->
-            </div>
-            <!-- no-tb-con -->
-          </div>
+            <!-- no-list-row-->
+        </div>
+        <!-- no-tb-con -->
     </div>
+</div>

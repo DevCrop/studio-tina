@@ -8,6 +8,9 @@ $(document).ready(function () {
   mainVisualSwiper();
   mainAboutAnimation();
   marqueeLogos();
+  subSnapAnimation();
+  subRotateAnimation();
+  subHistoryAnimation();
 });
 
 function initHeader() {
@@ -74,16 +77,311 @@ function initHeader() {
     });
   }
 
+  let lastScrollY = window.scrollY;
+
   function handleScroll() {
-    if (window.scrollY > 80) {
+    const currentScrollY = window.scrollY;
+
+    // 스크롤 위치에 따른 is-scrolled 클래스
+    if (currentScrollY > 80) {
       root.classList.add("is-scrolled");
     } else {
       root.classList.remove("is-scrolled");
+    }
+
+    // 스크롤 방향 감지 (최소 5px 이상 이동 시에만 방향 변경)
+    if (Math.abs(currentScrollY - lastScrollY) > 5) {
+      if (currentScrollY > lastScrollY) {
+        // 아래로 스크롤
+        root.classList.remove("direction-up");
+        root.classList.add("direction-down");
+      } else {
+        // 위로 스크롤
+        root.classList.remove("direction-down");
+        root.classList.add("direction-up");
+      }
+      lastScrollY = currentScrollY;
     }
   }
 
   window.addEventListener("scroll", handleScroll);
   handleScroll();
+}
+function subRotateAnimation() {
+  const section = document.querySelector(".no-sub-about-rotate");
+  if (!section) return;
+
+  const circleContainer = section.querySelector(".ripple-circle");
+  const items = section.querySelectorAll(".ripple-circle-item");
+  const textItems = section.querySelectorAll(".no-sub-about-rotate-text-item");
+  const numElement = section.querySelector("#current-num .f-heading-3"); // 첫 번째 span (숫자)
+
+  if (!circleContainer || !items.length) return;
+
+  // 각 단계별 컨테이너 회전값 (CSS item 위치: 90, 180, 270, 360)
+  const stages = [
+    { num: 1, rotation: 0 }, // item1 (90deg)을 12시(0deg)로
+    { num: 2, rotation: -90 }, // item2 (180deg)를 12시로
+    { num: 3, rotation: -180 }, // item3 (270deg)를 12시로
+    { num: 4, rotation: -270 }, // item4 (360deg=0deg)는 이미 12시
+  ];
+
+  // 이전 단계 추적
+  let previousStage = 0;
+
+  // 단계 업데이트 함수
+  const updateStage = (currentStage) => {
+    if (currentStage === previousStage) return;
+
+    // ripple-circle-item current 클래스 업데이트
+    items.forEach((item, index) => {
+      if (index === currentStage) {
+        item.classList.add("current");
+      } else {
+        item.classList.remove("current");
+      }
+    });
+
+    // rotate-text-item current 클래스 업데이트
+    textItems.forEach((item, index) => {
+      if (index === currentStage) {
+        item.classList.add("current");
+      } else {
+        item.classList.remove("current");
+      }
+    });
+
+    // 컨테이너 회전 애니메이션 (90도씩 snap)
+    gsap.to(circleContainer, {
+      rotation: stages[currentStage].rotation,
+      duration: 0.8,
+      ease: "power3.inOut",
+    });
+
+    // 숫자 업데이트 (첫 번째 span만 변경)
+    if (numElement) {
+      numElement.textContent = stages[currentStage].num;
+    }
+
+    // 이전 단계 업데이트
+    previousStage = currentStage;
+  };
+
+  // ScrollTrigger로 섹션 고정 및 snap
+  ScrollTrigger.create({
+    trigger: section,
+    start: "top top",
+    end: "+=300%", // 3배 길이로 스크롤
+    pin: true,
+    snap: {
+      snapTo: [0, 0.33, 0.66, 1], // 4단계로 snap
+      duration: { min: 0.3, max: 0.6 }, // snap 속도
+      ease: "power2.inOut",
+    },
+    onUpdate: (self) => {
+      // 현재 진행도에 따라 단계 결정
+      const progress = self.progress;
+      let currentStage = 0;
+
+      if (progress < 0.16) currentStage = 0;
+      else if (progress < 0.5) currentStage = 1;
+      else if (progress < 0.83) currentStage = 2;
+      else currentStage = 3;
+
+      // 단계 업데이트
+      updateStage(currentStage);
+    },
+  });
+
+  // 클릭 이벤트로 해당 단계로 이동
+  items.forEach((item, index) => {
+    item.addEventListener("click", () => {
+      const triggers = ScrollTrigger.getAll();
+      const trigger = triggers.find((t) => t.trigger === section);
+
+      if (trigger) {
+        const targetProgress = index / (stages.length - 1);
+        const targetScroll =
+          trigger.start + (trigger.end - trigger.start) * targetProgress;
+
+        // Lenis를 사용한 부드러운 스크롤
+        if (window.lenis) {
+          window.lenis.scrollTo(targetScroll, {
+            duration: 1,
+            easing: (t) =>
+              t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1, // easeInOutCubic
+          });
+        } else {
+          // Lenis가 없을 경우 일반 스크롤
+          window.scrollTo({
+            top: targetScroll,
+            behavior: "smooth",
+          });
+        }
+      }
+    });
+  });
+}
+function subSnapAnimation() {
+  const snapItems = document.querySelectorAll(".no-sub-about-snap-item");
+  if (!snapItems.length) return;
+
+  // 각 아이템의 초기 설정 및 복제
+  const itemsData = Array.from(snapItems).map((item, liIndex) => {
+    // 원본 내용을 2번 복제하여 무한 루프 구현
+    const innerContent = item.innerHTML;
+    item.innerHTML = innerContent + innerContent + innerContent;
+
+    // 전체 너비 계산 (복제된 콘텐츠 포함)
+    const itemWidth = item.scrollWidth / 3; // 3번 복제했으므로 1/3이 원본 너비
+
+    // li 인덱스 기준으로 rotation 결정
+    // 1번째(0), 3번째(2) li: -2deg / 2번째(1) li: 2deg
+    const rotation = liIndex % 2 === 0 ? -2 : 2;
+
+    // 모든 wrap 요소에 동일한 rotate 적용
+    const wraps = item.querySelectorAll(".no-sub-about-snap-item-wrap");
+    wraps.forEach((wrap) => {
+      gsap.set(wrap, {
+        rotation: rotation,
+        force3D: true,
+      });
+    });
+
+    return {
+      element: item,
+      direction: item.dataset.direction === "right" ? 1 : -1,
+      baseSpeed: 0.3, // 기본 자동 이동 속도
+      scrollSpeed: 0.8, // 스크롤 시 추가 속도
+      currentX: 0,
+      targetX: 0,
+      itemWidth: itemWidth, // 리셋 기준점
+    };
+  });
+
+  let lastScrollY = window.scrollY;
+  let scrollVelocity = 0;
+
+  // Lenis 스크롤 이벤트 활용
+  if (window.lenis) {
+    window.lenis.on("scroll", ({ scroll, velocity }) => {
+      scrollVelocity = velocity;
+    });
+  }
+
+  // 애니메이션 루프
+  function animate() {
+    itemsData.forEach((item) => {
+      // 기본 자동 이동 (조금씩)
+      const autoMove = item.baseSpeed * item.direction;
+
+      // 스크롤 양에 따른 추가 이동
+      const scrollMove = scrollVelocity * item.scrollSpeed * item.direction;
+
+      // 목표 위치 업데이트
+      item.targetX += autoMove + scrollMove;
+
+      // 부드러운 이징 적용 (lerp)
+      item.currentX += (item.targetX - item.currentX) * 0.08;
+
+      // 무한 루프: 한 세트가 지나가면 위치 리셋
+      if (item.direction === 1) {
+        // 오른쪽으로 이동 (양수)
+        if (item.currentX >= item.itemWidth) {
+          item.currentX -= item.itemWidth;
+          item.targetX -= item.itemWidth;
+        }
+      } else {
+        // 왼쪽으로 이동 (음수)
+        if (item.currentX <= -item.itemWidth) {
+          item.currentX += item.itemWidth;
+          item.targetX += item.itemWidth;
+        }
+      }
+
+      // GSAP으로 실제 DOM 업데이트 (최적화된 transform)
+      gsap.set(item.element, {
+        x: item.currentX,
+        force3D: true, // GPU 가속
+      });
+    });
+
+    // 스크롤 속도 감소 (Lenis가 없을 경우 대비)
+    if (!window.lenis) {
+      scrollVelocity *= 0.95;
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  // 애니메이션 시작
+  animate();
+
+  // Lenis가 없을 경우 일반 스크롤 이벤트로 대체
+  if (!window.lenis) {
+    let ticking = false;
+
+    window.addEventListener("scroll", () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          scrollVelocity = (currentScrollY - lastScrollY) * 0.5;
+          lastScrollY = currentScrollY;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+  }
+}
+
+function subHistoryAnimation() {
+  const section = document.querySelector(".no-sub-about-history");
+  if (!section) return;
+
+  const fixedYear = document.getElementById("fixed-year");
+  const fixedMonth = document.getElementById("fixed-month");
+  const historyItems = section.querySelectorAll(".no-sub-about-history-item");
+
+  if (!fixedYear || !fixedMonth || !historyItems.length) return;
+
+  // 숫자 카운팅 애니메이션 함수
+  const animateNumber = (element, targetValue) => {
+    const currentValue = parseInt(element.textContent);
+    if (currentValue === targetValue) return;
+
+    gsap.to(
+      { value: currentValue },
+      {
+        value: targetValue,
+        duration: 0.6,
+        ease: "power2.inOut",
+        onUpdate: function () {
+          element.textContent = Math.round(this.targets()[0].value);
+        },
+      }
+    );
+  };
+
+  // 각 history-item에 ScrollTrigger 설정
+  historyItems.forEach((item) => {
+    const year = parseInt(item.dataset.year);
+    const month = parseInt(item.dataset.month);
+
+    ScrollTrigger.create({
+      trigger: item,
+      start: "top center",
+      end: "bottom center",
+      onEnter: () => {
+        animateNumber(fixedYear, year);
+        animateNumber(fixedMonth, month);
+      },
+      onEnterBack: () => {
+        animateNumber(fixedYear, year);
+        animateNumber(fixedMonth, month);
+      },
+    });
+  });
 }
 
 function mainVisualSwiper() {
@@ -150,6 +448,7 @@ function mainVisualSwiper() {
 
 function initLenis() {
   const lenis = new Lenis();
+  window.lenis = lenis; // 전역 접근 가능하도록
 
   lenis.on("scroll", ScrollTrigger.update);
 

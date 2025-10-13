@@ -7,7 +7,7 @@
     <div class="no-header-container ">
         <div class="no-header">
             <div class="no-header__inner">
-                <div class="no-header__logo">
+                <div class="no-header-logo">
                     <a href="/">
                         <img src="/resource/images/logo/LOGO_WHITE.svg" alt="LOGO_WHITE" class="white" />
                     </a>

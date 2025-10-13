@@ -14,7 +14,6 @@ if ($mode == "pwd.change") {
 
     $hashed = hash("sha256", $pwd_old);
 
-    // Prepare query to fetch user info
     $stmt = $pdo->prepare("SELECT a.no, a.uid, a.upwd, a.uname, a.active_status 
                            FROM nb_admin a 
                            WHERE a.sitekey = :sitekey");
@@ -40,69 +39,82 @@ if ($mode == "pwd.change") {
 
         $new_hashed = hash("sha256", $pwd_new);
 
-        // Update the password
         $stmt = $pdo->prepare("UPDATE nb_admin SET upwd = :new_pwd WHERE no = :no");
-        $stmt->execute(['new_pwd' => $new_hashed, 'no' => $db_no]);
+        $result = $stmt->execute(['new_pwd' => $new_hashed, 'no' => $db_no]);
 
-        session_start();
-        session_destroy();
+        if ($result) {
+            session_destroy();  
 
-        echo json_encode(["result" => "success", "msg" => "정상적으로 수정 되었습니다. 변경된 비밀번호로 새로 로그인해주세요."]);
+            echo json_encode(["result" => "success", "msg" => "정상적으로 수정 되었습니다. 변경된 비밀번호로 새로 로그인해주세요."]);
+        } else {
+            echo json_encode(["result" => "fail", "msg" => "비밀번호 변경에 실패했습니다. 다시 시도해주세요."]);
+        }
     }
 
-} else if ($mode == "setting.config.save") {
+}
 
-    // Collect all sanitized POST data directly without a custom function
 
-    $title = $_POST['title'];
-    $phone = $_POST['phone'];
-    $hp = $_POST['hp'];
-    $fax = $_POST['fax'];
-    $email = $_POST['email'];
-    $customercenter_able_time = $_POST['customercenter_able_time'];
-    $company_able_time = $_POST['company_able_time'];
-    $google_map_key = $_POST['google_map_key'];
-    $footer_name = $_POST['footer_name'];
-    $footer_address = $_POST['footer_address'];
-    $footer_phone = $_POST['footer_phone'];
-    $footer_hp = $_POST['footer_hp'];
-    $footer_fax = $_POST['footer_fax'];
-    $footer_email = $_POST['footer_email'];
-    $footer_owner = $_POST['footer_owner'];
-    $footer_ssn = $_POST['footer_ssn'];
-    $footer_policy_charger = $_POST['footer_policy_charger'];
-    $meta_keywords = $_POST['meta_keywords'];
-    $meta_description = $_POST['meta_description'];
+if ($mode == "setting.config.save") {
 
-    $logo_top_filename = $_POST['logo_top_filename'];
-    $logo_footer_filename = $_POST['logo_footer_filename'];
-    $meta_thumb_filename = $_POST['meta_thumb_filename'];
-    $meta_favicon_ico_filename = $_POST['meta_favicon_ico_filename'];
+    // Default values for missing POST data
+    $title = isset($_POST['title']) ? $_POST['title'] : '';
+    $phone = isset($_POST['phone']) ? $_POST['phone'] : '';
+    $hp = isset($_POST['hp']) ? $_POST['hp'] : '';
+    $fax = isset($_POST['fax']) ? $_POST['fax'] : '';
+    $email = isset($_POST['email']) ? $_POST['email'] : '';
+    $customercenter_able_time = isset($_POST['customercenter_able_time']) ? $_POST['customercenter_able_time'] : '';
+    $company_able_time = isset($_POST['company_able_time']) ? $_POST['company_able_time'] : '';
+    $google_map_key = isset($_POST['google_map_key']) ? $_POST['google_map_key'] : '';
+    $footer_name = isset($_POST['footer_name']) ? $_POST['footer_name'] : '';
+    $footer_address = isset($_POST['footer_address']) ? $_POST['footer_address'] : '';
+    $footer_phone = isset($_POST['footer_phone']) ? $_POST['footer_phone'] : '';
+    $footer_hp = isset($_POST['footer_hp']) ? $_POST['footer_hp'] : '';
+    $footer_fax = isset($_POST['footer_fax']) ? $_POST['footer_fax'] : '';
+    $footer_email = isset($_POST['footer_email']) ? $_POST['footer_email'] : '';
+    $footer_owner = isset($_POST['footer_owner']) ? $_POST['footer_owner'] : '';
+    $footer_ssn = isset($_POST['footer_ssn']) ? $_POST['footer_ssn'] : '';
+    $footer_policy_charger = isset($_POST['footer_policy_charger']) ? $_POST['footer_policy_charger'] : '';
+    $meta_keywords = isset($_POST['meta_keywords']) ? $_POST['meta_keywords'] : '';
+    $meta_description = isset($_POST['meta_description']) ? $_POST['meta_description'] : '';
+
+    // Handle file uploads with checks
+    $logo_top_filename = isset($_POST['logo_top_filename']) ? $_POST['logo_top_filename'] : '';
+    $logo_footer_filename = isset($_POST['logo_footer_filename']) ? $_POST['logo_footer_filename'] : '';
+    $meta_thumb_filename = isset($_POST['meta_thumb_filename']) ? $_POST['meta_thumb_filename'] : '';
+    $meta_favicon_ico_filename = isset($_POST['meta_favicon_ico_filename']) ? $_POST['meta_favicon_ico_filename'] : '';
 
     $dir_logo = $UPLOAD_SITEINFO_DIR_LOGO;
     $dir_meta = $UPLOAD_META_DIR;
 
-    // Handle file uploads
-    $thumb_image_saved = $uploadResult['saved'];
-	$uploadResult = imageUpload($dir_logo, $_FILES['logo_top'], $logo_top_filename, false);
-    $logo_top = $uploadResult['saved'];
+    // Initialize $uploadResult to handle upload results
+    $uploadResult = ['saved' => ''];
 
-    $uploadResult = imageUpload($dir_logo, $_FILES['logo_footer'], $logo_footer_filename, false);
-    $logo_footer = $uploadResult['saved'];
+    // Handle logo and meta file uploads
+    if (isset($_FILES['logo_top'])) {
+        $uploadResult = imageUpload($dir_logo, $_FILES['logo_top'], $logo_top_filename, false);
+        $logo_top = $uploadResult['saved'];
+    }
 
-    $uploadResult = imageUpload($dir_meta, $_FILES['meta_thumb'], $meta_thumb_filename, false);
-    $meta_thumb = $uploadResult['saved'];
+    if (isset($_FILES['logo_footer'])) {
+        $uploadResult = imageUpload($dir_logo, $_FILES['logo_footer'], $logo_footer_filename, false);
+        $logo_footer = $uploadResult['saved'];
+    }
 
-    $uploadResult = imageUpload($dir_meta, $_FILES['meta_favicon_ico'], $meta_favicon_ico_filename, false);
-    $meta_favicon_ico = $uploadResult['saved'];
+    if (isset($_FILES['meta_thumb'])) {
+        $uploadResult = imageUpload($dir_meta, $_FILES['meta_thumb'], $meta_thumb_filename, false);
+        $meta_thumb = $uploadResult['saved'];
+    }
 
+    if (isset($_FILES['meta_favicon_ico'])) {
+        $uploadResult = imageUpload($dir_meta, $_FILES['meta_favicon_ico'], $meta_favicon_ico_filename, false);
+        $meta_favicon_ico = $uploadResult['saved'];
+    }
 
-    // Check if entry exists
+    // Check if entry exists in the database
     $stmt = $pdo->prepare("SELECT a.no FROM nb_siteinfo a WHERE a.sitekey = :sitekey");
     $stmt->execute(['sitekey' => $NO_SITE_UNIQUE_KEY]);
     $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-	
     if ($data) {
         // Update existing record
         $query = "UPDATE nb_siteinfo SET 
@@ -125,14 +137,14 @@ if ($mode == "pwd.change") {
                     footer_policy_charger = :footer_policy_charger,
                     meta_keywords = :meta_keywords,
                     meta_description = :meta_description";
-                    
+
         if ($logo_top) $query .= ", logo_top = :logo_top";
         if ($logo_footer) $query .= ", logo_footer = :logo_footer";
         if ($meta_thumb) $query .= ", meta_thumb = :meta_thumb";
         if ($meta_favicon_ico) $query .= ", meta_favicon_ico = :meta_favicon_ico";
         
         $query .= " WHERE sitekey = '$NO_SITE_UNIQUE_KEY'";
-        
+
         $stmt = $pdo->prepare($query);
         $params = compact(
             'title', 'phone', 'hp', 'fax', 'email', 'customercenter_able_time', 
@@ -151,9 +163,6 @@ if ($mode == "pwd.change") {
 
     } else {
         // Insert new record
-
-		
-	
         $query = "INSERT INTO nb_siteinfo (
                     sitekey, title, logo_top, logo_footer, meta_thumb, meta_favicon_ico, 
                     phone, hp, fax, email, customercenter_able_time, company_able_time, 
@@ -177,7 +186,6 @@ if ($mode == "pwd.change") {
             'footer_ssn', 'footer_policy_charger', 'meta_keywords', 'meta_description'
         );
 
-		// echo json_encode($params);exit; 
         $result = $stmt->execute($params);
         echo json_encode(["result" => $result ? "success" : "fail", "msg" => $result ? "정상적으로 등록 되었습니다." : "처리중 문제가 발생하였습니다.[Error-DB]"]);
     }

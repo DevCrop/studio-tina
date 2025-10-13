@@ -1,10 +1,7 @@
-<?
+<?php
+include_once "../../../inc/lib/base.class.php";
 
-	include_once "../../../inc/lib/base.class.php";
+session_destroy();
 
-	session_start();
-    session_destroy();
-
-	location("../../");
-
-?>
+header("Location: ../../");
+exit;

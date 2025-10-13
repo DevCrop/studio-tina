@@ -1,376 +1,361 @@
-<!DOCTYPE html>
-<html lang="ko">
 <?php
-	include_once "../../../inc/lib/base.class.php";
+include_once "../../../inc/lib/base.class.php";
 
-	$db = DB::getInstance(); // Get PDO instance
+$pageName = "팝업";
+$depthnum = 4;
+$pagenum = 2;
 
-    $depthnum = 2;
-    $pagenum = 2;
+$db = DB::getInstance();
 
-    $p_title = $_REQUEST['p_title'] ?? '';
-    $p_view = $_REQUEST['p_view'] ?? '';
-    $page = $_POST['page'] ?? 1;
-    $perpage = $_POST['perpage'] ?? 20;
+// 페이지네이션 설정
+$perpage = 10;
+$listCurPage = isset($_POST['page']) ? (int)$_POST['page'] : (isset($_GET['page']) ? (int)$_GET['page'] : 1);
+$pageBlock = 2;
+$count = ($listCurPage - 1) * $perpage;
 
-    $mainqry = "WHERE a.sitekey = :sitekey";
-    $params = ['sitekey' => $NO_SITE_UNIQUE_KEY];
+// GET 파라미터 처리
+$popup_type    = $_GET['popup_type']   ?? '';
+$active_filter = $_GET['is_active']    ?? '';
+$searchKeyword = $_GET['searchKeyword'] ?? '';
+$start_at      = $_GET['start_at']     ?? '';
+$end_at        = $_GET['end_at']       ?? '';
 
-    if ($p_title) {
-        $mainqry .= " AND REPLACE(a.p_title, ' ', '') LIKE :p_title";
-        $params['p_title'] = '%' . trim($p_title) . '%';
-    }
+// WHERE 조건 구성
+$where = "WHERE 1=1";
+$params = [];
 
-    if ($p_view) {
-        $mainqry .= " AND p_view = :p_view";
-        $params['p_view'] = trim($p_view);
-    }
+if (!empty($popup_type)) {
+    $where .= " AND p.popup_type = :popup_type";
+    $params[':popup_type'] = $popup_type;
+}
 
-    /* Rows per page and current page calculation */
-    $listRowCnt = $perpage;
-    $listCurPage = $page;
-    $count = ($listCurPage - 1) * $listRowCnt;
+if ($active_filter !== '') {
+    $where .= " AND p.is_active = :is_active";
+    $params[':is_active'] = (int)$active_filter;
+}
 
-    /* Get total count */
-    $query = "SELECT COUNT(*) as cnt FROM nb_popup a $mainqry";
-    $stmt = $db->prepare($query);
-    $stmt->execute($params);
-    $data = $stmt->fetch(PDO::FETCH_ASSOC);
-    $totalCnt = $data['cnt'] ?? 0;
+if (!empty($start_at)) {
+    $where .= " AND (p.end_at IS NULL OR p.end_at >= :start_at)";
+    $params[':start_at'] = $start_at;
+}
 
-    /* Total pages calculation */
-    $Page = ceil($totalCnt / $listRowCnt);
+if (!empty($end_at)) {
+    $where .= " AND (p.start_at IS NULL OR p.start_at <= :end_at)";
+    $params[':end_at'] = $end_at;
+}
 
-    /* Fetch results with pagination */
-    $query = "SELECT a.no, a.p_title, a.p_img, a.p_target, a.p_link, a.p_view, a.p_left, a.p_top, a.p_idx, 
-                     a.p_sdate, a.p_edate, a.p_rdate, a.p_none_limit, a.p_loc
-              FROM nb_popup a 
-              $mainqry 
-              ORDER BY a.no DESC
-              LIMIT :count, :listRowCnt";
+if (!empty($searchKeyword)) {
+    $where .= " AND p.title LIKE :searchKeyword";
+    $params[':searchKeyword'] = '%' . $searchKeyword . '%';
+}
 
-    $stmt = $db->prepare($query);
-    $stmt->bindValue(':count', $count, PDO::PARAM_INT);
-    $stmt->bindValue(':listRowCnt', $listRowCnt, PDO::PARAM_INT);
+// 전체 개수 조회
+$totalSql = "
+    SELECT COUNT(*) 
+    FROM nb_popups p
+    $where
+";
+$totalStmt = $db->prepare($totalSql);
+$totalStmt->execute($params);
+$totalCount = (int)$totalStmt->fetchColumn();
+$Page = ceil($totalCount / $perpage);
 
-    foreach ($params as $key => $value) {
-        $stmt->bindValue(":$key", $value);
-    }
-
-    $stmt->execute();
-    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    /* Row number calculation */
-    $rnumber = $totalCnt - ($listCurPage - 1) * $listRowCnt;
-
-
-	include_once "../../inc/admin.title.php";
-	include_once "../../inc/admin.css.php";
-	include_once "../../inc/admin.js.php";
+// 실제 데이터 조회
+$sql = "
+    SELECT p.*
+    FROM nb_popups p
+    $where
+    ORDER BY p.sort_no ASC, p.id DESC
+    LIMIT {$count}, {$perpage}
+";
+$stmt = $db->prepare($sql);
+$stmt->execute($params);
+$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-</head>
-<body>
-<div class="no-wrap">
-        <!-- Header -->
-		<?php
-		include_once "../../inc/admin.header.php";
-		?>
 
-        <!-- Main -->
+
+
+<?php include_once "../../inc/admin.head.php"; ?>
+
+<body data-page="popup">
+    <div class="no-wrap">
+        <?php include_once "../../inc/admin.header.php"; ?>
         <main class="no-app no-container">
-            <!-- Drawer -->
-            <?php
-                include_once "../../inc/admin.drawer.php";
-            ?>
+            <?php include_once "../../inc/admin.drawer.php"; ?>
 
-            <!-- Contents -->
-            <form method="POST" name="frm" id="frm">
-            <section class="no-content">
-                    <!-- Page Title -->
+            <form method="GET" name="frm" id="frm" autocomplete="off">
+                <input type="hidden" name="mode" id="mode" value="list">
+
+                <section class="no-content">
                     <div class="no-toolbar">
                         <div class="no-toolbar-container no-flex-stack">
                             <div class="no-page-indicator">
-                                <h1 class="no-page-title">배너 관리</h1>
+                                <h1 class="no-page-title"><?= $pageName ?> 관리</h1>
                                 <div class="no-breadcrumb-container">
                                     <ul class="no-breadcrumb-list">
-                                        <li class="no-breadcrumb-item">
-                                            <span>디자인 관리</span>
-                                        </li>
-                                        <li class="no-breadcrumb-item">
-                                            <span>배너 목록</span>
-                                        </li>
+                                        <li class="no-breadcrumb-item"><span>환경설정</span></li>
+                                        <li class="no-breadcrumb-item"><span><?= $pageName ?> 관리</span></li>
                                     </ul>
                                 </div>
                             </div>
-                            <!-- page indicator -->
-
+                            <?php if($role->canDelete()) : ?>
                             <div class="no-items-center">
-                                <a
-                                    href="./popup.add.php"
-                                    class="no-btn no-btn--main no-btn--big"
-                                >
-                                    팝업등록
+                                <a href="./popup.new.php" class="no-btn no-btn--main no-btn--big"> <?= $pageName ?> 생성
                                 </a>
                             </div>
+                            <?php endif;?>
                         </div>
                     </div>
 
-                    <!-- Search -->
+                    <!-- 검색 조건 -->
                     <div class="no-search no-toolbar-container">
                         <div class="no-card">
                             <div class="no-card-header">
-                                <h2 class="no-card-title">팝업 검색</h2>
+                                <h2 class="no-card-title"><?= $pageName ?> 검색</h2>
                             </div>
                             <div class="no-card-body no-admin-column">
+
+                                <!-- 팝업 위치 -->
+                                <div class="no-admin-block">
+                                    <h3 class="no-admin-title">팝업 위치</h3>
+                                    <div class="no-admin-content">
+                                        <select name="popup_type" id="popup_type">
+                                            <option value="">전체</option>
+                                            <?php foreach ($popup_types as $code => $label): ?>
+                                            <option value="<?= $code ?>"
+                                                <?= ($popup_type == $code) ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($label) ?>
+                                            </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                </div>
+
+
                                 <div class="no-admin-block">
                                     <h3 class="no-admin-title">노출 여부</h3>
                                     <div class="no-admin-content">
                                         <div class="no-radio-form no-list">
-                                            <label for="input1">
+                                            <!-- 전체 옵션 수동 추가 -->
+                                            <label for="is_active_all">
                                                 <div class="no-radio-box">
-                                                    <input
-                                                        type="radio"
-                                                        name="p_view"
-                                                        id="input1"
-                                                        value=""
-                                                        <?php if($p_view == "") echo "checked";?>
-                                                    />
-                                                    <span>
-                                                        <i
-                                                            class="bx bx-radio-circle-marked"
-                                                        ></i>
-                                                    </span>
+                                                    <input type="radio" name="is_active" id="is_active_all" value=""
+                                                        <?= $active_filter === '' ? 'checked' : '' ?>>
+                                                    <span><i class="bx bx-radio-circle-marked"></i></span>
                                                 </div>
-                                                <span class="no-radio-text"
-                                                    >전체</span
-                                                >
+                                                <span class="no-radio-text">전체</span>
                                             </label>
 
-                                            <label for="input2">
+                                            <!-- $is_active 반복 -->
+                                            <?php foreach ($is_active as $key => $label): 
+                                                $id = "is_active_$key";
+                                                $checked = ($active_filter !== '' && $active_filter == $key) ? 'checked' : '';
+                                            ?>
+                                            <label for="<?= $id ?>">
                                                 <div class="no-radio-box">
-                                                    <input
-                                                        type="radio"
-                                                        name="p_view"
-                                                        id="input2"
-                                                        value="Y"
-                                                        <?php if($p_view == "Y") echo "checked";?>
-                                                    />
-                                                    <span>
-                                                        <i
-                                                            class="bx bx-radio-circle-marked"
-                                                        ></i>
-                                                    </span>
+                                                    <input type="radio" name="is_active" id="<?= $id ?>"
+                                                        value="<?= $key ?>" <?= $checked ?>>
+                                                    <span><i class="bx bx-radio-circle-marked"></i></span>
                                                 </div>
-                                                <span class="no-radio-text"
-                                                    >노출</span
-                                                >
+                                                <span class="no-radio-text"><?= htmlspecialchars($label) ?></span>
                                             </label>
+                                            <?php endforeach; ?>
 
-                                            <label for="input3">
-                                                <div class="no-radio-box">
-                                                    <input
-                                                        type="radio"
-                                                        name="p_view"
-                                                        id="input3"
-                                                        value="N"
-                                                        <?php if($p_view == "N") echo "checked";?>
-                                                    />
-                                                    <span>
-                                                        <i
-                                                            class="bx bx-radio-circle-marked"
-                                                        ></i>
-                                                    </span>
-                                                </div>
-                                                <span class="no-radio-text"
-                                                    >숨김</span
-                                                >
-                                            </label>
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- 노출 기간 -->
                                 <div class="no-admin-block">
-                                    <h3 class="no-admin-title">검색어</h3>
-                                    <div class="no-search-wrap">
+                                    <h3 class="no-admin-title">노출 기간</h3>
+                                    <div class="no-admin-content no-admin-date">
+                                        <input type="text" name="start_at" id="start_at"
+                                            value="<?= isset($start_at) ? htmlspecialchars($start_at) : '' ?>" />
+                                        <span></span>
+                                        <input type="text" name="end_at" id="end_at"
+                                            value="<?= isset($end_at) ? htmlspecialchars($end_at) : '' ?>" />
+                                    </div>
+                                </div>
+
+
+                                <!-- 검색어 -->
+                                <div class="no-admin-block wide">
+                                    <h3 class="no-admin-title">팝업명</h3>
+                                    <div class="no-search-wrap ">
                                         <div class="no-search-input">
                                             <i class="bx bx-search-alt-2"></i>
-                                            <input
-                                                type="text"
-                                                name="p_title"
-                                                id="p_title"
-                                                title="검색어 입력"
-                                                placeholder="검색어를 입력해주세요."
-                                            />
+                                            <input type="text" name="searchKeyword" id="searchKeyword"
+                                                placeholder="팝업명을 입력하세요"
+                                                value="<?= htmlspecialchars($searchKeyword ?? '') ?>">
                                         </div>
                                         <div class="no-search-btn">
-                                            <button
-                                                type="button"
-                                                title="검색"
-                                                class="no-btn no-btn--main no-btn--search"
-                                                onClick="doSearchList();"
-                                            >
+                                            <button type="submit" class="no-btn no-btn--main no-btn--search">
                                                 검색
                                             </button>
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>
 
-                    <!-- Contents -->
+
+                    <!-- 리스트 -->
                     <div class="no-content-container">
                         <div class="no-card">
                             <div class="no-card-header">
-                                <h2 class="no-card-title">배너 관리</h2>
+                                <h2 class="no-card-title"><?= $pageName ?> 리스트</h2>
                             </div>
 
                             <div class="no-card-body">
+
+                                <div class="no-table-option">
+                                    <?php if($role->canDelete()) : ?>
+                                    <ul class="no-table-check-control">
+                                        <ul class="no-table-check-control">
+                                            <li><a href="#" class="no-btn no-btn--sm no-btn--check active "
+                                                    data-action="selectAll">전체선택</a>
+                                            </li>
+                                            <li><a href="#" class="no-btn no-btn--sm" data-action="deselectAll">선택해제</a>
+                                            </li>
+                                            <li><a href="#" class="no-btn no-btn--sm"
+                                                    data-action="deleteSelected">선택삭제</a></li>
+                                        </ul>
+                                    </ul>
+                                    <?php endif;?>
+                                    <span>총 <?=$totalCount?>개</span>
+                                </div>
+
+
                                 <div class="no-table-responsive">
+
                                     <table class="no-table">
-                                        <caption class="no-blind">
-                                            번호, 게시판 이름, 공지, 제목,
-                                            작성자, 작성일, 조회수, 관리로
-                                            구성된 게시글 관리표
-                                        </caption>
                                         <thead>
                                             <tr>
-                                                <th
-                                                    scope="col"
-                                                    class="no-width-120 no-min-width-60"
-                                                >
-                                                    번호
+                                                <?php if($role->canDelete()) : ?>
+                                                <th class="no-width-25 no-check">
+                                                    <div class="no-checkbox-form">
+                                                        <label>
+                                                            <input type="checkbox" id="selectAllCheckbox" />
+                                                            <span><i class="bx bxs-check-square"></i></span>
+                                                        </label>
+                                                    </div>
                                                 </th>
-                                                <th
-                                                    scope="col"
-                                                    class="no-width-100 no-min-width-70"
-                                                >
-                                                    노출
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    class="no-width-120 no-min-width-60"
-                                                >
-                                                    순위
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    class="no-min-width-120"
-                                                >
-                                                    팝업
-                                                </th>
-
-                                                <th
-                                                    scope="col"
-                                                    class="no-min-width-150"
-                                                >
-                                                    제목
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    class="no-min-width-150"
-                                                >
-                                                    개재일
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    class="no-min-width-150"
-                                                >
-                                                    링크
-                                                </th>
-
-                                                <th
-                                                    scope="col"
-                                                    class="no-min-width-100"
-                                                >
-                                                    링크형태
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    class="no-min-width-role no-td-center"
-                                                >
-                                                    관리
-                                                </th>
+                                                <?php endif;?>
+                                                <th>팝업명</th>
+                                                <th>썸네일</th>
+                                                <th>팝업 위치</th>
+                                                <th>노출 기간</th>
+                                                <th>순서변경</th>
+                                                <th>정렬</th>
+                                                <th>노출 여부</th>
+                                                <th>관리</th>
                                             </tr>
-                                            <!-- col 9 -->
                                         </thead>
                                         <tbody>
-										<?php
-											foreach ($results as $v) {
-												$app_view = ($v['p_view'] === "N") ? "노출안함" : "노출";
-												$app_src = $UPLOAD_WDIR_POPUP . "/" . $v['p_img'];
-												$app_popup = "";
+                                            <?php if (count($rows) > 0): ?>
+                                            <?php foreach ($rows as $row): ?>
+                                            <tr>
+                                                <?php if($role->canDelete()) :?>
+                                                <td class="no-check">
+                                                    <div class="no-checkbox-form">
+                                                        <label>
+                                                            <input type="checkbox" class="no-chk"
+                                                                value="<?= $row['id'] ?>">
+                                                            <span><i class="bx bxs-check-square"></i></span>
+                                                        </label>
+                                                    </div>
+                                                </td>
+                                                <?php endif ;?>
+                                                <td><?= htmlspecialchars($row['title']) ?></td>
 
-												if ($v['p_img']) {
-													$app_popup = "<img src='$app_src' width=100 alt='Popup Image'>";
-												}
-												?>
-												<tr>
-													<td>
-														<span> <?= $rnumber ?> </span>
-													</td>
-													<td>
-														<span class="no-btn no-btn--notice">
-															<?= $app_view ?>
-														</span>
-													</td>
-													<td>
-														<span> <?= $v['p_idx'] ?> </span>
-													</td>
-													<td class="no-td-image">
-														<div class="no-td-image-box">
-															<img src="<?= $app_src ?>" alt="<?= htmlspecialchars($v['p_title'], ENT_QUOTES, 'UTF-8') ?>" />
-														</div>
-													</td>
-													<td class="no-td-title">
-														<a href="./popup.view.php?no=<?= $v['no'] ?>">
-															<?= htmlspecialchars($v['p_title'], ENT_QUOTES, 'UTF-8') ?>
-														</a>
-													</td>
-													<td>
-														<span>
-															<?= ($v['p_none_limit'] === 'Y') ? '무기한' : $v['p_sdate'] . " ~ " . $v['p_edate'] ?>
-														</span>
-													</td>
-													<td>
-														<a href="<?= htmlspecialchars($v['p_link'], ENT_QUOTES, 'UTF-8') ?>" target="_blank"><?= htmlspecialchars($v['p_link'], ENT_QUOTES, 'UTF-8') ?></a>
-													</td>
-													<td>
-														<?= htmlspecialchars($v['p_target'], ENT_QUOTES, 'UTF-8') ?>
-													</td>
-													<td>
-														<div class="no-table-role">
-															<span class="no-role-btn">
-																<i class="bx bx-dots-vertical-rounded"></i>
-															</span>
-															<div class="no-table-action">
-																<a href="./popup.view.php?no=<?= $v['no'] ?>" class="no-btn no-btn--sm no-btn--normal">수정</a>
-																<a href="javascript:void(0);" class="no-btn no-btn--sm no-btn--delete-outline" onClick="doDelete(<?= $v['no'] ?>);">삭제</a>
-															</div>
-														</div>
-													</td>
-												</tr>
-												<?php
-												$rnumber--;
-											}
-										?>
+                                                <!-- 썸네일 이미지 -->
+                                                <td>
+                                                    <?php if (!empty($row['popup_image'])): ?>
+                                                    <img src="/uploads/popups/<?= $row['popup_image'] ?>" alt="썸네일"
+                                                        style="max-width: 60px;">
+                                                    <?php else: ?>
+                                                    <span style="color: #aaa;">-</span>
+                                                    <?php endif; ?>
+                                                </td>
+
+                                                <!-- 팝업 위치 -->
+                                                <td><?= htmlspecialchars($popup_types[$row['popup_type']] ?? '-') ?>
+                                                </td>
+
+                                                <!-- 시작일~종료일 -->
+                                                <td><?= htmlspecialchars($row['start_at']) ?> ~
+                                                    <?= htmlspecialchars($row['end_at']) ?></td>
+
+
+                                                <td class="sort-btn-group">
+                                                    <!-- sort_no가 클수록 위니까 버튼 누르면 sort_no를 크게/작게 조절 -->
+                                                    <button type="button" class="sort-btn" data-id="<?= $row['id'] ?>"
+                                                        data-action="up" data-no="<?= $row['sort_no'] + 1 ?>">
+                                                        <i class='bx bx-chevron-down'></i>
+                                                    </button>
+                                                    <button type="button" class="sort-btn" data-id="<?= $row['id'] ?>"
+                                                        data-action="down" data-no="<?= $row['sort_no'] - 1 ?>">
+
+                                                        <i class='bx bx-chevron-up'></i>
+                                                    </button>
+                                                    <button type="button" class="sort-btn" data-id="<?= $row['id'] ?>"
+                                                        data-action="first" data-no="<?= $totalCount ?>">
+                                                        <i class='bx bx-chevrons-down'></i>
+                                                    </button>
+                                                    <button type="button" class="sort-btn" data-id="<?= $row['id'] ?>"
+                                                        data-action="last" data-no="1">
+                                                        <i class='bx bx-chevrons-up'></i>
+                                                    </button>
+                                                </td>
+                                                <td><?= $row['sort_no'] ?></td>
+                                                <!-- 노출 여부 -->
+                                                <td>
+                                                    <span
+                                                        class="no-btn <?= $row['is_active'] ? 'no-btn--notice' : 'no-btn--normal' ?>">
+                                                        <?= htmlspecialchars($is_active[$row['is_active']] ?? '미정') ?>
+                                                    </span>
+                                                </td>
+
+                                                <!-- 관리 -->
+                                                <td>
+                                                    <div class="no-table-role">
+                                                        <span class="no-role-btn"><i
+                                                                class="bx bx-dots-vertical-rounded"></i></span>
+                                                        <div class="no-table-action">
+                                                            <a href="popup.edit.php?id=<?= $row['id'] ?>"
+                                                                class="no-btn no-btn--sm no-btn--normal">보기</a>
+                                                            <?php if($role->canDelete() ) : ?>
+                                                            <button type="button"
+                                                                class="no-btn no-btn--sm no-btn--delete-outline delete-btn"
+                                                                data-id="<?= $row['id'] ?>">삭제</button>
+                                                            <?php endif;?>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <?php endforeach; ?>
+                                            <?php else: ?>
+                                            <tr>
+                                                <td colspan="9" style="text-align: center; color: #888;">등록된 팝업이 없습니다.
+                                                </td>
+                                            </tr>
+                                            <?php endif; ?>
                                         </tbody>
                                     </table>
+
+
+
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Pagination -->
                     <?php include_once "../../lib/admin.pagination.php"; ?>
                 </section>
             </form>
         </main>
-
-        <!-- Footer -->
-        <script type="text/javascript" src="./js/popup.process.js?c=<?=$STATIC_ADMIN_JS_MODIFY_DATE?>"></script>
-        <?php
-            include_once "../../inc/admin.footer.php";
-        ?>
     </div>
-</body>
-</html> 
+
+    <?php include_once "../../inc/admin.footer.php"; ?>

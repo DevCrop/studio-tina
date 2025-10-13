@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html lang="ko">
 <?php
 
 include_once "../../../inc/lib/base.class.php";
@@ -56,7 +54,7 @@ try {
                 <input type="hidden" id="mode" name="mode" value="">
                 <input type="hidden" id="no" name="no" value="<?= htmlspecialchars($data['no']) ?>">
                 <input type="hidden" id="board_no" name="board_no" value="<?= htmlspecialchars($board_no) ?>">
-                
+
                 <section class="no-content">
                     <!-- Page Title -->
                     <div class="no-toolbar">
@@ -91,14 +89,8 @@ try {
                                         <label for="board">게시판</label>
                                     </h3>
                                     <div class="no-admin-content">
-                                        <input
-                                            type="text"
-                                            name="board"
-                                            id="board"
-                                            class="no-input--detail"
-                                            value="<?= htmlspecialchars($board_info[0]['title']) ?>"
-                                            readonly
-                                        />
+                                        <input type="text" name="board" id="board" class="no-input--detail"
+                                            value="<?= htmlspecialchars($board_info[0]['title']) ?>" readonly />
                                     </div>
                                 </div>
                                 <!-- admin-block -->
@@ -108,15 +100,8 @@ try {
                                         <label for="title">제목</label>
                                     </h3>
                                     <div class="no-admin-content">
-                                        <input
-                                            type="text"
-                                            name="title"
-                                            id="title"
-                                            class="no-input--detail"
-                                            value="<?= htmlspecialchars($data['title']) ?>"
-                                            placeholder="제목"
-                                            readonly
-                                        />
+                                        <input type="text" name="title" id="title" class="no-input--detail"
+                                            value="<?= htmlspecialchars($data['title']) ?>" placeholder="제목" readonly />
                                     </div>
                                 </div>
                                 <!-- admin-block -->
@@ -126,15 +111,9 @@ try {
                                         <label for="write_name">작성자</label>
                                     </h3>
                                     <div class="no-admin-content">
-                                        <input
-                                            type="text"
-                                            name="write_name"
-                                            id="write_name"
-                                            class="no-input--detail"
-                                            value="<?= htmlspecialchars($data['write_name']) ?>"
-                                            placeholder="작성자"
-                                            readonly
-                                        />
+                                        <input type="text" name="write_name" id="write_name" class="no-input--detail"
+                                            value="<?= htmlspecialchars($data['write_name']) ?>" placeholder="작성자"
+                                            readonly />
                                     </div>
                                 </div>
                                 <!-- admin-block -->
@@ -152,9 +131,8 @@ try {
 											max-width: 100%;
 											width: 100%;
 											height: 15rem;
-											overflow-y: auto"
-										>
-											<?=htmlspecialchars_decode($data['contents'])?>
+											overflow-y: auto">
+                                            <?=htmlspecialchars_decode($data['contents'])?>
                                         </div>
                                     </div>
                                 </div>
@@ -166,16 +144,11 @@ try {
                                     </h3>
                                     <div class="no-admin-content file">
                                         <div class="admin-flex">
-                                            <textarea
-												style="height: 15rem;
-											overflow-y: auto";
-                                                name="comment"
-                                                id="comment"
-                                                class="no-input--detail"
-                                                placeholder="댓글내용"
-                                            ></textarea>
+                                            <textarea style="height: 15rem;
+											overflow-y: auto" ; name="comment" id="comment" class="no-input--detail" placeholder="댓글내용"></textarea>
                                             <div style="margin-top:2rem">
-												<a href="javascript:void(0);" class="no-btn no-btn--main" onClick="doRegSave();">등록</a>
+                                                <a href="javascript:void(0);" class="no-btn no-btn--main"
+                                                    onClick="doRegSave();">등록</a>
                                             </div>
                                         </div>
                                     </div>
@@ -208,11 +181,13 @@ try {
                                             <li class="no-cmt-item">
                                                 <div class="no-cmt-item__info">
                                                     <span><?= $v['write_name'] ?></span>
-                                                    <span><?=(new DateTime($regdate))->format('Y-m-d')?></span>
+                                                    <span><?=(new DateTime($v['regdate']))->format('Y-m-d')?></span>
                                                 </div>
                                                 <div class="no-cmt-item__content"><?=$v['contents']?></div>
                                                 <div class="no-cmt-item-btn">
-                                                    <a href="javascript:void(0);" class="no-btn no-btn--sm no-btn--delete-outline" onClick="doCommentDelete(<?= $v['no'] ?>, <?= $no ?>);">삭제</a>
+                                                    <a href="javascript:void(0);"
+                                                        class="no-btn no-btn--sm no-btn--delete-outline"
+                                                        onClick="doCommentDelete(<?= $v['no'] ?>, <?= $no ?>);">삭제</a>
                                                 </div>
                                             </li>
                                             <?php endforeach; ?>
@@ -233,20 +208,63 @@ try {
         </main>
 
         <!-- Footer -->
-        <script type="text/javascript" src="./js/board.comment.process.js?c=<?= $STATIC_ADMIN_JS_MODIFY_DATE ?>"></script>
+        <script type="text/javascript" src="./js/board.comment.process.js?c=<?= $STATIC_ADMIN_JS_MODIFY_DATE ?>">
+        </script>
         <?php include_once "../../inc/admin.footer.php"; ?>
     </div>
 
     <style>
-        #board_no-button { display: none; }
-        .no-cmt-list { display: flex; flex-direction: column; }
-        .no-cmt-item { border-bottom: 1px solid var(--border-color); border-radius: 0.6rem; padding: 2.4rem 1.6rem; }
-        .no-cmt-item:last-child { border-bottom: 0; padding-bottom: 0; }
-        .no-cmt-item:first-child { padding-top: 0; }
-        .no-cmt-item__info { display: flex; align-items: center; gap: 1.6rem; color: var(--muted); font-size: 1.4rem; }
-        .no-cmt-item__info span:nth-child(1) { position: relative; }
-        .no-cmt-item__info span:nth-child(1)::after { position: absolute; content: ''; right: -0.8rem; top: 50%; transform: translateY(-50%); height: 1.2rem; width: 0.1rem; background-color: #ddd; }
-        .no-cmt-item__content { padding: 2rem 0; }
+    #board_no-button {
+        display: none;
+    }
+
+    .no-cmt-list {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .no-cmt-item {
+        border-bottom: 1px solid var(--border-color);
+        border-radius: 0.6rem;
+        padding: 2.4rem 1.6rem;
+    }
+
+    .no-cmt-item:last-child {
+        border-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .no-cmt-item:first-child {
+        padding-top: 0;
+    }
+
+    .no-cmt-item__info {
+        display: flex;
+        align-items: center;
+        gap: 1.6rem;
+        color: var(--muted);
+        font-size: 1.4rem;
+    }
+
+    .no-cmt-item__info span:nth-child(1) {
+        position: relative;
+    }
+
+    .no-cmt-item__info span:nth-child(1)::after {
+        position: absolute;
+        content: '';
+        right: -0.8rem;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 1.2rem;
+        width: 0.1rem;
+        background-color: #ddd;
+    }
+
+    .no-cmt-item__content {
+        padding: 2rem 0;
+    }
     </style>
 </body>
+
 </html>

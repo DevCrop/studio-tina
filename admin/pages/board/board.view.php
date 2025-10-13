@@ -1,10 +1,9 @@
-<!DOCTYPE html>
-<html lang="ko">
 <?php
     include_once "../../../inc/lib/base.class.php";
+    
 
-    $depthnum = 1;
-    $pagenum = 2;
+    $depthnum = 2;
+    $pagenum = 1;
 
     // PDO 인스턴스 가져오기
     $pdo = DB::getInstance();
@@ -28,7 +27,6 @@
         die("정보를 찾을 수 없습니다");
     }
 
-    // 게시판 관리 정보 가져오기
     $boardManage_info = getBoardManageInfoByNo($data['board_no']);
 
     include_once "../../inc/admin.title.php";
@@ -94,9 +92,10 @@
                                         <select name="board_no" id="board_no">
                                             <option value="">게시판 선택</option>
                                             <?php foreach ($arrBoardList as $v) { ?>
-                                                <option value="<?= htmlspecialchars($v['no']) ?>" <?php if ($data['board_no'] == $v['no']) echo "selected"; ?>>
-                                                    <?= htmlspecialchars($v['title']) ?>
-                                                </option>
+                                            <option value="<?= htmlspecialchars($v['no']) ?>"
+                                                <?php if ($data['board_no'] == $v['no']) echo "selected"; ?>>
+                                                <?= htmlspecialchars($v['title']) ?>
+                                            </option>
                                             <?php } ?>
                                         </select>
                                         <span class="no-admin-info">
@@ -124,9 +123,10 @@
                                                 $stmt_in = $pdo->prepare($query);
                                                 $stmt_in->execute([':sitekey' => $NO_SITE_UNIQUE_KEY, ':board_no' => $data['board_no']]);
                                                 while ($row = $stmt_in->fetch(PDO::FETCH_ASSOC)) { ?>
-                                                    <option value="<?= htmlspecialchars($row['no']) ?>" <?php if ($data['category_no'] == $row['no']) echo "selected"; ?>>
-                                                        <?= htmlspecialchars($row['name']) ?>
-                                                    </option>
+                                            <option value="<?= htmlspecialchars($row['no']) ?>"
+                                                <?php if ($data['category_no'] == $row['no']) echo "selected"; ?>>
+                                                <?= htmlspecialchars($row['name']) ?>
+                                            </option>
                                             <?php }
                                             } ?>
                                         </select>
@@ -138,53 +138,67 @@
                                 </div>
                                 <!-- admin-block -->
 
-								<!-- Extra Fields based on boardManage_info -->
-                                <?php for ($i = 1; $i <= 10; $i++) {
+                                <?php
+                                for ($i = 1; $i <= 30; $i++) {
                                     $extra_field_key = 'extra_match_field' . $i;
                                     $extra_field = $boardManage_info[0][$extra_field_key] ?? null;
-                                    if ($extra_field) { ?>
-                                        <div class="no-admin-block extra_fields">
-                                            <h3 class="no-admin-title">
-                                                <label for="extra<?= $i ?>"><?= htmlspecialchars($extra_field) ?></label>
-                                            </h3>
-                                            <div class="no-admin-content">
-                                                <input type="text" name="extra<?= $i ?>" id="extra<?= $i ?>" value="<?= htmlspecialchars($data['extra' . $i]) ?>" class="no-input--detail" placeholder="<?= htmlspecialchars($extra_field) ?>" />
-                                            </div>
-                                        </div>
-                                <?php } } ?>
-                                <!-- admin-block -->
-                                
+                                    $extra_value = $data['extra' . $i] ?? null;
+
+                                    if (!empty($extra_field) && !empty($extra_value)) { ?>
+                                <div class="no-admin-block extra_fields">
+                                    <h3 class="no-admin-title">
+                                        <label for="extra<?= $i ?>"><?= htmlspecialchars($extra_field) ?></label>
+                                    </h3>
+                                    <div class="no-admin-content">
+                                        <input type="text" name="extra<?= $i ?>" id="extra<?= $i ?>"
+                                            value="<?= htmlspecialchars($extra_value) ?>" class="no-input--detail"
+                                            placeholder="<?= htmlspecialchars($extra_field) ?>" />
+                                    </div>
+                                </div>
+                                <?php }
+                                } ?>
+
+
+
                                 <div class="no-admin-block no-admin-pos">
                                     <h3 class="no-admin-title">
                                         <label for="title">제목</label>
                                     </h3>
                                     <div class="no-admin-content">
-                                        <input type="text" name="title" id="title" value="<?= htmlspecialchars($data['title']) ?>" class="no-input--detail" placeholder="제목을 입력해주세요." />
+                                        <input type="text" name="title" id="title"
+                                            value="<?= htmlspecialchars($data['title']) ?>" class="no-input--detail"
+                                            placeholder="제목을 입력해주세요." />
                                     </div>
                                 </div>
                                 <!-- admin-block -->
 
-								<div class="no-admin-block">
+                                <div class="no-admin-block">
                                     <h3 class="no-admin-title"><label for="write_name">작성자</label></h3>
                                     <div class="no-admin-content">
-                                        <input type="text" name="write_name" id="write_name" value="<?= htmlspecialchars($NO_ADM_NAME) ?>" placeholder="사이트관리자" class="no-input--detail" />
+                                        <input type="text" name="write_name" id="write_name"
+                                            value="<?= htmlspecialchars($NO_ADM_NAME) ?>" placeholder="사이트관리자"
+                                            class="no-input--detail" />
                                     </div>
                                 </div>
 
                                 <div class="no-admin-block">
-                                    <h3 class="no-admin-title"><label for="direct_url">링크 URL</label></h3>
+                                    <h3 class="no-admin-title"><label for="direct_url">유튜브 링크 코드</label></h3>
                                     <div class="no-admin-content">
-                                        <input type="text" name="direct_url" id="direct_url" value="<?=$data['direct_url']?>" placeholder="링크 URL" class="no-input--detail" />
+                                        <input type="text" name="direct_url" id="direct_url"
+                                            value="<?=$data['direct_url']?>" placeholder="링크 URL"
+                                            class="no-input--detail" />
                                     </div>
                                 </div>
 
-								<div class="no-admin-block no-admin-pos">
+                                <div class="no-admin-block no-admin-pos">
                                     <h3 class="no-admin-title">
                                         <label for="regdate">작성일자</label>
                                     </h3>
                                     <div class="no-admin-content">
-                                        <input type="text" name="regdate" id="regdate" value="<?= htmlspecialchars($data['regdate']) ?>" class="no-input--detail" placeholder="작성일자를 입력해주세요." />
-										   <span class="no-admin-info">
+                                        <input type="text" name="regdate" id="regdate"
+                                            value="<?= htmlspecialchars($data['regdate']) ?>" class="no-input--detail"
+                                            placeholder="작성일자를 입력해주세요." />
+                                        <span class="no-admin-info">
                                             <i class="bx bxs-info-circle"></i>
                                             작성일자를 변경할 수 있습니다. 반드시 기존 형식에 맞추어 수정해야 합니다.
                                         </span>
@@ -197,7 +211,10 @@
                                     <div class="no-admin-content">
                                         <label for="is_notice" class="no-items-center">
                                             <div class="no-checkbox-form">
-                                                <input type="checkbox" name="is_notice" id="is_notice" class="no-input--detail" value="Y" />
+                                                <input type="checkbox" name="is_notice" id="is_notice"
+                                                    class="no-input--detail" value="Y"
+                                                    <?= ($data['is_notice'] === 'Y') ? 'checked' : '' ?> />
+
                                                 <span><i class="bx bxs-check-square"></i></span>
                                             </div>
                                             <span class="no-admin-info no-mt">공지사항으로 등록하면 게시판 상단에 고정됩니다.</span>
@@ -211,25 +228,12 @@
                                     </h3>
                                     <div class="no-admin-content">
                                         <div class="no-file-control">
-                                            <input
-                                                type="text"
-                                                class="no-fake-file"
-                                                id="fakeThumbFileTxt"
-                                                placeholder="파일을 선택해주세요."
-                                                readonly
-                                                disabled
-                                            />
+                                            <input type="text" class="no-fake-file" id="fakeThumbFileTxt"
+                                                placeholder="파일을 선택해주세요." readonly disabled />
                                             <div class="no-file-box">
-                                                <input
-                                                    type="file"
-                                                    name="thumb_image"
-                                                    id="thumb_image"
-                                                    onchange="javascript:document.getElementById('fakeThumbFileTxt').value = this.value"
-                                                />
-                                                <button
-                                                    type="button"
-                                                    class="no-btn no-btn--main"
-                                                >
+                                                <input type="file" name="thumb_image" id="thumb_image"
+                                                    onchange="javascript:document.getElementById('fakeThumbFileTxt').value = this.value" />
+                                                <button type="button" class="no-btn no-btn--main">
                                                     파일찾기
                                                 </button>
                                             </div>
@@ -242,11 +246,9 @@
                                             </a>
                                             <label class="no-thumb-check">
                                                 <div class="no-checkbox-form">
-                                                    <input type="checkbox" name="attach_file_del[]"  value="0" > 
+                                                    <input type="checkbox" name="attach_file_del[]" value="0">
                                                     <span>
-                                                    <i
-                                                        class="bx bxs-check-square"
-                                                    ></i>
+                                                        <i class="bx bxs-check-square"></i>
                                                     </span>
                                                 </div>
                                                 <span>삭제</span>
@@ -259,8 +261,7 @@
                                         </span>
                                     </div>
                                 </div>
-                                <!-- admin-block -->
-                                
+
 
                                 <!-- 파일 첨부 -->
                                 <div class="no-admin-block no-admin-field">
@@ -270,27 +271,31 @@
                                     <div class="no-admin-content">
                                         <div class="no-file-wrap">
                                             <?php for ($i = 1; $i <= 5; $i++) { ?>
-                                                <div class="no-file-control">
-                                                    <input type="text" class="no-fake-file" id="fakeFileTxt<?= $i ?>" placeholder="파일을 선택해주세요." readonly disabled />
-                                                    <div class="no-file-box">
-                                                        <input type="file" name="addFile<?= $i ?>" onchange="document.getElementById('fakeFileTxt<?= $i ?>').value = this.value" />
-                                                        <button type="button" class="no-btn no-btn--main">파일찾기</button>
-                                                    </div>
-                                                    <?php if (!empty($data['file_attach_' . $i])) { ?>
-                                                        <div class="no-board-thumb">
-                                                            <a href="/inc/lib/board.file.download.php?no=<?= htmlspecialchars($data['no']) ?>&fld=attach<?= $i ?>">
-                                                                <?= htmlspecialchars($data['file_attach_origin_' . $i]) ?>
-                                                            </a>
-                                                            <label class="no-thumb-check">
-                                                                <div class="no-checkbox-form">
-                                                                    <input type="checkbox" name="attach_file_del[]" value="<?= $i ?>"> 
-                                                                    <span><i class="bx bxs-check-square"></i></span>
-                                                                </div>
-                                                                <span>삭제</span>
-                                                            </label>
-                                                        </div>
-                                                    <?php } ?>
+                                            <div class="no-file-control">
+                                                <input type="text" class="no-fake-file" id="fakeFileTxt<?= $i ?>"
+                                                    placeholder="파일을 선택해주세요." readonly disabled />
+                                                <div class="no-file-box">
+                                                    <input type="file" name="addFile<?= $i ?>"
+                                                        onchange="document.getElementById('fakeFileTxt<?= $i ?>').value = this.value" />
+                                                    <button type="button" class="no-btn no-btn--main">파일찾기</button>
                                                 </div>
+                                                <?php if (!empty($data['file_attach_' . $i])) { ?>
+                                                <div class="no-board-thumb">
+                                                    <a
+                                                        href="/inc/lib/board.file.download.php?no=<?= htmlspecialchars($data['no']) ?>&fld=attach<?= $i ?>">
+                                                        <?= htmlspecialchars($data['file_attach_origin_' . $i]) ?>
+                                                    </a>
+                                                    <label class="no-thumb-check">
+                                                        <div class="no-checkbox-form">
+                                                            <input type="checkbox" name="attach_file_del[]"
+                                                                value="<?= $i ?>">
+                                                            <span><i class="bx bxs-check-square"></i></span>
+                                                        </div>
+                                                        <span>삭제</span>
+                                                    </label>
+                                                </div>
+                                                <?php } ?>
+                                            </div>
                                             <?php } ?>
                                         </div>
                                         <span class="no-admin-info">
@@ -315,10 +320,17 @@
                                 <!-- admin-block -->
 
                                 <div class="no-items-center center">
-                                    <a href="javascript:void(0);" class="no-btn no-btn--big no-btn--delete-outline" onClick="doDelete(<?= htmlspecialchars($data['no']) ?>);">삭제</a>
-                                    <a href="javascript:void(0);" class="no-btn no-btn--big no-btn--normal" onClick="doCopy(<?= htmlspecialchars($data['no']) ?>);">복사</a>
-                                    <a href="./board.list.php?<?= $searchParam ?>" class="no-btn no-btn--big no-btn--normal">목록</a>
-                                    <a href="javascript:void(0);" class="no-btn no-btn--big no-btn--main" onClick="doEditSave();">수정</a>
+                                    <?php if($role->canDelete()) : ?>
+                                    <a href="javascript:void(0);" class="no-btn no-btn--big no-btn--delete-outline"
+                                        onClick="doDelete(<?= htmlspecialchars($data['no']) ?>);">삭제</a>
+                                    <?php endif ;?>
+                                    <a href="./board.list.php?<?= $searchParam ?>"
+                                        class="no-btn no-btn--big no-btn--normal">목록</a>
+                                    <?php if($role->canDelete()) : ?>
+                                    <a href="javascript:void(0);" class="no-btn no-btn--big no-btn--main"
+                                        onClick="doEditSave();">수정</a>
+                                    <?php endif ;?>
+
                                 </div>
                             </div>
                             <!-- card-body -->
@@ -331,7 +343,8 @@
         <!-- Footer -->
         <script type="text/javascript" src="./js/board.process.js?v=<?= date('YmdHis') ?>"></script>
         <?php include_once "../../inc/admin.footer.php"; ?>
-        
+
     </div>
 </body>
+
 </html>

@@ -1,67 +1,73 @@
-<?php
-	if ($board_no == 9 || $board_no == 13) {
-?>
+    <section class="no-sub-notice no-section-md">
+        <div class="no-container-xl">
+            <div class="--section-title-with-search">
+                <hgroup>
+                    <h2 class="f-heading-3 clr-text-title">제품 문의</h2>
+                </hgroup>
 
-<main>
-    <section class="sub-news">
-        <div class="container-xl">
-            <h2 class="sub-h2 poppins">News</h2>
+                <div class="no-form-search ">
+                    <input type="text" name="searchKeyword" id="searchKeyword" placeholder="검색어를 입력해주세요.">
+                    <button type="button" class="" aria-label="search" onclick="doSearch();">
+                        <i class="fa-light fa-magnifying-glass" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
 
-            <article class="no-article">
-                <ul class="news-list" <?= $aos_slow_delay ?>>
-				<?php
-					foreach ($arrResultSet as $k => $v) {
-						$title = iconv_substr($v['title'], 0, 2000, "utf-8");
-						$contents = strip_tags($v['contents']);
-						$contents = iconv_substr($contents, 0, 500, "utf-8");
-						
-						// 타이틀의 공백을 '-'로 변환
-						// 작은따옴표와 특수문자 제거 (한글, 영문, 숫자, 공백, 일부 기호만 허용)
-						$cleanTitle = preg_replace('/[^가-힣a-zA-Z0-9\s\.\-]/u', '', str_replace("'", '', $title));
+            <div class="--cnt">
+                <!-- --cnt 내부 -->
+                <div class="notice">
+                    <table class="notice">
+                        <colgroup>
+                            <col style="width: auto;" />
+                            <col />
+                            <col />
+                        </colgroup>
+                        <thead>
+                            <tr class="">
+                                <th class="notice-head notice-title f-body-2">제목</th>
+                                <th class="notice-head notice-date f-body-2">작성일</th>
+                                <th class="notice-head notice-views f-body-2">조회수</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($arrResultSet as $row): ?>
+                            <tr class="notice-row">
+                                <td class="notice-cell notice-title">
+                                    <a class="f-body-1 --semibold"
+                                        href="<?=$ROOT?>/pages/board/board.confirm.php?mode=view&board_no=<?=$board_no?>&no=<?=$row['no']?>">
+                                        <i class="fa-regular fa-lock"></i>
+                                        <?= htmlspecialchars($row['title']) ?>
+                                        <?php if ((int)$row['comment_cnt'] > 0): ?>
+                                        <span class="answer-status complete">답변 완료</span>
+                                        <?php else: ?>
+                                        <span class="answer-status pending">답변 대기</span>
+                                        <?php endif; ?>
+                                    </a>
 
-						// 공백을 '-'로 변환
-						$encodedTitle = str_replace(' ', '-', $cleanTitle);
+                                </td>
+                                <td class="notice-cell notice-date">
+                                    <time datetime="<?= $row['date'] ?>">
+                                        <?= date("Y-m-d", strtotime($row['regdate'])) ?>
+                                    </time>
+                                </td>
+                                <td class="notice-cell notice-views">
+                                    <?= number_format($row['read_cnt']) ?>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
 
-						// 링크에 타이틀을 추가 (urlencode 대신 rawurlencode 사용)
-						$link = "./board.view.php?board_no=$board_no&no={$v['no']}&searchKeyword=" . rawurlencode($searchKeyword) . "&searchColumn=" . rawurlencode($searchColumn) . "&page=$page&category_no=$category_no&title=" . rawurlencode($encodedTitle);
+                </div>
+
+                <div class="no-write-btn">
+                    <a href="<?=$ROOT?>/pages/board/board.write.php?board_no=<?=$board_no?>" class="no-btn-primary">
+                        글 등록하기
+                    </a>
+                </div>
 
 
-						
-						$imgSrc = "";
-						if ($v['thumb_image']) {
-							$imgSrc = $UPLOAD_WDIR_BOARD . "/" . $v['thumb_image'];
-						} else {
-					
-						}
+                <?php include_once $STATIC_ROOT . '/inc/layouts/pagination.php'; ?>
 
-						$target = $v['direct_url'] ? '_blank' : '_self';
-						$link = $v['direct_url'] ? $v['direct_url'] : $link;
-
-						$imgData = 'data-pswp-width="1600" data-pswp-height="1024" class="my-image"';
-						if ($v['direct_url']) {
-							$imgData = '';
-						}
-					?>
-                    <li>
-                        <a href="<?= $link ?>">
-                            <h3><?= $title ?></h3>
-                            <span><?= date("Y.m.d", strtotime($v['regdate'])) ?></span>
-
-                            <img src="<?= $imgSrc ?>">
-                        </a>
-                    </li>
-					<?php
-						$rnumber--;
-					}
-					?>
-                </ul>
-
-                <?php include_once $STATIC_ROOT."/pages/board/components/pagination.php"; ?>
-            </article>
-        </div>
+            </div>
     </section>
-</main>
-
-<?php
-	}
-?>

@@ -27,6 +27,10 @@
     display: flex;
     justify-content: space-between;
     padding-bottom: fluid(12, 24);
+    @include mq(md) {
+      flex-direction: column;
+      gap: fluid(36, 24);
+    }
     &__left {
       display: flex;
       gap: fluid(24, 40);

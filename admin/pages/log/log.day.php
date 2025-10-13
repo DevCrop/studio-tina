@@ -1,17 +1,15 @@
-<!DOCTYPE html>
-<html lang="ko">
 <?php
 	include_once "../../../inc/lib/base.class.php";
 
 	$pdo = DB::getInstance();
-	$depthnum = 5;
-	$pagenum = 2;
+	$depthnum = 13;
+	$pagenum = 1;
 
 	include_once "../../inc/admin.title.php";
 	include_once "../../inc/admin.css.php";
 	include_once "../../inc/admin.js.php";
 ?>
-<script type="text/javascript" src="<?= htmlspecialchars($NO_IS_SUBDIR) ?>/admin/resource/js/datepicker.onlymonth.js?v=<?= htmlspecialchars($STATIC_FRONT_JS_MODIFY_DATE) ?>"></script>
+
 </head>
 
 <body>
@@ -24,32 +22,45 @@
             <!-- Drawer -->
             <?php include_once "../../inc/admin.drawer.php"; ?>
 
-            <?php
-            // Date Processing
-            $sdate = $_REQUEST['sdate'] ?? '';
-            $sdateArr = $sdate ? explode("-", $sdate) : [];
+			<?php
+				// Date Processing (month only)
+				$sdate = $_REQUEST['sdate'] ?? ''; // YYYY-MM
+				if (!preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $sdate)) {
+					$sdate = date('Y-m');
+				}
+				[$Select_Year, $Select_Month] = array_map('intval', explode('-', $sdate));
+				$curYM = sprintf('%04d-%02d', $Select_Year, $Select_Month);
 
-            $Select_Year = $sdateArr[0] ?? date("Y");
-            $Select_Month = $sdateArr[1] ?? date("m");
-            $curYM = "$Select_Year-$Select_Month";
+				// 월 총 방문자
+				$stmt = $pdo->prepare("SELECT COUNT(*) FROM nb_analytics WHERE `year`=:y AND `month`=:m");
+				$stmt->execute([':y'=>$Select_Year, ':m'=>$Select_Month]);
+				$TotalMonth = (int)$stmt->fetchColumn();
 
-            // Total Visitors
-            $stmt = $pdo->prepare("SELECT SUM(Visit_Num) AS CDSV FROM nb_counter_data WHERE Year = :year AND month = :month");
-            $stmt->execute(['year' => $Select_Year, 'month' => $Select_Month]);
-            $Total = $stmt->fetchColumn() ?? 0;
+				// 일별 카운트
+				$stmt = $pdo->prepare("
+					SELECT `day`, COUNT(*) AS cnt
+					FROM nb_analytics
+					WHERE `year`=:y AND `month`=:m
+					GROUP BY `day`
+				");
+				$stmt->execute([':y'=>$Select_Year, ':m'=>$Select_Month]);
 
-            // Get Start Year
-            $stmt = $pdo->query("SELECT MIN(Year) AS CDMY FROM nb_counter_data");
-            $Start_Year = $stmt->fetchColumn() ?? date("Y");
+				$dayMap = [];
+				$max = 0;
+				foreach ($stmt as $r) {
+					$d = (int)$r['day'];
+					$c = (int)$r['cnt'];
+					$dayMap[$d] = $c;
+					if ($c > $max) $max = $c;
+				}
 
-            // Get Start Month
-            $stmt = $pdo->prepare("SELECT MIN(Month) AS CDMM FROM nb_counter_data WHERE Year = :year");
-            $stmt->execute(['year' => $Start_Year]);
-            $Start_Month = $stmt->fetchColumn() ?? date("m");
+				$daysInMonth = cal_days_in_month(CAL_GREGORIAN, $Select_Month, $Select_Year);
+				$loopStart = 1;
+				$loopEnd   = $daysInMonth;
 
-            $arr_year = range($Start_Year, date("Y"));
-            $arr_month = range(1, 12);
-            ?>
+			?>
+
+
 
             <!-- Contents -->
             <form id="frm" name="frm" method="post" autocomplete="off">
@@ -73,26 +84,36 @@
                     <!-- Search -->
                     <div class="no-search no-toolbar-container">
                         <div class="no-card">
-                            <div class="no-card-body no-admin-column">
-                                <div class="no-admin-block no-w-20">
-                                    <h3 class="no-admin-title">총방문자</h3>
-                                    <div class="no-admin-content">
-                                        <span class="no-admin-cnt"><?= htmlspecialchars(number_format($Total)) ?>명</span>
-                                    </div>
-                                </div>    
+                          <div class="no-card-body no-admin-column">
+							  <div class="no-admin-block no-w-20">
+								<h3 class="no-admin-title">총방문자</h3>
+								<div class="no-admin-content">
+								  <span class="no-admin-cnt"><?= number_format($TotalMonth) ?>명</span>
+								  <?php if ($Filter_Day !== null): ?>
+									<div class="no-pd-8--t">
+									  <small>선택일 :</small> <strong><?= number_format($TotalDay) ?>명</strong>
+									</div>
+								  <?php endif; ?>
+								</div>
+							  </div>
 
-                                <div class="no-admin-block no-w-80">
-                                    <h3 class="no-admin-title">날짜선택</h3>
-                                    <div class="no-admin-content no-admin-date">
-                                        <div class="no-search-wrap">
-                                            <input type="text" name="sdate" id="sdate" value="<?= htmlspecialchars($curYM) ?>" autocomplete="off">
-                                            <div class="no-search-btn">
-                                                <button type="submit" class="no-btn no-btn--main no-btn--search">검색</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+							  <div class="no-admin-block no-w-80">
+								<h3 class="no-admin-title">날짜선택</h3>
+								<div class="no-admin-content no-admin-date">
+								  <div class="no-search-wrap" style="gap:12px;display:flex;align-items:center;">
+									<div>
+									  <input type="month" name="sdate" id="s_date" value="<?= htmlspecialchars($curYM) ?>">
+									</div>
+								
+									<div class="no-search-btn">
+									  <button type="submit" class="no-btn no-btn--main no-btn--search">검색</button>
+									</div>
+								  </div>
+								</div>
+							  </div>
+							</div>
+
+
                         </div>
                     </div>
 
@@ -105,53 +126,38 @@
 
                             <div class="no-card-body">
                                 <div class="no-table-responsive">
-                                    <table class="no-table">
-                                        <caption class="no-blind">
-                                            일자, 접속수, 접속수 그래프, 접속수 퍼센트로 구성된 시간별 접속통계표
-                                        </caption>
-                                        <thead class="no-blind">
-                                            <tr>
-                                                <th scope="col" class="no-min-width-60">일자</th>
-                                                <th scope="col" class="no-min-width-60">접속수</th>
-                                                <th scope="col" class="no-min-width-150">접속수 그래프</th>
-                                                <th scope="col" class="no-min-width-60">접속수 퍼센트</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php
-                                            // Maximum Visitor Count
-                                            $stmt = $pdo->prepare("SELECT IFNULL(MAX(Visit_Num), 0) AS MV FROM nb_counter_data WHERE Year = :year AND month = :month");
-                                            $stmt->execute(['year' => $Select_Year, 'month' => $Select_Month]);
-                                            $max = $stmt->fetchColumn() ?? 0;
+								  <table class="no-table">
+									<caption class="no-blind">일자, 접속수, 접속수 그래프, 접속수 퍼센트</caption>
+									<thead class="">
+									  <tr>
+										<th scope="col" class="no-min-width-60">일자</th>
+										<th scope="col" class="no-min-width-60">접속수</th>
+										<th scope="col" class="no-min-width-150">접속수 그래프</th>
+									  </tr>
+									</thead>
+									<tbody>
+									<?php for ($i = $loopStart; $i <= $loopEnd; $i++):
+										$cnt = $dayMap[$i] ?? 0;
+										$percentOfTotal = $TotalMonth ? round(($cnt / $TotalMonth) * 100, 2) : 0;
+										$percentOfMax   = $max ? round(($cnt / $max) * 100, 2) : 0;
+										$barWidth = max(1, $percentOfMax);
+										$isMax = ($cnt > 0 && $cnt === $max);
+									?>
+									  <tr>
+										<td><?= $i ?>일</td>
+										<td><?= number_format($cnt) ?>명</td>
+										<td>
+										  <div style="width:100%;background:#eee;height:8px;">
+											<div style="width:<?= $barWidth ?>%;height:8px;<?= $isMax ? 'background:#0083e8;' : 'background:#ccc;' ?>"></div>
+										  </div>
+										  <small style="margin-left:6px;"><?= number_format($percentOfTotal,2) ?>%</small>
+										</td>
+									  </tr>
+									<?php endfor; ?>
+									</tbody>
+								  </table>
+								</div>
 
-                                            for ($i = 1; $i <= 31; $i++) {
-                                                // Visitors for the Day
-                                                $stmt = $pdo->prepare("SELECT IFNULL(SUM(Visit_Num), 0) AS SV FROM nb_counter_data WHERE Year = :year AND month = :month AND Day = :day");
-                                                $stmt->execute(['year' => $Select_Year, 'month' => $Select_Month, 'day' => $i]);
-                                                $Month_Num = $stmt->fetchColumn() ?? 0;
-
-                                                $Percent = $Total ? round(100 * $Month_Num / $Total, 2) : 0;
-                                                $Percent1 = $max ? round(100 * $Month_Num / $max, 2) : 0;
-                                                $Percent_Width = max(1, $Percent1);
-
-                                                $Back_Color = ($max == $Month_Num && $max > 0) ? " style='background-color:#0083e8;'" : " style='background-color:#CCCCCC;'";
-                                            ?>
-                                            <tr>
-                                                <td><span><?= $i ?>일</span></td>
-                                                <td><span><?= htmlspecialchars(number_format($Month_Num)) ?>명</span></td>
-                                                <td>
-                                                    <table width="<?= htmlspecialchars($Percent_Width) ?>%" cellspacing="0" cellpadding="0" height="8">
-                                                        <tr><td <?= $Back_Color ?>>&nbsp;</td></tr>
-                                                    </table>
-                                                </td>
-                                                <td><span><?= htmlspecialchars(number_format($Percent, 2)) ?>%</span></td>
-                                            </tr>
-                                            <?php
-                                            }
-                                            ?>
-                                        </tbody>
-                                    </table>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -159,8 +165,6 @@
             </form>
         </main>
 
-        <!-- Footer -->
-        <script type="text/javascript" src="./js/setting.process.js?c=<?= htmlspecialchars($STATIC_ADMIN_JS_MODIFY_DATE) ?>"></script>
         <?php include_once "../../inc/admin.footer.php"; ?>
     </div>
     <style>

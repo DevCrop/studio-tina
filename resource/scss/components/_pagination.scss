@@ -2,36 +2,72 @@
 
 .no-pagination {
   display: flex;
-  margin-top: fluid(32, 64);
+  margin-top: fluid(48, 80);
   align-items: center;
-
   justify-content: center;
+  gap: fluid(8, 12);
 
-  gap: 0.8rem;
-
-  a {
-    width: fluid(24, 36);
-
-    height: fluid(24, 36);
-    border-radius: 4rem;
+  // 화살표 버튼 (<<, <, >, >>)
+  .--arrow {
+    width: fluid(36, 44);
+    height: fluid(36, 44);
     @include flex-center();
+    border-radius: 3rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.3s ease;
+    cursor: pointer;
 
-    border: 1px solid #ddd;
-
-    transition: 0.15s;
-
-    &:hover {
-      background: #fafafa;
-      color: var(--clr-ui-bg-lg);
+    svg {
+      width: fluid(16, 20);
+      height: fluid(16, 20);
     }
 
-    &.active {
-      background-color: #222;
-      color: #fff;
+    &:hover:not([disabled]) {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 1);
+      transform: translateY(-2px);
     }
 
-    &.--arrow {
-      border: none;
+    &[disabled] {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+  }
+
+  // 숫자 컨테이너
+  .--numbers {
+    display: flex;
+    align-items: center;
+    gap: fluid(4, 6);
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 3rem;
+
+    a {
+      width: fluid(36, 48);
+      height: fluid(36, 48);
+      @include flex-center();
+      border-radius: 3rem;
+      color: rgba(255, 255, 255, 0.7);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+
+      &.active {
+        background: #fff;
+        border-color: transparent;
+        color: #000;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(246, 191, 203, 0.3);
+      }
+    }
+
+    .--dots {
+      color: rgba(255, 255, 255, 0.4);
+      font-weight: 600;
+      padding: 0 fluid(4, 8);
+      user-select: none;
     }
   }
 }

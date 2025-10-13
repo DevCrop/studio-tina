@@ -1,34 +1,19 @@
-<section class="no-contact">
-    <div class="container-xl">
-        <a href="/<?=app()->getLocale()?>/contact" class="contact-btn">
-            <div class="txt">
-                <span>
-                    <?= $sub_title ?>
-				</span>
-                <h2 class="poppins">Let's Turn Ideas<br> into Reality</h2>
-            </div>
-        </a>
-
-        <?php if ($rolling): ?>
-        <div class="running-wrap left">
-            <ul class="running-image marquee-wrap" id="left">
-                <li><img src="/resource/images/contact-left1.jpg"></li>
-                <li><img src="/resource/images/contact-left2.jpg"></li>
-                <li><img src="/resource/images/contact-left3.jpg"></li>
-                <li><img src="/resource/images/contact-left4.jpg"></li>
-                <li><img src="/resource/images/contact-left5.jpg"></li>
-            </ul>
+<section class="no-main-contact no-section-md">
+    <div class="no-container-2xl">
+        <div class="--cnt">
+            <h2 class="f-display-1">
+                YOUR <br>
+                NEXT STORY
+            </h2>
+            <a href="#" class="no-btn-cta">
+                <p>View More</p>
+                <div>
+                    <i class="fa-regular fa-arrow-right-long"></i>
+                </div>
+            </a>
         </div>
-        
-        <div class="running-wrap right">
-            <ul class="running-image" id="right">
-                <li><img src="/resource/images/contact-right1.jpg"></li>
-                <li><img src="/resource/images/contact-right2.jpg"></li>
-                <li><img src="/resource/images/contact-right3.jpg"></li>
-                <li><img src="/resource/images/contact-right4.jpg"></li>
-                <li><img src="/resource/images/contact-right5.jpg"></li>
-            </ul>
-        </div>
-        <?php endif; ?>
     </div>
+    <video autoplay loop muted preload="auto" playsinline>
+        <source src="/resource/video/main_video.mp4" type="video/mp4">
+    </video>
 </section>

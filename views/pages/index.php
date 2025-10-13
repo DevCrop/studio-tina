@@ -76,12 +76,8 @@
             </div>
         </div>
     </div>
-    <div class="scroll-line">
-        <p>Scroll</p>
-        <div class="line"></div>
-    </div>
+    <?= include_view('components.scrollLine') ?>
 </section>
-<!--
 <section class="no-main-about">
     <div class="no-main-about__inner">
         <div class="no-main-about-txt">
@@ -113,7 +109,6 @@
     </div>
 
 </section>
--->
 
 <section class="no-main-spiral-gallery no-section-md">
     <div class="no-container-2xl">
@@ -126,9 +121,9 @@
                 <div id="spiral-gallery-container" class="container">
                 </div>
             </div>
-            
+
         </article>
-    </div>  
+    </div>
 </section>
 
 <section class="no-main-news no-section-md">
@@ -164,7 +159,6 @@
     </div>
 </section>
 
-<!--
 <section class="no-main-partners no-section-md">
     <div class="no-container-2xl">
         <article>
@@ -202,30 +196,8 @@
         </div>
     </div>
 </section>
--->
 
-<!--
-
-<section class="no-main-contact no-section-md">
-    <div class="no-container-2xl">
-        <div class="--cnt">
-            <h2 class="f-display-1">
-                YOUR <br>
-                NEXT STORY
-            </h2>
-            <a href="#" class="no-btn-cta">
-                <p>View More</p>
-                <div>
-                    <i class="fa-regular fa-arrow-right-long"></i>
-                </div>
-            </a>
-        </div>
-    </div>
-    <video autoplay loop muted preload="auto" playsinline>
-        <source src="/resource/video/main_video.mp4" type="video/mp4">
-    </video>
-</section>
--->
+<?= include_view('sections.contact') ?>
 
 <?php end_section() ?>
 

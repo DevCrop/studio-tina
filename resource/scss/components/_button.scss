@@ -14,10 +14,34 @@
   }
 }
 
+.no-prev-button {
+  width: fluid(36, 54);
+  height: fluid(36, 54);
+  @include flex-center();
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  transition: ease all 0.3s;
+  margin-bottom: fluid(24, 40);
+  &:hover {
+    transform: scale(1.1);
+  }
+}
 %btn-outline {
   @extend %btn;
 
   border: 2px solid var(--clr-ui-white);
+}
+.no-link-view {
+  @extend %btn;
+  border: 1px solid var(--clr-border-white-strong);
+  border-radius: 5rem;
+  padding: 0.8rem 1rem 0.8rem 1.6rem;
+  gap: fluid(8, 12);
+  transition: ease all 0.3s;
+  &:hover {
+    transform: scale(1.1);
+  }
 }
 
 .no-btn {

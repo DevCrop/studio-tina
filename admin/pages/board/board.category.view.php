@@ -1,10 +1,14 @@
-<!DOCTYPE html>
-<html lang="ko">
 <?php
 include_once "../../../inc/lib/base.class.php";
 
 $depthnum = 1;
 $pagenum = 2;
+
+// 페이지네이션 필수 변수
+$Page = $Page ?? 1;
+$listCurPage = $listCurPage ?? 1;
+$pageBlock = $pageBlock ?? 2;
+
 
 $connect = DB::getInstance(); // PDO 인스턴스
 
@@ -42,6 +46,7 @@ include_once "../../inc/admin.css.php";
 include_once "../../inc/admin.js.php";
 ?>
 </head>
+
 <body>
     <div class="no-wrap">
         <!-- Header -->
@@ -57,7 +62,7 @@ include_once "../../inc/admin.js.php";
                 <input type="hidden" id="mode" name="mode" value="">
                 <input type="hidden" id="no" name="no" value="<?= htmlspecialchars($no, ENT_QUOTES) ?>">
                 <input type="hidden" id="board_no" name="board_no" value="<?= htmlspecialchars($no, ENT_QUOTES) ?>">
-                
+
                 <section class="no-content">
                     <!-- Page Title -->
                     <div class="no-toolbar">
@@ -88,10 +93,13 @@ include_once "../../inc/admin.js.php";
                                     <div class="no-search-select">
                                         <div class="no-search-wrap">
                                             <div class="no-search-input">
-                                                <input style="padding-left: 1.2rem" name="name" id="name" type="text" title="카테고리 등록" placeholder="카테고리를 입력해주세요." value="">
+                                                <input style="padding-left: 1.2rem" name="name" id="name" type="text"
+                                                    title="카테고리 등록" placeholder="카테고리를 입력해주세요." value="">
                                             </div>
                                             <div class="no-search-btn">
-                                                <button type="button" title="검색" class="no-btn no-btn--main no-btn--search" onClick="doCategoryAdd();">등록</button>
+                                                <button type="button" title="검색"
+                                                    class="no-btn no-btn--main no-btn--search"
+                                                    onClick="doCategoryAdd();">등록</button>
                                             </div>
                                         </div>
                                     </div>
@@ -120,33 +128,41 @@ include_once "../../inc/admin.js.php";
                                         </thead>
                                         <tbody>
                                             <?php if ($categories): ?>
-                                                <?php foreach ($categories as $v): ?>
-                                                    <tr>
-                                                        <td>
-                                                            <span>
-                                                                <input type="text" id="name_<?= htmlspecialchars($v['no'], ENT_QUOTES) ?>" value="<?= htmlspecialchars($v['name'], ENT_QUOTES) ?>">
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            <span>
-                                                                <input type="text" id="sort_no_<?= htmlspecialchars($v['no'], ENT_QUOTES) ?>" value="<?= htmlspecialchars($v['sort_no'], ENT_QUOTES) ?>">
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            <div class="no-table-role">
-                                                                <span class="no-role-btn">
-                                                                    <i class="bx bx-dots-vertical-rounded"></i>
-                                                                </span>
-                                                                <div class="no-table-action">
-                                                                    <a href="javascript:doCategorySave(<?= htmlspecialchars($v['no'], ENT_QUOTES) ?>);" class="no-btn no-btn--sm no-btn--normal">저장</a>
-                                                                    <a href="javascript:doCategoryDelete(<?= htmlspecialchars($v['no'], ENT_QUOTES) ?>);" class="no-btn no-btn--sm no-btn--delete-outline">삭제</a>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                <?php endforeach; ?>
+                                            <?php foreach ($categories as $v): ?>
+                                            <tr>
+                                                <td>
+                                                    <span>
+                                                        <input type="text"
+                                                            id="name_<?= htmlspecialchars($v['no'], ENT_QUOTES) ?>"
+                                                            value="<?= htmlspecialchars($v['name'], ENT_QUOTES) ?>">
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span>
+                                                        <input type="text"
+                                                            id="sort_no_<?= htmlspecialchars($v['no'], ENT_QUOTES) ?>"
+                                                            value="<?= htmlspecialchars($v['sort_no'], ENT_QUOTES) ?>">
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="no-table-role">
+                                                        <span class="no-role-btn">
+                                                            <i class="bx bx-dots-vertical-rounded"></i>
+                                                        </span>
+                                                        <div class="no-table-action">
+                                                            <a href="javascript:doCategorySave(<?= htmlspecialchars($v['no'], ENT_QUOTES) ?>);"
+                                                                class="no-btn no-btn--sm no-btn--normal">저장</a>
+                                                            <a href="javascript:doCategoryDelete(<?= htmlspecialchars($v['no'], ENT_QUOTES) ?>);"
+                                                                class="no-btn no-btn--sm no-btn--delete-outline">삭제</a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <?php endforeach; ?>
                                             <?php else: ?>
-                                                <tr><td colspan="3">등록된 카테고리가 없습니다.</td></tr>
+                                            <tr>
+                                                <td colspan="3">등록된 카테고리가 없습니다.</td>
+                                            </tr>
                                             <?php endif; ?>
                                         </tbody>
                                     </table>
@@ -165,13 +181,16 @@ include_once "../../inc/admin.js.php";
         </main>
 
         <!-- Footer -->
-        <script type="text/javascript" src="./js/board.manage.process.js?c=<?= htmlspecialchars($STATIC_ADMIN_JS_MODIFY_DATE, ENT_QUOTES) ?>"></script>
+        <script type="text/javascript"
+            src="./js/board.manage.process.js?c=<?= htmlspecialchars($STATIC_ADMIN_JS_MODIFY_DATE, ENT_QUOTES) ?>">
+        </script>
         <?php include_once "../../inc/admin.footer.php"; ?>
     </div>
     <style>
-        #board_no-button {
-            display: none;
-        }
+    #board_no-button {
+        display: none;
+    }
     </style>
 </body>
+
 </html>

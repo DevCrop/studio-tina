@@ -1,93 +1,56 @@
 <?php
 include_once $_SERVER['DOCUMENT_ROOT'] . "/inc/lib/base.class.php";
 
-try {
-    // Obtain PDO instance
-    $db = DB::getInstance();
+$db = DB::getInstance();
 
-    // Previous post query
-    $query = "SELECT title, no, regdate FROM nb_board 
-              WHERE board_no = :board_no AND is_notice != 'Y' AND no < :no 
-              ORDER BY no DESC LIMIT 1";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(':board_no', $board_no, PDO::PARAM_INT);
-    $stmt->bindParam(':no', $no, PDO::PARAM_INT);
-    $stmt->execute();
-    $r1 = $stmt->fetch(PDO::FETCH_ASSOC);
+$board_no = $_GET['board_no'] ?? 1;
+$page = $_GET['page'] ?? 1;
+$page = max(1, (int)$page);
+$pageSize = 3;
+$offset = ($page - 1) * $pageSize;
 
-    // Set previous post title and link
-	$hasPrev = $r1 ? true : false;
-	$prev_title = $r1 ? $r1['title'] : (($HTML_LANG == 'en') ? "No previous post." : "이전글이 없습니다.");
-	$prev_link = $r1 ? $_SERVER['PHP_SELF'] . "?no=" . $r1['no'] . "&board_no=" . $board_no : 'javascript:void(0)';
-	$prevBack = $r1 ? '' : 'onClick="redirectToList();"';
+// ✴️ 무조건 전체글 기준 게시물 수 카운트
+$sqlCnt = "SELECT COUNT(*) FROM nb_board WHERE board_no = :board_no AND is_notice != 'Y'";
+$stmtCnt = $db->prepare($sqlCnt);
+$stmtCnt->bindValue(':board_no', $board_no, PDO::PARAM_INT);
+$stmtCnt->execute();
+$totalItems = (int)$stmtCnt->fetchColumn();
+$totalPages = ceil($totalItems / $pageSize);
 
-    // Next post query
-    $query = "SELECT title, no, regdate FROM nb_board 
-              WHERE board_no = :board_no AND is_notice != 'Y' AND no > :no 
-              ORDER BY no ASC LIMIT 1";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(':board_no', $board_no, PDO::PARAM_INT);
-    $stmt->bindParam(':no', $no, PDO::PARAM_INT);
-    $stmt->execute();
-    $r2 = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    // Set next post title and link
-	$hasNext = $r2 ? true : false;
-	$next_title = $r2 ? $r2['title'] : (($HTML_LANG == 'en') ? "No next post." : "다음글이 없습니다.");
-	$next_link = $r2 ? $_SERVER['PHP_SELF'] . "?no=" . $r2['no'] . "&board_no=" . $board_no : 'javascript:void(0)';
-	$nextBack = $r2 ? '' : 'onClick="redirectToList();"';
-
-} catch (PDOException $e) {
-    echo "데이터를 불러오는 중 오류가 발생했습니다: " . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
-    exit;
-}
-
+// ✴️ 무조건 전체글 기준 최신글 3개 조회
+$sql = "SELECT no, title, regdate, thumb_image FROM nb_board 
+        WHERE board_no = :board_no AND is_notice != 'Y'
+        ORDER BY regdate DESC LIMIT :offset, :limit";
+$stmt = $db->prepare($sql);
+$stmt->bindValue(':board_no', $board_no, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$stmt->bindValue(':limit', $pageSize, PDO::PARAM_INT);
+$stmt->execute();
+$posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
-<div class="no-board-nav mb60">
-    <ul class="no-board-nav__items">
-        <li>
-            <a href="<?= $prev_link ?>" <?= $prevBack ?> class="no-board-nav__link">
-                <div class="no-board-nav__division">
-                    <i class="fa-sharp fa-regular fa-angle-up" style="color: #fff;"></i>
-                    <p><?= ($HTML_LANG == 'en') ? 'Previous' : '이전글' ?></p>
-                    <span class="no-board-nav__title"><?= $prev_title ?></span>
-                </div>
-                <span class="no-board-nav__date"><?= $hasPrev ? date('Y-m-d', strtotime($r1['regdate'])) : '' ?></span>
-            </a>
-        </li>
+<section class="no-prevnext no-pd-64--y no-pd-48--b">
+    <a href="/pages/board/board.list.php?board_no=<?= $board_no ?>" class="no-body-lg fw600 category">
+        전체글 <i class="fa-solid fa-angle-up fa-rotate-90"></i>
+    </a>
 
-        <li>
-            <a href="<?= $next_link ?>" <?= $nextBack ?> class="no-board-nav__link">
-                <div class="no-board-nav__division">
-                    <i class="fa-sharp fa-regular fa-angle-down" style="color: #fff;"></i>
-                    <p><?= ($HTML_LANG == 'en') ? 'Next' : '다음글' ?></p>
-                    <span class="no-board-nav__title"><?= $next_title ?></span>
-                </div>
-                <span class="no-board-nav__date"><?= $hasNext ? date('Y-m-d', strtotime($r2['regdate'])) : '' ?></span>
-            </a>
-        </li>
+    <ul class="content-list no-mg-8--y">
+        <?php foreach ($posts as $post): ?>
+            <li>
+                <a href="/pages/board/board.view.php?board_no=<?= $board_no ?>&no=<?= $post['no'] ?>">
+                    <div class="txt">
+                        <h3 class="no-body-md fw300 no-mg-8--b"><?= htmlspecialchars($post['title']) ?></h3>
+                        <p class="no-body-xs fw300 wgray"><?= date("y.m.d", strtotime($post['regdate'])) ?></p>
+                    </div>
+                    <img src="<?= $UPLOAD_WDIR_BOARD . '/' . $post['thumb_image'] ?>" class="no-radius-xx" alt="">
+                </a>
+            </li>
+        <?php endforeach; ?>
     </ul>
 
-    <div class="view-btn">
-        <a href="./board.list.php?board_no=<?= $board_no ?>&category_no=<?= $cate_no ?>&RtsearchKeyword=<?= $searchKeyword ?>&RtsearchColumn=<?= $searchColumn ?>&page=<?= $page ?? 1 ?>">
-            <?= ($HTML_LANG == 'en') ? 'List' : '목록' ?>
-        </a>
-    </div>
-</div>
-
-<?php
-$cate_no = $_GET['category_no'] ?? '';
-?>
-
-<script>
-function redirectToList() {
-    alert('정보를 찾을 수 없습니다.');
-    const board_no = searchParam('board_no');
-    location.href = './board.list.php?board_no=' + board_no;
-}
-
-function searchParam(key) {
-    return new URLSearchParams(location.search).get(key);
-}
-</script>
+    <?php
+    $listCurPage = $page;
+    $Page = $totalPages;
+    include_once $STATIC_ROOT . "/pages/board/components/pagination.php";
+    ?>
+</section>

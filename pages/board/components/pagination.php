@@ -1,68 +1,50 @@
-<?php
-// Define default values if not already set
-$listCurPage = $listCurPage ?? 1;
-$pageBlock = 5; // Number of pages to show before and after the current page, for a total of 10
-$pageActive = $listCurPage ? "active" : "";
+<div class="no-pagination">
+    <!-- 이전 페이지 -->
+    <a href="javascript:void(0);" class="prev arrow wgray i-24" onClick="goListMove(<?= max(1, $listCurPage - 1) ?>)">◣</a>
 
-// Total number of pages, replace $Page with the actual total page count
-$Page = $Page ?? 1;
-?>
+    <ul class="page_num">
+        <?php
+        $totalPages = $Page;
+        $curPage = $listCurPage;
+        $side = 4; // 좌우 표시할 개수
 
-<div class="no-board-pagination">
-    <?php if ($listCurPage > 1): ?>
-        <?php $prevpage = $listCurPage - 1; ?>
-        <a href="javascript:void(0);" title="prev" class="prevnext prev" onClick="goListMove(<?= htmlspecialchars($prevpage, ENT_QUOTES, 'UTF-8') ?>, '<?= htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8') ?>');">
-             <i class="fa-sharp fa-regular fa-angle-right fa-rotate-180" style="color: #fff;" aria-hidden="true"></i>
-        </a>
-    <?php else: ?>
-        <a href="javascript:void(0);" title="prev" class="prevnext prev">
-             <i class="fa-sharp fa-regular fa-angle-right fa-rotate-180" style="color: #fff;" aria-hidden="true"></i>
-        </a>
-    <?php endif; ?>
+        $start = max(2, $curPage - $side);
+        $end = min($totalPages - 1, $curPage + $side);
 
-    <ul>
-        <?php 
-        // Determine the start and end pages for pagination
-        $startPage = max(1, $listCurPage - $pageBlock);
-        $endPage = min($Page, $listCurPage + $pageBlock);
+        // 항상 첫 페이지 출력
+        echo '<li><a href="javascript:void(0);" class="no-body-md wgray ' . ($curPage === 1 ? 'active' : '') . '" onClick="goListMove(1)">1</a></li>';
 
-        for ($x = $startPage; $x <= $endPage; $x++):
-            if ($x > 0 && $x <= $Page):
-                if ($x == $listCurPage): ?>
-                    <li>
-                        <a href="javascript:void(0);" title="<?= htmlspecialchars($x, ENT_QUOTES, 'UTF-8') ?> page" class="<?= $pageActive ?> num"><p><?= htmlspecialchars($x, ENT_QUOTES, 'UTF-8') ?></p></a>
-                    </li>
-                <?php else: ?>
-                    <li>
-                        <a href="javascript:void(0);" title="<?= htmlspecialchars($x, ENT_QUOTES, 'UTF-8') ?> page" class="num" onClick="goListMove(<?= htmlspecialchars($x, ENT_QUOTES, 'UTF-8') ?>, '<?= htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8') ?>');"><p><?= htmlspecialchars($x, ENT_QUOTES, 'UTF-8') ?></p></a>
-                    </li>
-                <?php endif;
-            endif;
-        endfor; 
+        // 앞쪽 ... 처리
+        if ($start > 2) {
+            echo '<li><a href="javascript:void(0);" class="no-body-md wgray">•••</a></li>';
+        }
+
+        // 중앙 페이지 출력
+        for ($i = $start; $i <= $end; $i++) {
+            $active = ($i === $curPage) ? 'active' : '';
+            echo '<li><a href="javascript:void(0);" class="no-body-md wgray ' . $active . '" onClick="goListMove(' . $i . ')">' . $i . '</a></li>';
+        }
+
+        // 뒤쪽 ... 처리
+        if ($end < $totalPages - 1) {
+            echo '<li><a href="javascript:void(0);" class="no-body-md wgray">•••</a></li>';
+        }
+
+        // 마지막 페이지 출력 (중복 방지)
+        if ($totalPages > 1) {
+            echo '<li><a href="javascript:void(0);" class="no-body-md wgray ' . ($curPage === $totalPages ? 'active' : '') . '" onClick="goListMove(' . $totalPages . ')">' . $totalPages . '</a></li>';
+        }
         ?>
     </ul>
 
-    <?php if ($listCurPage < $Page): ?>
-        <?php $nextpage = $listCurPage + 1; ?>
-        <a href="javascript:void(0);" title="next" class="prevnext next" onClick="goListMove(<?= htmlspecialchars($nextpage, ENT_QUOTES, 'UTF-8') ?>, '<?= htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8') ?>');">
-           <i class="fa-sharp fa-regular fa-angle-right" style="color: #fff;" aria-hidden="true"></i>
-        </a>
-    <?php else: ?>
-        <a href="javascript:void(0);" title="next" class="prevnext next">
-        <i class="fa-sharp fa-regular fa-angle-right" style="color: #fff;" aria-hidden="true"></i>
-        </a>
-    <?php endif; ?>
+    <!-- 다음 페이지 -->
+    <a href="javascript:void(0);" class="prev arrow wgray i-24" onClick="goListMove(<?= min($totalPages, $curPage + 1) ?>)">◥</a>
 </div>
 
 <script>
-function goListMove(start, url) {
-    const form = document.getElementById('frm');
-    const hiddenInput = document.createElement('input');
-    hiddenInput.type = 'hidden';
-    hiddenInput.name = 'page';
-    hiddenInput.value = start;
-    form.appendChild(hiddenInput);
-    form.action = url;
-    form.submit();
+function goListMove(page) {
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('page', page);
+    window.location.href = window.location.pathname + '?' + urlParams.toString();
 }
 </script>

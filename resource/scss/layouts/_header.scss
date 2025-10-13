@@ -9,8 +9,16 @@ header {
   height: var(--header-height);
   z-index: var(--header-z-index);
   transition: ease all 0.3s;
+  padding: 0 fluid(20, 24);
   &.is-scrolled {
     border-bottom: 1px solid var(--clr-border-white-week);
+  }
+
+  &.direction-up {
+    top: 0;
+  }
+  &.direction-down {
+    top: calc(var(--header-height) * -1);
   }
 
   .no-header {
@@ -54,7 +62,7 @@ header {
     }
     &-logo {
       height: 100%;
-      max-width: fluid(64, 86);
+      max-width: fluid(48, 86);
       height: var(--header-height);
       position: relative;
       z-index: 1;
@@ -128,9 +136,6 @@ header {
         }
       }
       @include mq(md) {
-        @include flex-center();
-        flex-direction: column;
-        gap: 0.3rem;
       }
     }
     &__nav {
@@ -140,6 +145,9 @@ header {
       transform: translate(-50%, -50%);
       height: var(--header-height);
       transition: ease all 0.3s;
+      @include mq(md) {
+        display: none;
+      }
     }
     &__menu {
       height: 100%;
@@ -287,6 +295,8 @@ header {
       opacity: 0;
       visibility: hidden;
       transition: ease all 0.3s;
+      @include mq(md) {
+      }
     }
   }
   &__nav {

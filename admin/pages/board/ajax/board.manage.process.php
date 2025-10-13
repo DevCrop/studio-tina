@@ -5,195 +5,157 @@ include_once "../../../lib/admin.check.ajax.php";
 $connect = DB::getInstance(); // Initialize PDO instance
 $mode = $_POST['mode'];
 
-if ($mode == "save") {
-		try {
-			// PDO 인스턴스 가져오기
-			$pdo = DB::getInstance();
+if ($mode === "save") {
+    try {
+        $pdo = DB::getInstance();
 
-			// 변수 설정
-			$title = $_POST['title'];
-			$skin = $_POST['skin'];
-			$content = $_POST['content'];
-			$view_yn = $_POST['view_yn'];
-			$secret_yn = $_POST['secret_yn'];
-			$list_size = isset($_POST['list_size']) && $_POST['list_size'] !== '' ? (int)$_POST['list_size'] : $BOARD_DEFAULT_LIST_SIZE;
-			$fileattach_yn = $_POST['fileattach_yn'];
-			$fileattach_cnt = $_POST['fileattach_cnt'] ?? 0;
-			$comment_yn = $_POST['comment_yn'];
-			$category_yn = $_POST['category_yn'];
-			$depth1 = $_POST['depth1'];
-			$depth2 = $_POST['depth2'];
-			$depth3 = $_POST['depth3'];
-			$lnb_path = $_POST['lnb_path'];
+        $title = $_POST['title'] ?? '';
+        $skin = $_POST['skin'] ?? '';
+        $view_yn = ($_POST['view_yn'] ?? '') === 'Y' ? 'Y' : 'N';
+        $secret_yn = ($_POST['secret_yn'] ?? '') === 'Y' ? 'Y' : 'N';
+        $list_size = isset($_POST['list_size']) && $_POST['list_size'] !== '' ? (int)$_POST['list_size'] : (int)$BOARD_DEFAULT_LIST_SIZE;
+        $fileattach_yn = ($_POST['fileattach_yn'] ?? '') === 'Y' ? 'Y' : 'N';
+        $fileattach_cnt = (int)($_POST['fileattach_cnt'] ?? 0);
+        $comment_yn = ($_POST['comment_yn'] ?? '') === 'Y' ? 'Y' : 'N';
+        $category_yn = ($_POST['category_yn'] ?? '') === 'Y' ? 'Y' : 'N';
 
-			// 추가 필드
-			$extra_fields = [];
-			for ($i = 1; $i <= 15; $i++) {
-				$extra_fields[] = $_POST["extra_match_field{$i}"];
-			}
+        $extra_fields = [];
+        for ($i = 1; $i <= 30; $i++) {
+            $extra_fields[] = $_POST["extra_match_field{$i}"] ?? '';
+        }
 
+        $uploads_dir = $UPLOAD_DIR_BOARD;
+        $origin_file = '';
+        $uploadResult = imageUpload($uploads_dir, $_FILES['top_banner_image'] ?? null, $origin_file, false);
+        $savedFile = $uploadResult['saved'] ?? '';
 
-			// 파일 업로드 처리
-			$uploads_dir = $UPLOAD_DIR_BOARD;
-			$uploadResult = imageUpload($uploads_dir, $_FILES['top_banner_image'], $origin_file, false);
-			$savedFile = $uploadResult['saved'];
+        $query = "INSERT INTO nb_board_manage (
+            sitekey, title, skin, regdate, top_banner_image, view_yn, secret_yn,
+            list_size, fileattach_yn, fileattach_cnt, comment_yn, category_yn,
+            extra_match_field1, extra_match_field2, extra_match_field3, extra_match_field4, extra_match_field5,
+            extra_match_field6, extra_match_field7, extra_match_field8, extra_match_field9, extra_match_field10,
+            extra_match_field11, extra_match_field12, extra_match_field13, extra_match_field14, extra_match_field15,
+            extra_match_field16, extra_match_field17, extra_match_field18, extra_match_field19, extra_match_field20,
+            extra_match_field21, extra_match_field22, extra_match_field23, extra_match_field24, extra_match_field25,
+            extra_match_field26, extra_match_field27, extra_match_field28, extra_match_field29, extra_match_field30
+        ) VALUES (
+            :sitekey, :title, :skin, NOW(), :top_banner_image, :view_yn, :secret_yn,
+            :list_size, :fileattach_yn, :fileattach_cnt, :comment_yn, :category_yn,
+            :extra1, :extra2, :extra3, :extra4, :extra5,
+            :extra6, :extra7, :extra8, :extra9, :extra10,
+            :extra11, :extra12, :extra13, :extra14, :extra15,
+            :extra16, :extra17, :extra18, :extra19, :extra20,
+            :extra21, :extra22, :extra23, :extra24, :extra25,
+            :extra26, :extra27, :extra28, :extra29, :extra30
+        )";
 
-			// SQL 쿼리 준비
-			$query = "INSERT INTO nb_board_manage (
-							sitekey, title, skin, regdate, top_banner_image, contents, view_yn, secret_yn, 
-							list_size, fileattach_yn, fileattach_cnt, comment_yn, depth1, depth2, depth3, lnb_path, category_yn,
-							extra_match_field1, extra_match_field2, extra_match_field3, extra_match_field4, extra_match_field5,
-							extra_match_field6, extra_match_field7, extra_match_field8, extra_match_field9, extra_match_field10,
-							extra_match_field11, extra_match_field12, extra_match_field13, extra_match_field14, extra_match_field15
-						) VALUES (
-							:sitekey, :title, :skin, NOW(), :top_banner_image, :contents, :view_yn, :secret_yn, 
-							:list_size, :fileattach_yn, :fileattach_cnt, :comment_yn, :depth1, :depth2, :depth3, :lnb_path, :category_yn,
-							:extra1, :extra2, :extra3, :extra4, :extra5, :extra6, :extra7, :extra8, :extra9, :extra10,
-							:extra11, :extra12, :extra13, :extra14, :extra15
-						)";
-			
-			// 쿼리 실행
-			$stmt = $pdo->prepare($query);
-			$result = $stmt->execute([
-				':sitekey' => $NO_SITE_UNIQUE_KEY,
-				':title' => $title,
-				':skin' => $skin,
-				':top_banner_image' => $savedFile,
-				':contents' => $content,
-				':view_yn' => $view_yn,
-				':secret_yn' => $secret_yn,
-				':list_size' => $list_size,
-				':fileattach_yn' => $fileattach_yn,
-				':fileattach_cnt' => $fileattach_cnt,
-				':comment_yn' => $comment_yn,
-				':depth1' => $depth1,
-				':depth2' => $depth2,
-				':depth3' => $depth3,
-				':lnb_path' => $lnb_path,
-				':category_yn' => $category_yn,
-				':extra1' => $extra_fields[0],
-				':extra2' => $extra_fields[1],
-				':extra3' => $extra_fields[2],
-				':extra4' => $extra_fields[3],
-				':extra5' => $extra_fields[4],
-				':extra6' => $extra_fields[5],
-				':extra7' => $extra_fields[6],
-				':extra8' => $extra_fields[7],
-				':extra9' => $extra_fields[8],
-				':extra10' => $extra_fields[9],
-				':extra11' => $extra_fields[10],
-				':extra12' => $extra_fields[11],
-				':extra13' => $extra_fields[12],
-				':extra14' => $extra_fields[13],
-				':extra15' => $extra_fields[14]
-			]);
+        $stmt = $pdo->prepare($query);
+        $params = [
+            ':sitekey' => $NO_SITE_UNIQUE_KEY,
+            ':title' => $title,
+            ':skin' => $skin,
+            ':top_banner_image' => $savedFile,
+            ':view_yn' => $view_yn,
+            ':secret_yn' => $secret_yn,
+            ':list_size' => $list_size,
+            ':fileattach_yn' => $fileattach_yn,
+            ':fileattach_cnt' => $fileattach_cnt,
+            ':comment_yn' => $comment_yn,
+            ':category_yn' => $category_yn,
+        ];
+        for ($i = 1; $i <= 30; $i++) {
+            $params[":extra{$i}"] = $extra_fields[$i-1];
+        }
 
-			// 성공 메시지
-			if ($result) {
-				echo json_encode(["result" => "success", "msg" => "정상적으로 등록되었습니다."]);
-			} else {
-				echo json_encode(["result" => "fail", "msg" => "처리 중 문제가 발생하였습니다.[Error-DB]"]);
-			}
-		} catch (Exception $e) {
-			// 예외 처리
-			echo json_encode(["result" => "fail", "msg" => "처리 중 문제가 발생하였습니다: " . $e->getMessage()]);
-		}
+        $result = $stmt->execute($params);
 
+        echo json_encode([
+            "result" => $result ? "success" : "fail",
+            "msg" => $result ? "정상적으로 등록되었습니다." : "처리 중 문제가 발생하였습니다.[Error-DB]"
+        ]);
+    } catch (Exception $e) {
+        echo json_encode(["result" => "fail", "msg" => "처리 중 문제가 발생하였습니다: " . $e->getMessage()]);
+    }
 } elseif ($mode == "edit") {
-	try {
-		$no = $_POST['no'];
-		$title = $_POST['title'];
-		$skin = $_POST['skin'];
-		$content = $_POST['content'];
-		$view_yn = $_POST['view_yn'];
-		$secret_yn = $_POST['secret_yn'];
-		$list_size = isset($_POST['list_size']) && $_POST['list_size'] !== '' ? (int)$_POST['list_size'] : $BOARD_DEFAULT_LIST_SIZE;
-		$fileattach_yn = $_POST['fileattach_yn'];
-		$fileattach_cnt = $_POST['fileattach_cnt'] ?? 0;
-		$comment_yn = $_POST['comment_yn'];
-		$category_yn = $_POST['category_yn'];
-		$depth1 = $_POST['depth1'];
-		$depth2 = $_POST['depth2'];
-		$depth3 = $_POST['depth3'];
-		$lnb_path = $_POST['lnb_path'];
+    try {
+        $no = $_POST['no'] ?? null;
+        $title = $_POST['title'] ?? '';
+        $skin = $_POST['skin'] ?? '';
+        $view_yn = (($_POST['view_yn'] ?? '') === 'Y') ? 'Y' : 'N';
+        $secret_yn = (($_POST['secret_yn'] ?? '') === 'Y') ? 'Y' : 'N';
+        $list_size = isset($_POST['list_size']) && $_POST['list_size'] !== '' ? (int)$_POST['list_size'] : (int)$BOARD_DEFAULT_LIST_SIZE;
+        $fileattach_yn = (($_POST['fileattach_yn'] ?? '') === 'Y') ? 'Y' : 'N';
+        $fileattach_cnt = (int)($_POST['fileattach_cnt'] ?? 0);
+        $comment_yn = (($_POST['comment_yn'] ?? '') === 'Y') ? 'Y' : 'N';
+        $category_yn = (($_POST['category_yn'] ?? '') === 'Y') ? 'Y' : 'N';
 
-		$extra_match_fields = [];
-		for ($i = 1; $i <= 15; $i++) {
-			$extra_match_fields[] = $_POST["extra_match_field$i"] ?? '';
-		}
+        $extra_match_fields = [];
+        for ($i = 1; $i <= 30; $i++) {
+            $extra_match_fields[] = $_POST["extra_match_field$i"] ?? '';
+        }
 
-		$uploads_dir = $UPLOAD_DIR_BOARD;
-		$origin_file = ''; 
-		$uploadResult = imageUpload($uploads_dir, $_FILES['top_banner_image'] ?? null, $origin_file, false);
-		$savedFile = $uploadResult['saved'] ?? '';
+        $uploads_dir = $UPLOAD_DIR_BOARD;
+        $origin_file = '';
+        $uploadResult = imageUpload($uploads_dir, $_FILES['top_banner_image'] ?? null, $origin_file, false);
+        $savedFile = $uploadResult['saved'] ?? '';
 
-		// 기본 업데이트 쿼리 문자열
-		$query = "UPDATE nb_board_manage SET 
-			title = :title, skin = :skin, contents = :contents, view_yn = :view_yn, secret_yn = :secret_yn, 
-			list_size = :list_size, fileattach_yn = :fileattach_yn, fileattach_cnt = :fileattach_cnt, 
-			comment_yn = :comment_yn, depth1 = :depth1, depth2 = :depth2, depth3 = :depth3, lnb_path = :lnb_path, 
-			category_yn = :category_yn, extra_match_field1 = :extra1, extra_match_field2 = :extra2, extra_match_field3 = :extra3, 
-			extra_match_field4 = :extra4, extra_match_field5 = :extra5, extra_match_field6 = :extra6, extra_match_field7 = :extra7, 
-			extra_match_field8 = :extra8, extra_match_field9 = :extra9, extra_match_field10 = :extra10, extra_match_field11 = :extra11, 
-			extra_match_field12 = :extra12, extra_match_field13 = :extra13, extra_match_field14 = :extra14, 
-			extra_match_field15 = :extra15";
+        $query = "UPDATE nb_board_manage SET 
+            title = :title, skin = :skin, view_yn = :view_yn, secret_yn = :secret_yn,
+            list_size = :list_size, fileattach_yn = :fileattach_yn, fileattach_cnt = :fileattach_cnt,
+            comment_yn = :comment_yn, category_yn = :category_yn,
+            extra_match_field1 = :extra1, extra_match_field2 = :extra2, extra_match_field3 = :extra3,
+            extra_match_field4 = :extra4, extra_match_field5 = :extra5, extra_match_field6 = :extra6, extra_match_field7 = :extra7,
+            extra_match_field8 = :extra8, extra_match_field9 = :extra9, extra_match_field10 = :extra10, extra_match_field11 = :extra11,
+            extra_match_field12 = :extra12, extra_match_field13 = :extra13, extra_match_field14 = :extra14, extra_match_field15 = :extra15,
+            extra_match_field16 = :extra16, extra_match_field17 = :extra17, extra_match_field18 = :extra18, extra_match_field19 = :extra19, extra_match_field20 = :extra20,
+            extra_match_field21 = :extra21, extra_match_field22 = :extra22, extra_match_field23 = :extra23, extra_match_field24 = :extra24, extra_match_field25 = :extra25,
+            extra_match_field26 = :extra26, extra_match_field27 = :extra27, extra_match_field28 = :extra28, extra_match_field29 = :extra29, extra_match_field30 = :extra30";
+        if ($savedFile) {
+            $query .= ", top_banner_image = :top_banner_image";
+        }
+        $query .= " WHERE no = :no";
 
-		// top_banner_image가 있을 경우 쿼리 및 파라미터에 추가
-		if ($savedFile) {
-			$query .= ", top_banner_image = :top_banner_image";
-		}
-		$query .= " WHERE no = :no";
+        $stmt = $connect->prepare($query);
 
-		$stmt = $connect->prepare($query);
+        $params = [
+            ':title' => $title,
+            ':skin' => $skin,
+            ':view_yn' => $view_yn,
+            ':secret_yn' => $secret_yn,
+            ':list_size' => $list_size,
+            ':fileattach_yn' => $fileattach_yn,
+            ':fileattach_cnt' => $fileattach_cnt,
+            ':comment_yn' => $comment_yn,
+            ':category_yn' => $category_yn,
+            ':no' => $no,
+        ];
+        for ($i = 1; $i <= 30; $i++) {
+            $params[":extra{$i}"] = $extra_match_fields[$i-1];
+        }
+        if ($savedFile) {
+            $params[':top_banner_image'] = $savedFile;
+        }
 
-		$params = [
-			':title' => $title,
-			':skin' => $skin,
-			':contents' => $content,
-			':view_yn' => $view_yn,
-			':secret_yn' => $secret_yn,
-			':list_size' => $list_size,
-			':fileattach_yn' => $fileattach_yn,
-			':fileattach_cnt' => $fileattach_cnt,
-			':comment_yn' => $comment_yn,
-			':depth1' => $depth1,
-			':depth2' => $depth2,
-			':depth3' => $depth3,
-			':lnb_path' => $lnb_path,
-			':category_yn' => $category_yn,
-			':no' => $no,
-		];
+        $result = $stmt->execute($params);
 
-		foreach ($extra_match_fields as $index => $field) {
-			$params[":extra" . ($index + 1)] = $field;
-		}
+        echo json_encode([
+            "result" => $result ? "success" : "fail",
+            "msg" => $result ? "정상적으로 수정되었습니다." : "처리 중 문제가 발생하였습니다.[Error-DB]"
+        ]);
+    } catch (PDOException $e) {
+        echo json_encode([
+            "result" => "fail",
+            "msg" => "데이터베이스 오류가 발생하였습니다: " . $e->getMessage()
+        ]);
+    } catch (Exception $e) {
+        echo json_encode([
+            "result" => "fail",
+            "msg" => "처리 중 문제가 발생하였습니다: " . $e->getMessage()
+        ]);
+    }
+}
 
-		// top_banner_image 파라미터를 추가
-		if ($savedFile) {
-			$params[':top_banner_image'] = $savedFile;
-		}
-
-		$result = $stmt->execute($params);
-
-		echo json_encode([
-			"result" => $result ? "success" : "fail",
-			"msg" => $result ? "정상적으로 수정되었습니다." : "처리 중 문제가 발생하였습니다.[Error-DB]"
-		]);
-
-	} catch (PDOException $e) {
-		echo json_encode([
-			"result" => "fail",
-			"msg" => "데이터베이스 오류가 발생하였습니다: " . $e->getMessage()
-		]);
-	} catch (Exception $e) {
-		echo json_encode([
-			"result" => "fail",
-			"msg" => "처리 중 문제가 발생하였습니다: " . $e->getMessage()
-		]);
-	}
-
-
-} elseif ($mode == "delete") {
+ elseif ($mode == "delete") {
 
 	$no = $_POST['no'];
 

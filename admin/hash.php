@@ -13,5 +13,3 @@ if (isset($_REQUEST['base64'])) {
 } else {
     echo "Error: 'base64' parameter is required.<br>";
 }
-
-?>

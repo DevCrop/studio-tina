@@ -1,8 +1,6 @@
 <?php
 include_once "../../inc/lib/base.class.php";
 
-$depthnum = 1;
-$pagenum = 5;
 
 $no = $_REQUEST['no'] ?? null;
 $board_no = $_REQUEST['board_no'] ?? null;
@@ -11,22 +9,6 @@ if (!$board_no) {
     error("잘못된 접근입니다", $NO_IS_SUBDIR . "/");
 }
 
-$searchKeyword = $_REQUEST['searchKeyword'] ?? '';
-$searchColumn = $_REQUEST['searchColumn'] ?? '';
-$sdate = $_REQUEST['sdate'] ?? '';
-$edate = $_REQUEST['edate'] ?? '';
-
-// 상세페이지 리턴 처리
-$RtsearchKeyword = $_REQUEST['RtsearchKeyword'] ?? '';
-$RtsearchColumn = $_REQUEST['RtsearchColumn'] ?? '';
-
-if ($RtsearchKeyword) {
-    $searchKeyword = base64_decode($RtsearchKeyword);
-}
-
-if ($RtsearchColumn) {
-    $searchColumn = base64_decode($RtsearchColumn);
-}
 
 try {
     // Obtain PDO instance
@@ -69,126 +51,92 @@ if ($role_info[0]['role_edit'] === "N") {
     alert("접근 권한이 없습니다.");
 }
 
-// 타이틀과 메뉴 항목 설정
-$board_title = explode('(', $board_info[0]['title']);
 
-// 메뉴 설정
-$depthNum = 1;
-$lnbNum = $board_no == 42 ? 3 : ($board_no == 41 ? 5 : null);
-$subNum = $board_no == 41 ? 3 : ($board_no == 40 ? 4 : null);
 
-// 특수한 경우 설정
-if ($board_no >= 44 && $board_no <= 53) {
-    switch ($board_no) {
-        case 44:
-            $depthNum = 4;
-            $lnbNum = 5;
-            $subNum = 1;
-            break;
-        case 45:
-            $depthNum = 4;
-            $lnbNum = 3;
-            $subNum = 1;
-            break;
-        case 43:
-            $depthNum = 2;
-            $lnbNum = 4;
-            break;
-        case 50:
-            $depthNum = 4;
-            $lnbNum = 4;
-            break;
-        case 47:
-            $depthNum = 3;
-            $lnbNum = 3;
-            break;
-        case 46:
-            $depthNum = 4;
-            $lnbNum = 4;
-            break;
-        case 49:
-            $depthNum = 4;
-            $lnbNum = 5;
-            $subNum = 4;
-            break;
-        case 53:
-            $depthNum = 2;
-            $lnbNum = 5;
-            $subNum = 1;
-            $detailNum = 1;
-            break;
-    }
-}
 ?>
 
-<!DOCTYPE HTML>
-<html lang="ko">
-<head>
-    <?php
-    include_once "../../inc/inc_titlemeta.php";
-    include_once "../../inc/inc_css.php";
-    include_once "../../inc/inc_script.php";
-    ?>
-    <script type="text/javascript" src="<?= htmlspecialchars($NO_IS_SUBDIR, ENT_QUOTES, 'UTF-8') ?>/pages/board/js/board.js?v=<?= htmlspecialchars($STATIC_FRONT_JS_MODIFY_DATE, ENT_QUOTES, 'UTF-8') ?>"></script>
-</head>
-<body>
-<div class="no_wrap">
-    <?php include_once "../../inc/header.php"; ?>
+<!-- Head -->
+<?php include_once $STATIC_ROOT . '/inc/layouts/head.php'; ?>
 
-    <main>
-        <?php include_once "../../inc/visual.php"; ?>
-        <?php include_once "../../inc/lnb.php"; ?>
+<!-- 스타일, 스크립트  -->
+<script type="text/javascript" src="<?= $NO_IS_SUBDIR ?>/pages/board/js/board.js?v=<?= $STATIC_FRONT_JS_MODIFY_DATE ?>">
+</script>
 
-        <section class="no-sec-pd">
-            <div class="no-form-container">
-                <div class="no-subject" data-aos="fade-up" data-aos-duration="1000">
-                    <h2 class="no-subject__title"><?= htmlspecialchars($board_title[0], ENT_QUOTES, 'UTF-8') ?></h2>
+<!-- Header -->
+<?php include_once $STATIC_ROOT . '/inc/layouts/header.php'; ?>
+<?php include_once $STATIC_ROOT . '/inc/shared/sub.visual.php'; ?>
+
+
+
+<section class="no-sub-write no-section-md">
+    <div class="no-container-lg">
+        <div class="--section-title-with-button">
+            <hgroup>
+                <h2 class="f-heading-3 clr-text-title">AS Center</h2>
+            </hgroup>
+
+        </div>
+
+        <div class="--cnt">
+            <form id="frm" name="frm" method="post" action="board.submit.php">
+                <input type="hidden" id="mode" name="mode" value="" />
+                <input type="hidden" id="is_secret" name="is_secret"
+                    value="<?= htmlspecialchars($board_info[0]['secret_yn']) ?>" />
+                <input type="hidden" id="board_no" name="board_no" value="<?= htmlspecialchars($board_no) ?>" />
+                <input type="hidden" id="no" name="no" value="<?= htmlspecialchars($no) ?>" />
+
+                <div class="no-form-container">
+                    <div class="no-form-control">
+                        <label for="write_name">성함 <span class="--require-symbol">*</span></label>
+                        <input type="text" id="write_name" name="write_name" placeholder="성함을 입력해주세요."
+                            value="<?= htmlspecialchars($data['write_name'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                    </div>
+                    <div class="no-form-control">
+                        <label for="phone">연락처</label>
+                        <input type="text" id="phone" name="phone" placeholder="연락처를 입력해주세요"
+                            value="<?= htmlspecialchars($data['phone'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                    </div>
+                    <div class="no-form-control">
+                        <label for="company">업체명</label>
+                        <input type="text" id="company" name="company" placeholder="업체명을 입력해주세요"
+                            value="<?= htmlspecialchars($data['company'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                    </div>
+                    <div class="no-form-control">
+                        <label for="title">제목 <span class="--require-symbol">*</span></label>
+                        <input type="text" id="title" name="title" placeholder="제목을 입력해주세요"
+                            value="<?= htmlspecialchars($data['title'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                    </div>
                 </div>
 
-                <form id="frm" name="frm" method="post">
-                    <input type="hidden" id="mode" name="mode" value="" />
-                    <input type="hidden" id="is_secret" name="is_secret" value="<?= htmlspecialchars($board_info[0]['secret_yn'], ENT_QUOTES, 'UTF-8') ?>" />
-                    <input type="hidden" id="board_no" name="board_no" value="<?= htmlspecialchars($board_no, ENT_QUOTES, 'UTF-8') ?>" />
-                    <input type="hidden" id="no" name="no" value="<?= htmlspecialchars($data['no'], ENT_QUOTES, 'UTF-8') ?>" />
+                <div class="no-form-control --mt-sm">
+                    <label for="contents">내용 <span class="--require-symbol">*</span></label>
+                    <textarea name="contents"
+                        id="contents"><?= htmlspecialchars($data['contents'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+                </div>
 
-                    <div class="no-input-wrap">
-                        <div class="no-input-box no-input-box--wide">
-                            <label for="title">제목</label>
-                            <input type="text" name="title" id="title" value="<?= htmlspecialchars($data['title'], ENT_QUOTES, 'UTF-8') ?>">
-                        </div>
-                        <div class="no-input-box no-input-box--wide">
-                            <label for="write_name">성명</label>
-                            <input type="text" name="write_name" id="write_name" value="<?= htmlspecialchars($data['write_name'], ENT_QUOTES, 'UTF-8') ?>">
-                        </div>
-                        <div class="no-input-box no-input-box--wide">
-                            <label for="contents">내용</label>
-                            <textarea name="contents" id="contents" cols="30" rows="10"><?= htmlspecialchars($data['contents'], ENT_QUOTES, 'UTF-8') ?></textarea>
-                        </div>
-                        <div class="no-input-box">
-                            <label for="r_captcha">보안코드</label>
-                            <div class="no-input-capt">
-                                <div class="no-input-capt__img">
-                                    <img src="/inc/lib/captcha.n.php" alt="captcha" style="height: 30px">
-                                </div>
-                                <input type="text" name="r_captcha" id="r_captcha" maxlength="5">
-                            </div>
-                        </div>
+                <div class="no-form-row --mt-sm">
+                    <div class="no-form-captcha">
+                        <figure><img id="captcha-img" src="/inc/lib/captcha.n.php" alt="captcha"></figure>
+                        <button type="button" id="reloading"><i class="fa-regular fa-arrow-rotate-left"></i></button>
+                        <input type="text" name="r_captcha" id="r_captcha" maxlength="5" placeholder="스팸방지 5자리를 입력해 주세요"
+                            autocomplete="off">
                     </div>
 
-                    <div class="no-confirm-btns">
-                        <div class="no-confirm-btns__cancel">
-                            <a href="javascript:void(0);" onClick="location.href='./board.list.php?board_no=<?= htmlspecialchars($board_no, ENT_QUOTES, 'UTF-8') ?>'" title="취소">취소</a>
-                        </div>
-                        <div class="no-confirm-btns__post">
-                            <a href="javascript:void(0);" onClick="doBoardEditSubmit(<?= $isSecret ?>)" title="확인">확인</a>
-                        </div>
+                    <div class="no-form-control">
+                        <input type="password" id="secret_pwd" name="secret_pwd" placeholder="비밀번호를 입력해주세요.">
                     </div>
-                </form>
-            </div>
-        </section>
-    </main>
+                </div>
 
-    <?php include_once "../../inc/footer.php"; ?>
-</div>
-</body>
-</html>
+                <div class="no-btn-wrap">
+                    <a href="javascript:void(0);" onclick="history.back();"
+                        class="no-btn-secondary no-btn-inquiry">취소하기</a>
+                    <a href="javascript:void(0);" onclick="doBoardEditSubmit(<?= $isSecret ? 'true' : 'false' ?>)"
+                        class="no-btn-primary no-btn-inquiry">확인</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</section>
+
+<?php include_once $STATIC_ROOT . '/inc/layouts/footer.php'; ?>

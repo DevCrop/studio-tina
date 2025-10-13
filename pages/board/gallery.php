@@ -5,11 +5,6 @@
 <?php include_once $STATIC_ROOT.'/inc/layouts/head.php'; ?>
 
 <!-- css, js  -->
-<?php 
-    include_once $STATIC_ROOT.'/inc/layouts/header.php';
-    include_once $STATIC_ROOT.'/inc/shared/sub.visual.gallery.php';
-?>
-
 
 <!-- contents -->
 

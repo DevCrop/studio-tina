@@ -8,7 +8,7 @@
 $_path_str = __DIR__;
 $CACHE_MODIFIER = date('YmdHis');
 $NO_IS_SUBDIR = "";
-$NO_SITE_UNIQUE_KEY = "PALETT";
+$NO_SITE_UNIQUE_KEY = "STTINA";
 
 require_once dirname(__DIR__, 2) . '/src/autoload.php';
 
@@ -173,3 +173,8 @@ if (class_exists('Lisence') && isProduction()) {
         exit;
     }
 }
+
+// ROLE 검사
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/lib/Role.php';
+
+$role = new Role();
