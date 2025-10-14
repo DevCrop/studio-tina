@@ -4,9 +4,9 @@ input,
 select,
 textarea {
   background: none;
-  padding: 0 fluid(10, 16);
   width: 100%;
-  height: fluid(36, 60);
+  padding-top: fluid(16, 24);
+  height: fluid(48, 64);
   border-bottom: 1px solid var(--clr-border-white-strong);
 }
 
@@ -25,31 +25,61 @@ textarea {
 }
 
 .no-form-control {
+  position: relative;
+
   label {
-    display: flex;
-    align-items: center;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--clr-text-title);
+    font-size: fluid(14, 16);
+    font-weight: 400;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    opacity: 1;
   }
+
   input,
   select,
   textarea {
     background: none;
     width: 100%;
-    height: fluid(36, 60);
-    border-bottom: 1px solid var(--clr-border-white-strong);
+    border-bottom: 1px solid var(--clr-border-white-week);
     color: #fff;
+    transition: border-color 0.3s ease;
     &:focus {
-      border-color: var(--clr-primary-def);
+      border-color: var(--clr-border-white-strong);
+      outline: none;
     }
   }
 
   textarea {
     height: fluid(160, 320);
     display: block;
+    padding-top: fluid(24, 48);
+    resize: vertical;
+  }
+
+  &.--focused {
+    label {
+      top: 0;
+      transform: translateY(0);
+      opacity: 0.48;
+    }
+  }
+
+  &:has(textarea) {
+    label {
+      top: fluid(24, 36);
+    }
+    &.--focused label {
+      top: 0;
+    }
   }
 
   &.--full {
     grid-column: 1 / 3;
-
     @include mq(md) {
       grid-column: auto;
     }
@@ -107,10 +137,30 @@ textarea {
 
   grid-template-columns: repeat(2, 1fr);
 
-  gap: var(--gutter-sm);
+  gap: var(--gutter-md);
 
   @include mq(md) {
     grid-template-columns: 1fr;
+  }
+}
+
+.no-form-submit {
+  margin-top: var(--gutter-md);
+  display: flex;
+
+  @include mq(md) {
+  }
+  button {
+    width: fluid(188, 288);
+    height: fluid(64, 88);
+    border-radius: 5rem;
+    border: 1px solid var(--clr-border-white-strong);
+    transition: ease all 0.3s;
+    &:hover {
+      color: #000;
+      background: #fff;
+      border: 1px solid transparent;
+    }
   }
 }
 

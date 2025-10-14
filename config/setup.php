@@ -6,7 +6,7 @@ define('IMG_PATH', '/resource/images');
 define('ENV_PRODUCTION', 'production');
 define('ENV_DEVELOPMENT', 'development');
 
-define('FORCE_LOCALE_PREFIX', true);
+define('FORCE_LOCALE_PREFIX', false);
 
 define('LOCALES', [
     'ko' => 'ko-KR',
@@ -18,4 +18,4 @@ define('DEFAULT_LOCALE', 'ko');
 /**
  * Change mode here
  */
-define('ENV', ENV_DEVELOPMENT);
+define('ENV', ENV_PRODUCTION);

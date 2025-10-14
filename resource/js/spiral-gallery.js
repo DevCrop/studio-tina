@@ -33,112 +33,57 @@ class SpiralGallery {
     this.isPopupOpen = false;
     this.stopFriction = 0.85; // 팝업 열릴 때 감속력 (더 빠르게 멈춤)
 
-    this.imageData = [
-      {
-        image: "resource/images/works/works_img_1.jpg",
-        video: "dQw4w9WgXcQ",
-        category: "Category 1",
-        title: "Title 1",
-      },
-      {
-        image: "resource/images/works/works_img_2.jpg",
-        video: "jNQXAC9IVRw",
-        category: "Category 2",
-        title: "Title 2",
-      },
-      {
-        image: "resource/images/works/works_img_3.jpg",
-        video: "kJQP7kiw5Fk",
-        category: "Category 3",
-        title: "Title 3",
-      },
-      {
-        image: "resource/images/works/works_img_4.jpg",
-        video: "fJ9rUzIMcZQ",
-        category: "Category 4",
-        title: "Title 4",
-      },
-      {
-        image: "resource/images/works/works_img_1.jpg",
-        video: "dQw4w9WgXcQ",
-        category: "Category 1",
-        title: "Title 1",
-      },
-      {
-        image: "resource/images/works/works_img_2.jpg",
-        video: "jNQXAC9IVRw",
-        category: "Category 2",
-        title: "Title 2",
-      },
-      {
-        image: "resource/images/works/works_img_3.jpg",
-        video: "kJQP7kiw5Fk",
-        category: "Category 3",
-        title: "Title 3",
-      },
-      {
-        image: "resource/images/works/works_img_4.jpg",
-        video: "fJ9rUzIMcZQ",
-        category: "Category 4",
-        title: "Title 4",
-      },
-      {
-        image: "resource/images/works/works_img_1.jpg",
-        video: "dQw4w9WgXcQ",
-        category: "Category 1",
-        title: "Title 1",
-      },
-      {
-        image: "resource/images/works/works_img_2.jpg",
-        video: "jNQXAC9IVRw",
-        category: "Category 2",
-        title: "Title 2",
-      },
-      {
-        image: "resource/images/works/works_img_3.jpg",
-        video: "kJQP7kiw5Fk",
-        category: "Category 3",
-        title: "Title 3",
-      },
-      {
-        image: "resource/images/works/works_img_4.jpg",
-        video: "fJ9rUzIMcZQ",
-        category: "Category 4",
-        title: "Title 4",
-      },
-      {
-        image: "resource/images/works/works_img_1.jpg",
-        video: "dQw4w9WgXcQ",
-        category: "Category 1",
-        title: "Title 1",
-      },
-      {
-        image: "resource/images/works/works_img_2.jpg",
-        video: "jNQXAC9IVRw",
-        category: "Category 2",
-        title: "Title 2",
-      },
-      {
-        image: "resource/images/works/works_img_3.jpg",
-        video: "kJQP7kiw5Fk",
-        category: "Category 3",
-        title: "Title 3",
-      },
-      {
-        image: "resource/images/works/works_img_4.jpg",
-        video: "fJ9rUzIMcZQ",
-        category: "Category 4",
-        title: "Title 4",
-      },
-    ];
+    this.imageData = []; // 빈 배열로 초기화
 
     this.init();
   }
 
-  init() {
+  async init() {
+    await this.loadData();
     this.createGallery();
     this.setupDragEvents();
     this.startAutoRotation();
+  }
+
+  async loadData() {
+    try {
+      const response = await fetch("/api/spiral-gallery.php?limit=8");
+      const data = await response.json();
+
+      if (data.success && data.data.length > 0) {
+        // API 데이터를 imageData 형식으로 변환하고 3배로 복제
+        const originalData = data.data.map((work) => ({
+          image: work.image_url,
+          video: work.direct_url || work.link_url.split("/").pop(), // direct_url 우선 사용
+          category: "Portfolio", // 기본 카테고리
+          title: work.title,
+        }));
+
+        // 데이터를 3배로 복제
+        this.imageData = [...originalData, ...originalData, ...originalData];
+      } else {
+        // 데이터가 없을 경우 기본 데이터 사용
+        this.imageData = [
+          {
+            image: "resource/images/works/works_img_1.jpg",
+            video: "dQw4w9WgXcQ",
+            category: "Category 1",
+            title: "Title 1",
+          },
+        ];
+      }
+    } catch (error) {
+      console.error("Spiral Gallery Data Error:", error);
+      // 에러 시 기본 데이터 사용
+      this.imageData = [
+        {
+          image: "resource/images/works/works_img_1.jpg",
+          video: "dQw4w9WgXcQ",
+          category: "Category 1",
+          title: "Title 1",
+        },
+      ];
+    }
   }
 
   createGallery() {
@@ -193,10 +138,10 @@ class SpiralGallery {
         e.preventDefault();
         // 드래그 중이 아닐 때만 팝오버 열기
         if (!this.isDragging) {
-          const videoId = item.getAttribute("data-video-id");
-          // Popover 객체의 handleClick 메서드 호출
+          const directUrl = item.getAttribute("data-video-id");
+          // Popover 객체의 handleClick 메서드 호출 (direct_url 값 그대로 전달)
           if (window.popover) {
-            window.popover.handleClick(videoId);
+            window.popover.handleClick(directUrl);
           }
         }
       });
@@ -348,6 +293,46 @@ class SpiralGallery {
   }
 
   startAutoRotation() {
+    const getResponsiveConfig = () => {
+      const w = window.innerWidth || document.documentElement.clientWidth;
+      if (w <= 768) {
+        return { z: 0, radius: 400, itemShift: 36, scale: 0.9 };
+      }
+      if (w <= 1320) {
+        return { z: -100, radius: 520, itemShift: 42, scale: 0.95 };
+      }
+      return { z: -200, radius: 640, itemShift: 48, scale: 1 };
+    };
+
+    let {
+      z: currentZ,
+      radius: currentRadius,
+      itemShift: currentShift,
+      scale: currentScale,
+    } = getResponsiveConfig();
+
+    // 컨테이너 오버플로우 방지
+    if (this.container) {
+      this.container.style.overflow = "hidden";
+    }
+
+    const handleResize = () => {
+      const cfg = getResponsiveConfig();
+      currentZ = cfg.z;
+      currentRadius = cfg.radius;
+      currentShift = cfg.itemShift;
+      currentScale = cfg.scale;
+      // 반지름/간격 업데이트 후 아이템 재배치
+      this.RADIUS = currentRadius;
+      this.ITEM_SHIFT = currentShift;
+      this.resetParameters();
+      if (this.gallery) {
+        this.positionItems();
+        this.adjustContainerHeight();
+      }
+    };
+    window.addEventListener("resize", handleResize);
+
     const updateFrame = () => {
       // 드래그 중이 아닐 때만 관성 적용
       if (!this.isDragging) {
@@ -368,8 +353,8 @@ class SpiralGallery {
         }
       }
 
-      // 중심점을 유지하면서 회전만 적용
-      this.gallery.style.transform = `translateZ(-200px) translateY(0px) rotateY(${this.currentAngle}deg)`;
+      // 중심점을 유지하면서 회전 및 스케일 적용
+      this.gallery.style.transform = `translateZ(${currentZ}px) translateY(0px) rotateY(${this.currentAngle}deg) scale(${currentScale})`;
 
       this.animId = requestAnimationFrame(updateFrame);
     };
@@ -442,7 +427,7 @@ class SpiralGallery {
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   let container = document.getElementById("spiral-gallery-container");
   if (!container) return;
 

@@ -276,11 +276,21 @@ $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 <td><?= htmlspecialchars($row['branch_name'] ?? '-') ?></td>
                                                 <td><?= htmlspecialchars($row['title']) ?></td>
 
-                                                <!-- 썸네일 이미지 -->
+                                                <!-- 썸네일 이미지/영상 -->
                                                 <td>
-                                                    <?php if (!empty($row['banner_image'])): ?>
-                                                    <img src="/uploads/banners/<?= $row['banner_image'] ?>" alt="썸네일"
+                                                    <?php if (!empty($row['banner_image'])): 
+                                                        $file_ext = strtolower(pathinfo($row['banner_image'], PATHINFO_EXTENSION));
+                                                        $is_video = in_array($file_ext, ['mp4', 'webm', 'ogg']);
+                                                    ?>
+                                                    <?php if ($is_video): ?>
+                                                    <video style="max-width: 60px; max-height: 40px;">
+                                                        <source src="/uploads/banner/<?= $row['banner_image'] ?>"
+                                                            type="video/<?= $file_ext ?>">
+                                                    </video>
+                                                    <?php else: ?>
+                                                    <img src="/uploads/banner/<?= $row['banner_image'] ?>" alt="썸네일"
                                                         style="max-width: 60px;">
+                                                    <?php endif; ?>
                                                     <?php else: ?>
                                                     <span style="color: #aaa;">-</span>
                                                     <?php endif; ?>

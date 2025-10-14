@@ -153,9 +153,8 @@
     <script src="<?= $ROOT ?>/resource/vendor/gsap/scrollTrigger.min.js"></script>
     <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
     <script src="<?= $ROOT ?>/resource/js/fslightbox.js"></script>
-
+    <script src="<?= $ROOT ?>/resource/vendor/mouseFollower/mouseFollower.js"></script>
     <script src="/resource/js/popup.js?v=<?=time()?>" defer></script>
-    <script src="<?= $ROOT ?>/resource/js/spiral-gallery.js"></script>
     <!-- App JS -->
     <script src="<?= $ROOT ?>/resource/js/app.js?v=<?= date('YmdHis') ?>" defer></script>
 

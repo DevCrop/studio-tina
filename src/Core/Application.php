@@ -202,20 +202,23 @@ class Application
             // 로케일 감지 + path에서 제거 + prefix 유무
             [$loc, $path, $hadPrefix] = $this->detectLocaleFromPath($originalPath);
 
-            // ★ prefix가 없으면 /{locale}{originalPath} 로 302 리다이렉트
+            // ★ 로케일 prefix 리다이렉트 비활성화 (prefix 없이 사용)
+            // if (!$hadPrefix) {
+            //     $qs  = $_SERVER['QUERY_STRING'] ?? '';
+            //     $locPrefix = '/' . rawurlencode($loc);
+            //     $location = $locPrefix . ($originalPath === '/' ? '' : $originalPath);
+            //     if ($qs !== '') {
+            //         $location .= (strpos($location, '?') === false ? '?' : '&') . $qs;
+            //     }
+            //     return (new Response())->redirect($location, 302);
+            // }
+
+            // prefix가 없으면 원래 경로 사용
             if (!$hadPrefix) {
-                // 쿼리 유지
-                $qs  = $_SERVER['QUERY_STRING'] ?? '';
-                $locPrefix = '/' . rawurlencode($loc);
-                // originalPath는 `/` 또는 `/contact` 같은 “원래 요청 경로”
-                $location = $locPrefix . ($originalPath === '/' ? '' : $originalPath);
-                if ($qs !== '') {
-                    $location .= (strpos($location, '?') === false ? '?' : '&') . $qs;
-                }
-                return (new Response())->redirect($location, 302);
+                $path = $originalPath;
             }
 
-            // prefix를 제거한 경로로 라우팅 매치
+            // 라우팅 매치
             $matched = $this->router->match($method, $path);
 
             if (!$matched) {

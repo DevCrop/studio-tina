@@ -24,6 +24,9 @@
         'title' => 'COMPANY',
     ]) ?>
 
+
+
+
 <section class="no-sub-about-company no-section-md">
     <div class="no-container-2xl">
         <div class="no-sub-section-title --tac">
@@ -40,6 +43,9 @@
         </div>
     </div>
 </section>
+
+
+
 
 <section class="no-sub-about-snap no-section-md">
     <ul class="no-sub-about-snap-list">
@@ -96,7 +102,6 @@
         </div>
     </div>
 </section>
-<!--핀걸고 애니메이션 줄 예정 GSAP SNAP 기능.-->
 <section class="no-sub-about-rotate ">
     <div class="no-container-2xl">
         <div class="no-sub-about-rotate-inner">
@@ -165,6 +170,55 @@
         <img src="/resource/images/bg/gradient_bg.png" alt="">
     </div>
 </section>
+
+
+<section class="no-sub-about-creators no-section-md">
+    <div class="no-container-2xl">
+        <div class="no-sub-section-title --tac">
+            <h2 class="f-display-2">Our Creators</h2>
+        </div>
+        <div class="--cnt">
+            <div class="no-sub-about-creators-inner">
+                <div class="no-sub-about-creators-wrap">
+                    <!-- 타이틀 FIXED -->
+                    <div class="no-sub-about-creators-title">
+                        <h3 class="f-heading-1 --bold">Directors</h3>
+                    </div>
+                    <!-- 컨텐츠 일반 스크롤링 -->
+                    <div class="no-sub-about-creators-contents">
+                        <ul>
+                            <?php if (!empty($creators)): ?>
+                            <?php foreach ($creators as $creator): ?>
+                            <li>
+                                <div class="no-sub-about-creators-contents-title">
+                                    <h3 class="f-heading-3 --bold"><?= htmlspecialchars($creator['title'] ?? '') ?></h3>
+                                    <?php if (!empty($creator['extra1'])): ?>
+                                    <span class="f-body-1 --medium"><?= htmlspecialchars($creator['extra1']) ?></span>
+                                    <?php endif; ?>
+                                </div>
+                                <?php 
+                                    $rawHtml = html_entity_decode((string)($creator['contents'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                ?>
+                                <div class="no-sub-about-creators-contents-html">
+                                    <?= $rawHtml ?>
+                                </div>
+                            </li>
+                            <?php endforeach; ?>
+                            <?php else: ?>
+                            <li>
+                                <p class="no-data">등록된 크리에이터가 없습니다.</p>
+                            </li>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
 
 <?= include_view('sections.contact') ?>
 

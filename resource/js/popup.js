@@ -51,15 +51,15 @@ class Popover {
     });
   }
 
-  handleClick(videoId) {
+  handleClick(directUrl) {
     if (this.isOpen) {
       this.close();
     } else {
-      this.open(videoId);
+      this.open(directUrl);
     }
   }
 
-  open(videoId) {
+  open(directUrl) {
     if (this.isOpen) return;
 
     // SpiralGallery에 팝업 열림 알림 (천천히 멈추도록)
@@ -67,9 +67,9 @@ class Popover {
       window.spiralGallery.onPopupOpen();
     }
 
-    // PLYR 플레이어 초기화
+    // PLYR 플레이어 초기화 (direct_url 값 그대로 사용)
     const plyrContainer = this.popupElement.querySelector(".plyr");
-    plyrContainer.setAttribute("data-plyr-embed-id", videoId);
+    plyrContainer.setAttribute("data-plyr-embed-id", directUrl);
 
     // 팝업 표시
     this.popupElement.classList.add("active");

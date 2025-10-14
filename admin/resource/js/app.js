@@ -14,6 +14,7 @@ import { EtcController } from "./Controller/EtcController.js";
 import { SimpleController } from "./Controller/SimpleController.js";
 import { HerbController } from "./Controller/HerbController.js";
 import { CustomController } from "./Controller/CustomController.js";
+import { SitemapBgController } from "./Controller/SitemapBgController.js";
 import { attachRadioToggle } from "./utils/initRadioToggle.js";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -93,6 +94,11 @@ document.addEventListener("DOMContentLoaded", () => {
     case "product":
       const productController = new ProductController();
       productController.init();
+      break;
+
+    case "sitemap_bg":
+      const sitemapBgController = new SitemapBgController();
+      sitemapBgController.init();
       break;
 
     default:

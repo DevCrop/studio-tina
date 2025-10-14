@@ -170,8 +170,8 @@ function makeLinks($str, $target) {
 
 // 이미지 업로드
 function imageUpload($path, $upfile, $origin_file = '', $return_origin = false) {
-    $allowed_ext = ['jpg', 'jpeg', 'png', 'gif', 'ico', 'svg', 'pdf'];
-    $max_file_size = 10485760; // 10MB
+    $allowed_ext = ['jpg', 'jpeg', 'png', 'gif', 'ico', 'svg', 'pdf', 'webp', 'mp4', 'webm', 'ogg'];
+    $max_file_size = 52428800; // 50MB (비디오 파일 고려)
 
 
 
@@ -183,7 +183,7 @@ function imageUpload($path, $upfile, $origin_file = '', $return_origin = false) 
     try {
         // 파일 크기 제한 확인
         if ($upfile['size'] > $max_file_size) {
-            throw new Exception("이미지 사이즈가 10MB 이하로 등록해주세요.");
+            throw new Exception("파일 크기는 50MB 이하로 업로드해주세요.");
         }
 
         // 확장자 검증

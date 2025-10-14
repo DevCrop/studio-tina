@@ -1,4 +1,18 @@
 <?php section('main_class', 'no-sub-view no-section-md') ?>
+<?php
+// SEO 메타: 제목/설명/키워드 설정
+$__seoTitle = isset($post['title']) ? (string)$post['title'] : __('news.index.seo_title');
+$__rawDesc  = isset($post['contents']) ? html_entity_decode((string)$post['contents'], ENT_QUOTES | ENT_HTML5, 'UTF-8') : '';
+$__textDesc = trim(strip_tags($__rawDesc));
+if ($__textDesc === '') {
+    $__textDesc = __('news.index.seo_desc');
+}
+// 설명 길이 제한
+$__textDesc = mb_substr($__textDesc, 0, 160, 'UTF-8');
+?>
+<?php section('seo_title', $__seoTitle) ?>
+<?php section('seo_desc', $__textDesc) ?>
+<?php section('seo_keywords', __('news.index.seo_keywords')) ?>
 
 <?php section('content') ?>
 

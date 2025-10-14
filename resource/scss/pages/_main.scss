@@ -3,6 +3,88 @@
 @use "../abstracts" as *;
 
 .no-main {
+  &-intro {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: #000;
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &-wrap {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      padding: 0 var(--gutter-md);
+      @include flex-center();
+    }
+
+    &-text {
+      color: #fff;
+      text-align: center;
+      min-height: fluid(80, 120);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &::after {
+        content: "|";
+        display: inline-block;
+        margin-left: fluid(4, 8);
+        animation: blink 1s infinite;
+      }
+    }
+
+    &-skip {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      gap: fluid(6, 8);
+      color: rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: fluid(10, 14) fluid(20, 28);
+      border-radius: 5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      bottom: fluid(24, 64);
+      left: 50%;
+      transform: translateX(-50%);
+
+      svg {
+        transition: transform 0.3s ease;
+      }
+
+      &:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.4);
+
+        svg {
+          transform: translateX(4px);
+        }
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+    }
+  }
+
+  @keyframes blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+
   &-visual {
     width: 100%;
     height: 100vh;
@@ -74,6 +156,9 @@
       transform: translateX(-50%);
       z-index: 11;
       color: #fff;
+      @include mq(md) {
+        display: none;
+      }
 
       > div {
         width: 24rem;
@@ -293,6 +378,10 @@
   &-section-title {
     @include flex-center();
     flex-direction: column;
+    @include mq(md) {
+      text-align: center;
+      align-items: center;
+    }
     a {
       margin-top: fluid(24, 36);
     }
@@ -310,8 +399,17 @@
         top: calc(var(--header-height) + fluid(16, 24));
         height: fluid(100, 150);
       }
+      @include mq(md) {
+        grid-template-columns: 1fr;
+        .no-main-section-title {
+          position: relative;
+          top: 0;
+          height: auto;
+        }
+      }
     }
     .--cnt {
+      margin-top: 0;
       ul {
         li {
           display: flex;
@@ -328,7 +426,9 @@
             flex-direction: column;
             position: relative;
             border-bottom: 1px solid var(--clr-border-white-week);
-
+            @include mq(md) {
+              padding: fluid(16, 24) 0;
+            }
             &:hover {
               figure {
                 opacity: 1;
@@ -432,11 +532,23 @@
   &-contact {
     position: relative;
     text-align: center;
-    height: 80vh;
+    height: fluid(240, 800);
     @include flex-center();
+    background: #000;
+    > div {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      @include flex-center();
+    }
     .--cnt {
       @include flex-center();
       flex-direction: column;
+      margin-top: 0;
     }
     video {
       position: absolute;
@@ -444,8 +556,8 @@
       top: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      z-index: -1;
+      object-fit: contain;
+      z-index: 1;
     }
     a {
       margin-top: fluid(36, 64);

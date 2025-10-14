@@ -158,9 +158,8 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 <th>이름</th>
                                                 <th>업체명</th>
                                                 <th>연락처</th>
-                                                <th>설치 지역</th>
+                                                <th>이메일</th>
                                                 <th>문의 일자</th>
-                                                <th>확인 여부</th>
                                                 <th>관리</th>
                                             </tr>
                                         </thead>
@@ -173,20 +172,14 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 <td><?= htmlspecialchars($request['name']) ?></td>
                                                 <td><?= htmlspecialchars($request['company']) ?></td>
                                                 <td><?= htmlspecialchars($request['phone']) ?></td>
-                                                <td><?= $area_categories[$request['area']] ?? '미정' ?></td>
+                                                <td><?= htmlspecialchars($request['email']) ?></td>
                                                 <td><?= htmlspecialchars($request['regdate']) ?></td>
-                                                <td>
-                                                    <span
-                                                        class="no-btn <?= ((int)$request['is_confirmed'] === 1) ? 'no-btn--notice' : 'no-btn--normal' ?>">
-                                                        <?= htmlspecialchars($is_confirmed[(int)$row['is_confirmed']] ?? '미정', ENT_QUOTES, 'UTF-8') ?>
-                                                    </span>
-                                                </td>
                                                 <td>
                                                     <div class="no-table-role">
                                                         <span class="no-role-btn"><i
                                                                 class="bx bx-dots-vertical-rounded"></i></span>
                                                         <div class="no-table-action">
-                                                            <a href="simple.view.php?id=<?= $row['id'] ?>"
+                                                            <a href="view.php?no=<?= $request['no'] ?>"
                                                                 class="no-btn no-btn--sm no-btn--normal">자세히 보기</a>
                                                         </div>
                                                     </div>
@@ -195,7 +188,7 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <?php endforeach; ?>
                                             <?php else: ?>
                                             <tr>
-                                                <td colspan="10" style="text-align:center;">문의 내역이 없습니다.</td>
+                                                <td colspan="7" style="text-align:center;">문의 내역이 없습니다.</td>
                                             </tr>
                                             <?php endif; ?>
                                         </tbody>

@@ -1,4 +1,7 @@
 <?php section('main_class', 'sub-news') ?>
+<?php section('seo_title', __('news.index.seo_title')) ?>
+<?php section('seo_desc', __('news.index.seo_desc')) ?>
+<?php section('seo_keywords', __('news.index.seo_keywords')) ?>
 
 <?php section('content') ?>
 

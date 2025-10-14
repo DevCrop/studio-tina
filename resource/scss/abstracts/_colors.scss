@@ -104,6 +104,11 @@ $theme-colors-light: (
   border-strong: #212121,
   border-white-week: rgba(255, 255, 255, 0.16),
   border-white-strong: rgba(255, 255, 255, 0.48),
+  // =====================
+  // cursor
+  // =====================
+  background-cursor: #769ed3,
+  text-cursor: #fff,
 );
 
 $theme-colors-dark: (
@@ -152,7 +157,7 @@ $theme-colors-dark: (
   // =====================
   // ui
   // =====================
-  ui-surface: #121212,
+  ui-surface: #000,
   ui-title: #fff,
 
   // =====================
@@ -195,7 +200,12 @@ $theme-colors-dark: (
   border-default: #2a2a2a,
   border-strong: #e0e0e0,
   border-white-week: rgba(255, 255, 255, 0.16),
-  border-white-strong: rgba(255, 255, 255, 0.48)
+  border-white-strong: rgba(255, 255, 255, 0.48),
+  // =====================
+  // cursor
+  // =====================
+  background-cursor: #769ed3,
+  text-cursor: #000
 );
 
 @function clr($color) {

@@ -26,21 +26,22 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 header("Pragma: no-cache");
 header("Content-Type: text/html; charset=utf-8");
 
-if (isProduction()) {
-    // --- HTTPS 강제 (프록시 고려)
-    $isHttps = (
-        (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ||
-        (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
-    );
-    if (!$isHttps && PHP_SAPI !== 'cli') {
-        $host = $_SERVER['HTTP_HOST'] ?? '';
-        $uri  = $_SERVER['REQUEST_URI'] ?? '/';
-        if ($host !== '') {
-            header('Location: https://' . $host . $uri, true, 301);
-            exit;
-        }
-    }
-}
+// HTTPS 강제 리다이렉트 비활성화
+// if (isProduction()) {
+//     // --- HTTPS 강제 (프록시 고려)
+//     $isHttps = (
+//         (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ||
+//         (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+//     );
+//     if (!$isHttps && PHP_SAPI !== 'cli') {
+//         $host = $_SERVER['HTTP_HOST'] ?? '';
+//         $uri  = $_SERVER['REQUEST_URI'] ?? '/';
+//         if ($host !== '') {
+//             header('Location: https://' . $host . $uri, true, 301);
+//             exit;
+//         }
+//     }
+// }
 
 // --- Error reporting (개발 중이면 표시, 운영이면 0 권장)
 // 헤더 전송 후라도 버퍼링 덕에 안전

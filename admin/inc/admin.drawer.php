@@ -11,13 +11,6 @@ $pagenum = $pagenum ?? 0;
 
 // 메뉴 정의
 $menus = [
-    1 => [
-        'key' => 'dashboard',
-        'title' => '대시보드',
-        'icon' => 'fa-grid-2',
-        'url'  => '/admin/main.php',
-        'subs' => []
-    ],
     2 => [
         'key' => 'board',
         'title' => '게시판',
@@ -41,6 +34,7 @@ $menus = [
         'title' => 'FAQ 관리',
         'icon' => 'fa-clipboard-question',
         'url'  => '/admin/pages/faq/index.php',
+        'hidden' => true, // 가림처리
     ],
     6 => [
         'key' => 'setting',
@@ -68,6 +62,12 @@ $menus = [
             ['title' => '월별 ', 'url' => 'log/log.month.php'],
 			['title' => '연별', 'url' => 'log/log.year.php'],
         ]
+    ],
+    9 => [
+        'key' => 'sitemap',
+        'title' => '사이트맵 배경 관리',
+        'icon' => 'fa-sitemap',
+        'url'  => '/admin/pages/sitemap/index.php',
     ],
 ];
 
@@ -106,6 +106,7 @@ if (isset($menus[$depthnum])) {
                 <?php foreach ($menus as $index => $menu): ?>
                 <?php
                         if (in_array($menu['key'], $restrictedMenuKeys)) continue;
+                        if (isset($menu['hidden']) && $menu['hidden']) continue; // 가림처리된 메뉴 제외
                         $hasSub = !empty($menu['subs']);
                     ?>
                 <li class="no-menu-item <?=$gnbActive[$index] ?? ''?>">

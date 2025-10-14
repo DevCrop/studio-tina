@@ -178,11 +178,11 @@ class Router
             }
         }
 
-        // ★ 로케일 prefix (기본 로케일은 prefix 없음)
-        $current = function_exists('locale') ? locale() : DEFAULT_LOCALE;
-        if ($current && $current !== DEFAULT_LOCALE) {
-            $uri = '/' . rawurlencode($current) . $uri;
-        }
+        // ★ 로케일 prefix 비활성화 (prefix 없이 URL 생성)
+        // $current = function_exists('locale') ? locale() : DEFAULT_LOCALE;
+        // if ($current && $current !== DEFAULT_LOCALE) {
+        //     $uri = '/' . rawurlencode($current) . $uri;
+        // }
 
         if ($absolute) {
             $isHttps = (

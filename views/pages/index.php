@@ -24,28 +24,46 @@
         clip: rect(0,0,0,0);">
     <?= __('main.sub_title') ?>
 </h2>
+<!--
+<section class="no-main-intro" id="mainIntro">
+    <div class="no-main-intro-wrap">
+        <h2 class="no-main-intro-text f-display-1" id="typingText"></h2>
+        <button type="button" class="no-main-intro-skip f-body-2" id="skipIntro">
+            Skip
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </button>
+    </div>
+</section>-->
 
 <section class="no-main-visual">
     <div class="no-main-visual-swiper">
         <ul class="swiper-wrapper">
+
+            <?php if (!empty($banners)): ?>
+            <?php foreach ($banners as $banner): 
+                $file_ext = strtolower(pathinfo($banner['banner_image'], PATHINFO_EXTENSION));
+                $is_video = in_array($file_ext, ['mp4', 'webm', 'ogg']);
+            ?>
             <li class="swiper-slide">
                 <article>
+                    <?php if ($is_video): ?>
                     <video autoplay loop muted preload="auto" playsinline>
-                        <source src="/resource/video/main_video.mp4" type="video/mp4">
+                        <source src="/uploads/banners/<?= htmlspecialchars($banner['banner_image']) ?>"
+                            type="video/<?= $file_ext ?>">
                     </video>
+                    <?php else: ?>
+                    <img src="/uploads/banners/<?= htmlspecialchars($banner['banner_image']) ?>"
+                        alt="<?= htmlspecialchars($banner['description'] ?? 'Studio Tina') ?>">
+                    <?php endif; ?>
                 </article>
                 <div class="no-main-visual-txt">
-                    <h2 class="f-display-2">Studio tina</h2>
+                    <h2 class="f-display-1">STUDIO TINA</h2>
                 </div>
             </li>
-            <li class="swiper-slide">
-                <article>
-                    <img src="/resource/images/main/main_visual_img.jpg" alt="">
-                </article>
-                <div class="no-main-visual-txt">
-                    <h2 class="f-display-2">Studio tina</h2>
-                </div>
-            </li>
+            <?php endforeach; ?>
+            <?php endif; ?>
         </ul>
 
         <div class="no-main-visual-controls">
@@ -78,6 +96,7 @@
     </div>
     <?= include_view('components.scrollLine') ?>
 </section>
+
 <section class="no-main-about">
     <div class="no-main-about__inner">
         <div class="no-main-about-txt">
@@ -131,7 +150,7 @@
         <article>
             <div class="no-main-section-title">
                 <h2 class="f-display-2">News</h2>
-                <a href="#" class="no-btn-cta">
+                <a href="/news" class="no-btn-cta">
                     <p>View More</p>
                     <div>
                         <i class="fa-regular fa-arrow-right-long"></i>
@@ -141,18 +160,30 @@
 
             <div class="--cnt">
                 <ul>
-                    <?php for ($i = 0; $i < 5; $i++): ?>
+                    <?php if (!empty($newsList)): ?>
+                    <?php foreach ($newsList as $news): ?>
                     <li>
-                        <a href="#">
-                            <time datetime="2025-01-01" class="clr-primary-def">2025.01.01</time>
-                            <h3 class="f-body-1 --semibold">스튜디오티나, 숏드라마 ‘스퍼맨’ 제작…네이버TV, 치지직에서 공개</h3>
-                            <p>스튜디오티나는 네이버TV와 치지직 공개 숏드라마 ‘스퍼맨’을 제작합니다.</p>
+                        <a href="/news/show/<?= $news['no'] ?>">
+                            <time datetime="<?= date('Y-m-d', strtotime($news['regdate'])) ?>" class="clr-primary-def">
+                                <?= date('Y.m.d', strtotime($news['regdate'])) ?>
+                            </time>
+                            <h3 class="f-body-1 --semibold"><?= htmlspecialchars($news['title']) ?></h3>
+                            <p><?= htmlspecialchars(mb_substr($news['contents'], 0, 100, 'UTF-8')) ?><?= mb_strlen($news['contents'], 'UTF-8') > 100 ? '...' : '' ?>
+                            </p>
+                            <?php if (!empty($news['thumb_image'])): ?>
                             <figure>
-                                <img src="/resource/images/main/new_thumb.jpg" alt="">
+                                <img src="/uploads/board/<?= $news['thumb_image'] ?>"
+                                    alt="<?= htmlspecialchars($news['title']) ?>">
                             </figure>
+                            <?php endif; ?>
                         </a>
                     </li>
-                    <?php endfor; ?>
+                    <?php endforeach; ?>
+                    <?php else: ?>
+                    <li class="no-data">
+                        <p>등록된 뉴스가 없습니다.</p>
+                    </li>
+                    <?php endif; ?>
                 </ul>
             </div>
         </article>
@@ -207,4 +238,21 @@
 <?php end_section() ?>
 
 <?php section('script') ?>
+<script>
+// 메인 페이지 항상 최상단에서 시작
+if (window.history.scrollRestoration) {
+    window.history.scrollRestoration = 'manual';
+}
+window.scrollTo(0, 0);
+
+// Lenis가 있다면 스크롤 위치 초기화
+if (window.lenis) {
+    window.lenis.scrollTo(0, {
+        immediate: true,
+        force: true
+    });
+}
+</script>
+<script src="/resource/js/intro-typing.js?v=<?= date('YmdHis') ?>"></script>
+<script src="/resource/js/spiral-gallery.js?v=<?= date('YmdHis') ?>"></script>
 <?php end_section() ?>

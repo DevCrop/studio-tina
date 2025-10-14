@@ -18,8 +18,6 @@ $menu->add('PARTNERS', '/about/partners', 'partners', ['parent' => $about, 'orde
 
 // WORKS
 $works = $menu->add('WORKS', '/works', 'works', ['orderIndex' => 20]);
-$menu->add('PORTFOLIO', '/works/portfolio', 'portfolio', ['parent' => $works, 'orderIndex' => 10]);
-$menu->add('CREATOR', '/works/creator', 'creator', ['parent' => $works, 'orderIndex' => 20]);
 
 // NEWS
 $news = $menu->add('NEWS', '/news', 'news', ['orderIndex' => 30]);

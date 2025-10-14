@@ -1,0 +1,123 @@
+@use "../abstracts" as *;
+
+// ========================================
+// Privacy Policy Page
+// ========================================
+
+.no-sub-privacy {
+  padding-top: fluid(120, 200);
+  padding-bottom: fluid(80, 120);
+
+  .no-sub-privacy-section {
+    .no-container-lg {
+      padding-left: fluid(20, 40);
+      padding-right: fluid(20, 40);
+    }
+  }
+
+  .no-sub-privacy-header {
+    margin-bottom: fluid(24, 48);
+
+    h1 {
+      margin-bottom: fluid(12, 16);
+      color: var(--clr-text-primary);
+    }
+
+    p {
+      color: var(--clr-text-secondary);
+      opacity: 0.7;
+    }
+  }
+
+  .no-sub-privacy-content {
+    .no-privacy-intro {
+      padding: fluid(24, 32) 0;
+      margin-bottom: fluid(40, 60);
+      border-left: 4px solid var(--clr-accent);
+
+      p {
+        color: var(--clr-text-primary);
+        line-height: 1.8;
+      }
+    }
+
+    .no-privacy-article {
+      margin-bottom: fluid(40, 60);
+      padding-bottom: fluid(40, 60);
+      border-bottom: 1px solid var(--clr-border-white-week);
+
+      &:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+
+      h2 {
+        margin-bottom: fluid(20, 28);
+        color: var(--clr-text-primary);
+      }
+
+      .no-privacy-text {
+        p {
+          margin-bottom: fluid(16, 20);
+          color: var(--clr-text-primary);
+          line-height: 1.8;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          a {
+            color: var(--clr-accent);
+            text-decoration: underline;
+            transition: opacity 0.3s ease;
+
+            &:hover {
+              opacity: 0.8;
+            }
+          }
+        }
+
+        ul {
+          margin-top: fluid(16, 20);
+          padding-left: fluid(20, 24);
+          list-style: disc;
+
+          li {
+            margin-bottom: fluid(8, 12);
+            color: var(--clr-text-primary);
+            line-height: 1.7;
+            list-style: disc;
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+
+            a {
+              color: var(--clr-accent);
+              text-decoration: underline;
+              transition: opacity 0.3s ease;
+
+              &:hover {
+                opacity: 0.8;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Footer Privacy Link 스타일
+.no-footer-privacy-link {
+  font-size: fluid(13, 14);
+  color: var(--clr-text-primary);
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+
+  &:hover {
+    opacity: 0.7;
+    text-decoration: underline;
+  }
+}

@@ -15,4 +15,5 @@ export const API = {
   SIMPLE: "/admin/Controller/SimpleController.php",
   CUSTOM: "/admin/Controller/CustomController.php",
   PRODUCT: "/admin/Controller/ProductController.php",
+  SITEMAP_BG: "/admin/Controller/SitemapBgController.php",
 };

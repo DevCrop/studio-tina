@@ -10,7 +10,7 @@
 
 $fluid-displays: (
   1: (
-    min: 48,
+    min: 40,
     max: 128,
     lh: 1.2,
     fw: 800,
@@ -18,7 +18,7 @@ $fluid-displays: (
     ff: "Manrope",
   ),
   2: (
-    min: 40,
+    min: 36,
     max: 96,
     lh: 1.2,
     fw: 700,
@@ -26,7 +26,7 @@ $fluid-displays: (
     ff: "Manrope",
   ),
   3: (
-    min: 36,
+    min: 32,
     max: 84,
     lh: 1.2,
     fw: 700,
@@ -34,7 +34,7 @@ $fluid-displays: (
     ff: "Manrope",
   ),
   4: (
-    min: 32,
+    min: 28,
     max: 72,
     lh: 1.41,
     fw: 700,
@@ -67,16 +67,16 @@ $fluid-headings: (
     max: 36,
     lh: 1.41,
     fw: 600,
-    ls: 0.04,
+    ls: -0.04,
     ff: "Manrope",
   ),
   4: (
     // sm
-    min: 16,
+    min: 15,
     max: 24,
     lh: 1.41,
     fw: 600,
-    ls: 0.04,
+    ls: -0.04,
     ff: "Manrope",
   ),
 );
@@ -85,15 +85,15 @@ $fluid-headings: (
 
 $fluid-bodys: (
   1: (
-    min: 15,
+    min: 14,
     max: 20,
     lh: 1.41,
     fw: 500,
-    ls: -0.6,
+    ls: -0.04,
     ff: "Pretendard",
   ),
   2: (
-    min: 14,
+    min: 13,
     max: 18,
     lh: 1.618,
     fw: 400,
@@ -101,7 +101,7 @@ $fluid-bodys: (
     ff: "Pretendard",
   ),
   3: (
-    min: 13,
+    min: 12,
     max: 16,
     lh: 1.618,
     fw: 400,
@@ -109,7 +109,7 @@ $fluid-bodys: (
     ff: "Pretendard",
   ),
   4: (
-    min: 12,
+    min: 11,
     max: 14,
     lh: 1.618,
     fw: 400,

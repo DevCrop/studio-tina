@@ -175,22 +175,28 @@ include_once "../../inc/admin.js.php";
                                     </div>
                                 </div>
 
-                                <!-- 배너 이미지 -->
+                                <!-- 배너 이미지/영상 -->
                                 <div class="no-admin-block">
-                                    <h3 class="no-admin-title"><label for="banner_image">썸네일 파일</label></h3>
+                                    <h3 class="no-admin-title"><label for="banner_image">배너 파일 (이미지/영상)</label></h3>
                                     <div class="no-admin-content">
                                         <div class="no-file-control">
                                             <input type="text" class="no-fake-file" id="fakeBannerFileTxt"
                                                 placeholder="파일을 선택해주세요." readonly disabled />
                                             <div class="no-file-box">
                                                 <input type="file" name="banner_image" id="banner_image"
-                                                    onchange="document.getElementById('fakeBannerFileTxt').value = this.value"
-                                                    accept="image/*" />
+                                                    onchange="previewBannerFile(this, 'bannerPreview', 'fakeBannerFileTxt')"
+                                                    accept="image/*,video/*" />
                                                 <button type="button" class="no-btn no-btn--main">파일찾기</button>
                                             </div>
                                         </div>
-                                        <span class="no-admin-info"><i class="bx bxs-info-circle"></i>배너에 사용되는 썸네일
-                                            이미지입니다.</span>
+
+                                        <div class="no-image-preview" id="bannerPreviewContainer">
+                                            <img id="bannerPreview" src="" alt="배너 미리보기"
+                                                style="display:none; max-width:150px; margin-top:10px;">
+                                        </div>
+
+                                        <span class="no-admin-info"><i class="bx bxs-info-circle"></i>이미지 파일 (jpg, png,
+                                            gif, webp) 또는 영상 파일 (mp4, webm)을 업로드할 수 있습니다.</span>
                                     </div>
                                 </div>
 

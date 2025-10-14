@@ -197,9 +197,9 @@ include_once "../../inc/admin.js.php";
                                     </div>
                                 </div>
 
-                                <!-- 배너 이미지 -->
+                                <!-- 배너 이미지/영상 -->
                                 <div class="no-admin-block">
-                                    <h3 class="no-admin-title"><label for="banner_image">썸네일 파일</label></h3>
+                                    <h3 class="no-admin-title"><label for="banner_image">배너 파일 (이미지/영상)</label></h3>
                                     <div class="no-admin-content">
                                         <div class="no-file-control">
                                             <input type="text" class="no-fake-file" id="fakeBannerFileTxt"
@@ -207,27 +207,37 @@ include_once "../../inc/admin.js.php";
                                                 value="<?= htmlspecialchars($banner['banner_image'] ?? '') ?>" />
                                             <div class="no-file-box">
                                                 <input type="file" name="banner_image" id="banner_image"
-                                                    accept="image/*"
-                                                    onchange="previewImage(this, 'bannerPreview', 'fakeBannerFileTxt')" />
+                                                    accept="image/*,video/*"
+                                                    onchange="previewBannerFile(this, 'bannerPreview', 'fakeBannerFileTxt')" />
                                                 <button type="button" class="no-btn no-btn--main">파일찾기</button>
                                             </div>
                                         </div>
 
-                                        <?php if (!empty($banner['banner_image'])): ?>
-                                        <div class="no-image-preview">
-                                            <img id="bannerPreview"
-                                                src="/uploads/banners/<?= $banner['banner_image'] ?>" alt="썸네일 미리보기"
-                                                style="max-width:150px; margin-top:10px;">
+                                        <?php if (!empty($banner['banner_image'])): 
+                                            $file_ext = strtolower(pathinfo($banner['banner_image'], PATHINFO_EXTENSION));
+                                            $is_video = in_array($file_ext, ['mp4', 'webm', 'ogg']);
+                                        ?>
+                                        <div class="no-image-preview" id="bannerPreviewContainer">
+                                            <?php if ($is_video): ?>
+                                            <video id="bannerPreview" controls
+                                                style="max-width:300px; margin-top:10px;">
+                                                <source src="/uploads/banner/<?= $banner['banner_image'] ?>"
+                                                    type="video/<?= $file_ext ?>">
+                                            </video>
+                                            <?php else: ?>
+                                            <img id="bannerPreview" src="/uploads/banner/<?= $banner['banner_image'] ?>"
+                                                alt="배너 미리보기" style="max-width:150px; margin-top:10px;">
+                                            <?php endif; ?>
                                         </div>
                                         <?php else: ?>
-                                        <div class="no-image-preview">
-                                            <img id="bannerPreview" src="" alt="썸네일 미리보기"
+                                        <div class="no-image-preview" id="bannerPreviewContainer">
+                                            <img id="bannerPreview" src="" alt="배너 미리보기"
                                                 style="display:none; max-width:150px; margin-top:10px;">
                                         </div>
                                         <?php endif; ?>
 
-                                        <span class="no-admin-info"><i class="bx bxs-info-circle"></i>배너에 사용되는 썸네일
-                                            이미지입니다.</span>
+                                        <span class="no-admin-info"><i class="bx bxs-info-circle"></i>이미지 파일 (jpg, png,
+                                            gif, webp) 또는 영상 파일 (mp4, webm)을 업로드할 수 있습니다.</span>
                                     </div>
                                 </div>
 

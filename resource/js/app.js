@@ -3,15 +3,93 @@ $(document).ready(function () {
   AOS.init();
   initHeader();
   initLenis();
+  initScrollToTop();
+  customCursor();
 
   gsap.registerPlugin(ScrollTrigger);
-  mainVisualSwiper();
+  // mainVisualSwiper는 인트로 완료 후 자동 실행됨
   mainAboutAnimation();
   marqueeLogos();
   subSnapAnimation();
   subRotateAnimation();
   subHistoryAnimation();
+  categoryAnimation();
 });
+
+function categoryAnimation() {
+  const categoryButtons = document.querySelectorAll(".no-category button");
+  const activeBg = document.querySelector(".no-category-active-bg");
+
+  if (!categoryButtons.length || !activeBg) return;
+
+  // 배경 위치 업데이트 함수
+  function updateActiveBg(button) {
+    const buttonRect = button.getBoundingClientRect();
+    const containerRect = button.closest("ul").getBoundingClientRect();
+
+    // 스크롤 오프셋 고려
+    const scrollLeft = button.closest("ul").scrollLeft || 0;
+    const left = buttonRect.left - containerRect.left + scrollLeft;
+    const top = buttonRect.top - containerRect.top;
+    const width = buttonRect.width;
+    const height = buttonRect.height;
+
+    activeBg.style.transform = `translate(${left}px, ${top}px)`;
+    activeBg.style.width = `${width}px`;
+    activeBg.style.height = `${height}px`;
+  }
+
+  // 초기 활성 버튼 위치 설정
+  const activeButton = document.querySelector(".no-category button.--active");
+  if (activeButton) {
+    updateActiveBg(activeButton);
+  }
+
+  // 버튼 클릭 이벤트
+  categoryButtons.forEach((button) => {
+    button.addEventListener("click", function () {
+      // 모든 버튼에서 active 클래스 제거
+      categoryButtons.forEach((btn) => btn.classList.remove("--active"));
+
+      // 현재 버튼에 active 클래스 추가
+      this.classList.add("--active");
+
+      // 배경 위치 업데이트
+      updateActiveBg(this);
+
+      // 여기에 필터링 로직 추가 가능
+      const category = this.dataset.category;
+      console.log("Selected category:", category);
+    });
+  });
+
+  // 스크롤 이벤트 추가 (가로 스크롤 시 배경 위치 업데이트)
+  const categoryContainer = document.querySelector(".no-category ul");
+  if (categoryContainer) {
+    categoryContainer.addEventListener("scroll", function () {
+      const currentActive = document.querySelector(
+        ".no-category button.--active"
+      );
+      if (currentActive) {
+        updateActiveBg(currentActive);
+      }
+    });
+  }
+
+  // 윈도우 리사이즈 시 배경 위치 재계산
+  let resizeTimer;
+  window.addEventListener("resize", function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+      const currentActive = document.querySelector(
+        ".no-category button.--active"
+      );
+      if (currentActive) {
+        updateActiveBg(currentActive);
+      }
+    }, 100);
+  });
+}
 
 function initHeader() {
   const root = document.getElementById("header");
@@ -222,6 +300,7 @@ function subRotateAnimation() {
     });
   });
 }
+
 function subSnapAnimation() {
   const snapItems = document.querySelectorAll(".no-sub-about-snap-item");
   if (!snapItems.length) return;
@@ -239,13 +318,10 @@ function subSnapAnimation() {
     // 1번째(0), 3번째(2) li: -2deg / 2번째(1) li: 2deg
     const rotation = liIndex % 2 === 0 ? -2 : 2;
 
-    // 모든 wrap 요소에 동일한 rotate 적용
-    const wraps = item.querySelectorAll(".no-sub-about-snap-item-wrap");
-    wraps.forEach((wrap) => {
-      gsap.set(wrap, {
-        rotation: rotation,
-        force3D: true,
-      });
+    // 아이템 자체만 살짝 기울임 (wrap에는 회전 적용하지 않음)
+    gsap.set(item, {
+      rotation: rotation,
+      force3D: true,
     });
 
     return {
@@ -384,7 +460,8 @@ function subHistoryAnimation() {
   });
 }
 
-function mainVisualSwiper() {
+// 전역 함수로 선언하여 intro에서 호출 가능하도록
+window.initMainSwiper = function () {
   const swiperContainer = document.querySelector(".no-main-visual-swiper");
   if (!swiperContainer) return;
 
@@ -392,13 +469,27 @@ function mainVisualSwiper() {
     ".no-main-visual-progress-bar"
   );
 
+  // 실제 슬라이드 개수 계산 (클론 제외)
+  const realSlides = swiperContainer.querySelectorAll(
+    ".swiper-wrapper > .swiper-slide"
+  );
+  const slideCount = realSlides.length;
+  const enableLoop = slideCount > 1;
+  const enableAutoplay = slideCount > 1;
+
   const swiper = new Swiper(".no-main-visual-swiper", {
-    loop: true,
-    speed: 800,
-    autoplay: {
-      delay: 3000,
-      disableOnInteraction: false,
+    loop: enableLoop,
+    speed: 1200,
+    effect: "fade",
+    fadeEffect: {
+      crossFade: true,
     },
+    autoplay: enableAutoplay
+      ? {
+          delay: 4000,
+          disableOnInteraction: false,
+        }
+      : false,
     watchOverflow: true,
     pagination: {
       el: ".swiper-pagination",
@@ -419,9 +510,10 @@ function mainVisualSwiper() {
         const controls = swiperContainer.querySelector(
           ".no-main-visual-controls"
         );
-        // 슬라이드가 1개면 controls 숨기기
-        if (this.slides.length <= 1 && controls) {
+        // 슬라이드가 1개면 컨트롤 숨김 및 진행바 초기화
+        if (slideCount <= 1 && controls) {
           controls.style.display = "none";
+          if (progressBar) progressBar.style.width = "0%";
         }
       },
       autoplayTimeLeft(s, time, progress) {
@@ -444,7 +536,7 @@ function mainVisualSwiper() {
   swiperContainer.addEventListener("mouseleave", () => {
     swiper.autoplay.start();
   });
-}
+};
 
 function initLenis() {
   const lenis = new Lenis();
@@ -457,6 +549,54 @@ function initLenis() {
   });
 
   gsap.ticker.lagSmoothing(0);
+}
+
+function initScrollToTop() {
+  const scrollToTopBtn = document.getElementById("scrollToTop");
+  if (!scrollToTopBtn) return;
+
+  const iconEl = scrollToTopBtn.querySelector("i");
+
+  scrollToTopBtn.addEventListener("click", () => {
+    if (window.lenis) {
+      window.lenis.scrollTo(0, {
+        duration: 1.5,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  });
+
+  // 통합 스크롤 핸들러
+  const handleScroll = () => {
+    const scrollY = window.scrollY || window.pageYOffset;
+    const doc = document.documentElement;
+    const maxScroll = doc.scrollHeight - window.innerHeight;
+
+    // 버튼 표시/숨김
+    scrollToTopBtn.classList.toggle("show", scrollY > 300);
+  };
+
+  // Lenis 사용 시
+  if (window.lenis) {
+    window.lenis.on("scroll", handleScroll);
+  } else {
+    // 기본 스크롤
+    let ticking = false;
+    window.addEventListener("scroll", () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+  }
+
+  // 초기 상태
+  handleScroll();
 }
 
 function mainAboutAnimation() {
@@ -664,5 +804,15 @@ function marqueeLogos() {
     }
 
     window.addEventListener("resize", debounce(playMarquee));
+  });
+}
+
+function customCursor() {
+  const cursor = new MouseFollower({
+    speed: 0.25,
+    stateDetection: {
+      "-pointer": "a, button",
+      "-hidden": "input, textarea, select",
+    },
   });
 }

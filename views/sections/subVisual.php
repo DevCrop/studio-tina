@@ -8,7 +8,7 @@
         <?php endif; ?>
     </div>
     <figure>
-        <video src="/resource/video/sub-visual.mp4" autoplay loop muted playsinline></video>
+        <video src="/resource/video/sub_visual_final.mp4" autoplay loop muted playsinline></video>
     </figure>
     <div class="no-sub-visual-bg"></div>
     <?= include_view('components.scrollLine') ?>

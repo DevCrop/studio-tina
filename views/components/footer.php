@@ -7,6 +7,9 @@
 
 
 <footer class="no-footer">
+    <button type="button" class="no-footer-top-btn" id="scrollToTop" aria-label="Scroll to top">
+        <i class="fa-regular fa-arrow-up"></i>
+    </button>
     <div class="no-container-2xl">
         <div class="no-footer-top">
             <div class="no-footer-top__left">
@@ -95,7 +98,7 @@
             <address>
                 &copy; 2025 Studio Tina. All rights reserved.
             </address>
-            <button>개인정보처리방침</button>
+            <a href="/privacy" class="no-footer-privacy-link">개인정보처리방침</a>
         </div>
     </div>
 </footer>

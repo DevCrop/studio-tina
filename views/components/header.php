@@ -1,6 +1,27 @@
 <?php 
     $MENU_ITEMS = app()->get('menu')->toArray();
     $siteinfo = app()->get('siteinfo');
+    
+    // 사이트맵 배경 이미지 조회
+    $db = DB::getInstance();
+    $stmt = $db->prepare("SELECT title, bg_image FROM nb_etcs ORDER BY id ASC");
+    $stmt->execute();
+    $sitemapBgs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // title별로 매핑
+    $bgImages = [
+        'default' => '/resource/images/util/sitemap_bg_default.jpg',
+        'about' => '/resource/images/util/sitemap_bg_1.jpg',
+        'works' => '/resource/images/util/sitemap_bg_2.jpg',
+        'news' => '/resource/images/util/sitemap_bg_3.jpg',
+        'contact' => '/resource/images/util/sitemap_bg_4.jpg',
+    ];
+    
+    foreach ($sitemapBgs as $bg) {
+        if (!empty($bg['bg_image'])) {
+            $bgImages[$bg['title']] = '/uploads/logo/' . $bg['bg_image'];
+        }
+    }
 ?>
 
 <header id="header">
@@ -87,11 +108,11 @@
             </div>
         </div>
         <div class="no-sitemap__bg">
-            <img src="/resource/images/util/sitemap_bg_default.jpg" alt="">
-            <img src="/resource/images/util/sitemap_bg_1.jpg" alt="">
-            <img src="/resource/images/util/sitemap_bg_2.jpg" alt="">
-            <img src="/resource/images/util/sitemap_bg_3.jpg" alt="">
-            <img src="/resource/images/util/sitemap_bg_4.jpg" alt="">
+            <img src="<?= $bgImages['default'] ?>" alt="default">
+            <img src="<?= $bgImages['about'] ?>" alt="about">
+            <img src="<?= $bgImages['works'] ?>" alt="works">
+            <img src="<?= $bgImages['news'] ?>" alt="news">
+            <img src="<?= $bgImages['contact'] ?>" alt="contact">
         </div>
 
     </aside>

@@ -12,6 +12,8 @@ header {
   padding: 0 fluid(20, 24);
   &.is-scrolled {
     border-bottom: 1px solid var(--clr-border-white-week);
+    background: #000;
+    box-shadow: 0 0 10px 0 rgba(255, 255, 255, 0.1);
   }
 
   &.direction-up {
@@ -35,14 +37,6 @@ header {
       }
       .no-header-btn span {
         background: #000;
-      }
-      .logo-brand {
-        opacity: 1;
-        visibility: visible;
-      }
-      .logo-white {
-        opacity: 0;
-        visibility: hidden;
       }
     }
 
@@ -73,10 +67,7 @@ header {
         max-width: fluid(64, 86);
         height: var(--header-height);
         width: 100%;
-        .logo-brand {
-          opacity: 0;
-          visibility: hidden;
-        }
+
         img {
           position: absolute;
           left: 50%;
@@ -204,7 +195,7 @@ header {
         visibility: hidden;
         position: absolute;
         top: fluid(36, 64);
-        background: rgba(255, 255, 255, 0.24);
+        background: rgba(0, 0, 0, 0.24);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         display: flex;
@@ -213,9 +204,11 @@ header {
         padding: fluid(12, 16);
         border-radius: fluid(8, 10);
         text-align: center;
+        box-shadow: 0 0 10px 0 rgba(255, 255, 255, 0.24);
         a {
-          opacity: 0.4;
+          opacity: 0.64;
           transition: ease all 0.3s;
+
           &:hover {
             opacity: 1;
           }
