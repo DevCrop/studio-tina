@@ -114,64 +114,97 @@ $router->group(['prefix' => '/'], function ($r)  {
         $boardNo = 27;
         $db = \DB::getInstance();
 
-        // 카테고리 중 'Directors'의 category_no 조회
-        $directorsCategoryNo = null;
-        $categories = getBoardCategory($boardNo) ?: [];
-        foreach ($categories as $cat) {
-            if (isset($cat['name']) && strtolower($cat['name']) === 'directors') {
-                $directorsCategoryNo = (int)($cat['category_no'] ?? 0) ?: null;
-                break;
+        // 하드코딩된 카테고리 번호들과 레이블 매핑
+        $categoryMapping = [
+            31 => 'Director',
+            32 => 'Writer', 
+            33 => 'AI Creator',
+            34 => 'AI Director'
+        ];
+        $creatorsByCategory = [];
+
+        // 각 카테고리별로 크리에이터 조회
+        foreach ($categoryMapping as $categoryNo => $categoryName) {
+            error_log('Processing category: ' . $categoryNo);
+            
+            // 해당 카테고리의 게시글 조회
+            $stmt = $db->prepare("
+                SELECT no, title, contents, regdate, thumb_image, extra1
+                FROM nb_board
+                WHERE board_no = :board_no 
+                AND category_no = :category_no
+                ORDER BY no DESC
+            ");
+            $stmt->bindValue(':board_no', $boardNo, \PDO::PARAM_INT);
+            $stmt->bindValue(':category_no', $categoryNo, \PDO::PARAM_INT);
+            $stmt->execute();
+            $creators = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            error_log('Category ' . $categoryNo . ' creators count: ' . count($creators));
+            
+            if (!empty($creators)) {
+                $creatorsByCategory[] = [
+                    'category_name' => $categoryName, // 매핑된 카테고리명
+                    'category_no' => $categoryNo,
+                    'creators' => $creators
+                ];
             }
         }
 
-        // 게시글 목록 조회 (Directors 카테고리 한정, 없으면 전체)
-        $data = \Database\DB::fetchBoardList([
-            'board_no'   => $boardNo,
-            'category_no'=> $directorsCategoryNo,
-            'page'       => 1,
-            'perpage'    => 100,
-            'search'     => [
-                'keyword' => '',
-                'column'  => '',
-                'sdate'   => '',
-                'edate'   => '',
-            ],
-        ]);
-
-        $creators = $data['arrResultSet'] ?? [];
-
+        // 디버깅용 로그
+        error_log('creatorsByCategory: ' . print_r($creatorsByCategory, true));
+        
         return render('pages.about.company', [
-            'creators' => $creators,
-            'directorsCategoryNo' => $directorsCategoryNo,
+            'creatorsByCategory' => $creatorsByCategory,
         ]);
     })->name('about');
 
     $r->get('/about/company', function() {
         $boardNo = 27;
-        $directorsCategoryNo = null;
-        $categories = getBoardCategory($boardNo) ?: [];
-        foreach ($categories as $cat) {
-            if (isset($cat['name']) && strtolower($cat['name']) === 'directors') {
-                $directorsCategoryNo = (int)($cat['category_no'] ?? 0) ?: null;
-                break;
+        $db = \DB::getInstance();
+
+        // 하드코딩된 카테고리 번호들과 레이블 매핑
+        $categoryMapping = [
+            31 => 'Director',
+            32 => 'Writer', 
+            33 => 'AI Creator',
+            34 => 'AI Director'
+        ];
+        $creatorsByCategory = [];
+
+        // 각 카테고리별로 크리에이터 조회
+        foreach ($categoryMapping as $categoryNo => $categoryName) {
+            error_log('Processing category: ' . $categoryNo);
+            
+            // 해당 카테고리의 게시글 조회
+            $stmt = $db->prepare("
+                SELECT no, title, contents, regdate, thumb_image, extra1
+                FROM nb_board
+                WHERE board_no = :board_no 
+                AND category_no = :category_no
+                ORDER BY no DESC
+            ");
+            $stmt->bindValue(':board_no', $boardNo, \PDO::PARAM_INT);
+            $stmt->bindValue(':category_no', $categoryNo, \PDO::PARAM_INT);
+            $stmt->execute();
+            $creators = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            error_log('Category ' . $categoryNo . ' creators count: ' . count($creators));
+            
+            if (!empty($creators)) {
+                $creatorsByCategory[] = [
+                    'category_name' => $categoryName, // 매핑된 카테고리명
+                    'category_no' => $categoryNo,
+                    'creators' => $creators
+                ];
             }
         }
-        $data = \Database\DB::fetchBoardList([
-            'board_no'   => $boardNo,
-            'category_no'=> $directorsCategoryNo,
-            'page'       => 1,
-            'perpage'    => 100,
-            'search'     => [
-                'keyword' => '',
-                'column'  => '',
-                'sdate'   => '',
-                'edate'   => '',
-            ],
-        ]);
-        $creators = $data['arrResultSet'] ?? [];
+
+        // 디버깅용 로그
+        error_log('creatorsByCategory: ' . print_r($creatorsByCategory, true));
+        
         return render('pages.about.company', [
-            'creators' => $creators,
-            'directorsCategoryNo' => $directorsCategoryNo,
+            'creatorsByCategory' => $creatorsByCategory,
         ]);
     })->name('about.company');
     $r->get('/about/history', fn() => render('pages.about.history'))->name('about.history');

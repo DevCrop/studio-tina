@@ -6,17 +6,15 @@
 <?php section('content') ?>
 
 
-<?= include_view('sections.subVisual', [
-        'title' => 'NEWS',
-    ]) ?>
-
-
 <form id="frm" name="frm" method="get" autocomplete='off'>
     <input type="hidden" id="board_no" name="board_no" value="<?= htmlspecialchars($board_no) ?>">
     <input type="hidden" id="category_no" name="category_no" value="<?= htmlspecialchars($category_no) ?>">
     <input type="hidden" id="mode" name="mode" value="">
 
     <section class="no-sub-news no-section-md">
+        <div class="no-section-sub-title">
+            <h2 class="f-display-2 fade-up --tac">News</h2>
+        </div>
         <div class="no-container-2xl">
             <div class="--cnt">
                 <ul>
@@ -30,7 +28,7 @@
                             $imgSrc = $GLOBALS['UPLOAD_WDIR_BOARD'] . "/" . $v['thumb_image'];
                         }
                     ?>
-                    <li>
+                    <li class="fade-up">
                         <a href="/news/show/<?= $v['no'] ?>">
                             <figure>
                                 <?php if ($imgSrc): ?><img src="<?= htmlspecialchars($imgSrc) ?>" alt=""><?php endif; ?>
@@ -38,7 +36,7 @@
                             <div>
                                 <h3 class="f-heading-4 --bold"><?= htmlspecialchars($title) ?></h3>
                                 <span
-                                    class="f-body-2 --regular"><?= htmlspecialchars(strip_tags($v['contents']))?></span>
+                                    class="f-body-2 --regular"><?= htmlspecialchars(mb_strimwidth(preg_replace('/&[a-zA-Z0-9#]+;/', '', strip_tags(html_entity_decode($v['contents'], ENT_QUOTES | ENT_HTML5, 'UTF-8'))), 0, 150, '...', 'UTF-8')) ?></span>
                             </div>
                         </a>
                     </li>

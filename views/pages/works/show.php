@@ -16,12 +16,9 @@ $listUrl    = '/works';
 $labelList  = ($HTML_LANG ?? '') === 'en' ? 'Go to List' : '목록으로';
 ?>
 
-<section class="no-sub-works-view-visual">
-    <img src="<?= e('/uploads/board/' . $work['file_attach_1']) ?>" alt="<?= e($work['title'] ?? '') ?>">
-</section>
+
 <section class="no-sub-works-show no-section-md">
     <div class="no-container-2xl">
-
 
         <!-- 작품 상세 정보 -->
         <article class="no-sub-works-show-article">

@@ -15,10 +15,10 @@ class Popover {
     // 팝업 HTML 구조 생성
     const popupHTML = `
       <div class="video-popup" id="video-popup">
+      <button class="close-btn">&times;</button>
         <div class="popup-content">
-          <button class="close-btn">&times;</button>
-          <div class="plyr-video-container">
-            <div class="plyr" data-plyr-provider="youtube" data-plyr-embed-id=""></div>
+          <div class="video-container">
+            <iframe id="video-iframe" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
           </div>
         </div>
       </div>
@@ -62,55 +62,43 @@ class Popover {
   open(directUrl) {
     if (this.isOpen) return;
 
+    // direct_url이 없으면 알림 표시 후 리턴
+    if (!directUrl || directUrl.trim() === "") {
+      alert("영상이 없습니다");
+      return;
+    }
+
+    // Lenis 스크롤 중지
+    if (window.lenis) {
+      window.lenis.stop();
+      console.log("모달 열림 - Lenis 스크롤 중지");
+    }
+
     // SpiralGallery에 팝업 열림 알림 (천천히 멈추도록)
     if (window.spiralGallery) {
       window.spiralGallery.onPopupOpen();
     }
 
-    // PLYR 플레이어 초기화 (direct_url 값 그대로 사용)
-    const plyrContainer = this.popupElement.querySelector(".plyr");
-    plyrContainer.setAttribute("data-plyr-embed-id", directUrl);
+    // YouTube URL을 embed URL로 변환
+    let embedUrl = directUrl;
+    if (directUrl.includes("youtube.com/watch?v=")) {
+      const videoId = directUrl.split("v=")[1].split("&")[0];
+      embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+    } else if (directUrl.includes("youtu.be/")) {
+      const videoId = directUrl.split("youtu.be/")[1].split("?")[0];
+      embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+    } else if (!directUrl.includes("embed")) {
+      // 직접 YouTube ID인 경우
+      embedUrl = `https://www.youtube.com/embed/${directUrl}?autoplay=1&rel=0`;
+    }
+
+    // iframe에 URL 설정
+    const iframe = this.popupElement.querySelector("#video-iframe");
+    iframe.src = embedUrl;
 
     // 팝업 표시
     this.popupElement.classList.add("active");
     document.body.style.overflow = "hidden";
-
-    // PLYR 플레이어 초기화 (약간의 지연 후)
-    setTimeout(() => {
-      if (window.Plyr) {
-        // 기존 플레이어가 있다면 제거
-        if (this.currentPlayer) {
-          this.currentPlayer.destroy();
-        }
-
-        this.currentPlayer = new Plyr(plyrContainer, {
-          controls: [
-            "play-large",
-            "play",
-            "progress",
-            "current-time",
-            "mute",
-            "volume",
-            "settings",
-            "fullscreen",
-          ],
-          settings: ["quality", "speed"],
-          quality: {
-            default: 720,
-            options: [1080, 720, 480, 360],
-          },
-        });
-
-        // 플레이어 이벤트 리스너
-        this.currentPlayer.on("ready", () => {
-          console.log("PLYR 플레이어 준비 완료");
-        });
-
-        this.currentPlayer.on("play", () => {
-          console.log("비디오 재생 시작");
-        });
-      }
-    }, 100);
 
     this.isOpen = true;
   }
@@ -118,17 +106,20 @@ class Popover {
   close() {
     if (!this.isOpen) return;
 
+    // Lenis 스크롤 재시작
+    if (window.lenis) {
+      window.lenis.start();
+      console.log("모달 닫힘 - Lenis 스크롤 재시작");
+    }
+
     // SpiralGallery에 팝업 닫힘 알림 (다시 회전 시작)
     if (window.spiralGallery) {
       window.spiralGallery.onPopupClose();
     }
 
-    // 플레이어 정지 및 제거
-    if (this.currentPlayer) {
-      this.currentPlayer.stop();
-      this.currentPlayer.destroy();
-      this.currentPlayer = null;
-    }
+    // iframe 정지 (src 제거)
+    const iframe = this.popupElement.querySelector("#video-iframe");
+    iframe.src = "";
 
     // 팝업 숨기기
     this.popupElement.classList.remove("active");

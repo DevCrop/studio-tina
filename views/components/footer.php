@@ -76,17 +76,17 @@
                 <div class="no-footer-social">
                     <ul>
                         <li>
-                            <a href="#">
+                            <a href="https://youtube.com">
                                 <i class="fa-brands fa-youtube"></i>
                             </a>
                         </li>
                         <li>
-                            <a href="#">
+                            <a href="https://facebook.com">
                                 <i class="fa-brands fa-facebook"></i>
                             </a>
                         </li>
                         <li>
-                            <a href="#">
+                            <a href="https://instagram.com">
                                 <i class="fa-brands fa-instagram"></i>
                             </a>
                         </li>

@@ -27,12 +27,16 @@
 <section class="no-sub-about-partners no-section-md">
     <div class="no-container-2xl">
         <div class="no-sub-section-title --tac">
-            <h2 class="f-display-2">Our Partners</h2>
+            <div class="no-main-section-title">
+                <div class="text-reveal-container">
+                    <h2 class="f-display-2 text-reveal-item">Our Partners</h2>
+                </div>
+            </div>
         </div>
         <div class="--cnt">
             <ul>
                 <?php for ($i = 1; $i < 24; $i++): ?>
-                <li>
+                <li class="fade-up">
                     <figure>
                         <img src="/resource/images/logo/partners_logo_<?= $i ?>.png" alt="Partner <?= $i ?>">
                     </figure>

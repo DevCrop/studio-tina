@@ -56,8 +56,21 @@
     $twitterDesc     = $siteinfo['twitter_desc']   ?? $pageDesc;
 
     // 파비콘/썸네일
-    $favicon         = $siteinfo['favicon']        ?? ($ROOT . '/resource/images/favicon.png');
-    $faviconAbs      = (strpos($favicon, 'http') === 0) ? $favicon : ($baseUrl . $favicon);
+    $favicon         = $siteinfo['meta_favicon_ico'] ?? ($ROOT . '/resource/images/favicon.png');
+    
+    // 파비콘 URL 처리
+    if (!empty($favicon)) {
+        if (strpos($favicon, 'http') === 0) {
+            // 이미 완전한 URL인 경우
+            $faviconAbs = $favicon;
+        } else {
+            // uploads/meta/ 경로로 수정
+            $faviconAbs = $baseUrl . '/uploads/meta/' . ltrim($favicon, '/');
+        }
+    } else {
+        // 기본 파비콘
+        $faviconAbs = $baseUrl . $ROOT . '/resource/images/favicon.png';
+    }
 
     // 검증 태그들
     $naverVerify     = $siteinfo['naver_site_verification'] ?? null;
@@ -136,7 +149,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
     <!-- App CSS -->
     <link rel="stylesheet" href="<?= $ROOT ?>/resource/css/style.css?v=<?= $styleVer ?>" />
 
@@ -160,7 +173,7 @@
 
 </head>
 
-<body>
+<body<?= ($_SERVER['REQUEST_URI'] === '/' || $_SERVER['REQUEST_URI'] === '') ? ' class="main-page"' : '' ?>>
 
     <div class="__root">
         <?= include_view('components.header') ?>
@@ -174,6 +187,6 @@
     <?= yield_section('portal', '') ?>
     <?= yield_section('script', '') ?>
 
-</body>
+    </body>
 
 </html>

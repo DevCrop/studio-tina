@@ -24,7 +24,7 @@
         clip: rect(0,0,0,0);">
     <?= __('main.sub_title') ?>
 </h2>
-<!--
+
 <section class="no-main-intro" id="mainIntro">
     <div class="no-main-intro-wrap">
         <h2 class="no-main-intro-text f-display-1" id="typingText"></h2>
@@ -35,7 +35,10 @@
             </svg>
         </button>
     </div>
-</section>-->
+    <div class="no-main-intro-bg">
+        <img src="/resource/images/bg/intro_gradient_bg.png" alt="">
+    </div>
+</section>
 
 <section class="no-main-visual">
     <div class="no-main-visual-swiper">
@@ -97,6 +100,41 @@
     <?= include_view('components.scrollLine') ?>
 </section>
 
+<section class="no-main-spiral-gallery no-section-md">
+    <div class="no-container-2xl">
+        <article>
+            <div class="no-main-section-title">
+                <div class="text-reveal-container">
+                    <span class="clr-primary-def f-heading-3 text-reveal-item">PORTFOLIO</span>
+                </div>
+                <div class="text-reveal-container">
+                    <h2 class="f-display-2">
+                        <span class="text-reveal-item">Our</span>
+                        <span class="text-reveal-item">Crafted</span>
+                        <span class="text-reveal-item">Scenes</span>
+                    </h2>
+                </div>
+            </div>
+            <div class="--cnt">
+                <div id="spiral-gallery-container" class="container">
+                </div>
+            </div>
+            <div class="no-main-spiral-gallery-btn">
+                <a href="/works" class="no-btn-cta">
+                    <p>View More</p>
+                    <div>
+                        <i class="fa-regular fa-arrow-right-long" aria-hidden="true"></i>
+                    </div>
+                </a>
+            </div>
+        </article>
+    </div>
+    <div class="no-main-spiral-gallery-bg">
+        <img src="/resource/images/bg/gallery_bg.png" alt="">
+    </div>
+</section>
+
+
 <section class="no-main-about">
     <div class="no-main-about__inner">
         <div class="no-main-about-txt">
@@ -116,11 +154,9 @@
             </div>
         </div>
         <div class="no-main-about-img">
-            <img class="image" src="/resource/images/main/main_about_img_1.jpg" alt="">
-            <img class="image" src="/resource/images/main/main_about_img_2.jpg" alt="">
-            <img class="image" src="/resource/images/main/main_about_img_3.jpg" alt="">
-            <img class="image" src="/resource/images/main/main_about_img_4.jpg" alt="">
-            <img class="image" src="/resource/images/main/main_about_img_5.jpg" alt="">
+            <?php for ($i = 1; $i <= 7; $i++): ?>
+            <img class="image" src="/resource/images/main/main_about_img_<?=$i?>.jpg" alt="">
+            <?php endfor; ?>
         </div>
         <div class="no-main-about-bg">
             <img src="/resource/images/main/main_about_bg.jpg" alt="">
@@ -129,27 +165,15 @@
 
 </section>
 
-<section class="no-main-spiral-gallery no-section-md">
-    <div class="no-container-2xl">
-        <article>
-            <div class="no-main-section-title">
-                <span class="clr-primary-def f-heading-3">PORTFOLIO</span>
-                <h2 class="f-display-2">Our Crafted Scenes</h2>
-            </div>
-            <div class="--cnt">
-                <div id="spiral-gallery-container" class="container">
-                </div>
-            </div>
 
-        </article>
-    </div>
-</section>
 
 <section class="no-main-news no-section-md">
     <div class="no-container-2xl">
         <article>
             <div class="no-main-section-title">
-                <h2 class="f-display-2">News</h2>
+                <div class="text-reveal-container">
+                    <h2 class="f-display-2 text-reveal-item">News</h2>
+                </div>
                 <a href="/news" class="no-btn-cta">
                     <p>View More</p>
                     <div>
@@ -162,14 +186,13 @@
                 <ul>
                     <?php if (!empty($newsList)): ?>
                     <?php foreach ($newsList as $news): ?>
-                    <li>
+                    <li class="fade-up">
                         <a href="/news/show/<?= $news['no'] ?>">
-                            <time datetime="<?= date('Y-m-d', strtotime($news['regdate'])) ?>" class="clr-primary-def">
+
+                            <h3 class="f-heading-3 --semibold"><?= htmlspecialchars($news['title']) ?></h3>
+                            <time datetime="<?= date('Y-m-d', strtotime($news['regdate'])) ?>" class="">
                                 <?= date('Y.m.d', strtotime($news['regdate'])) ?>
                             </time>
-                            <h3 class="f-body-1 --semibold"><?= htmlspecialchars($news['title']) ?></h3>
-                            <p><?= htmlspecialchars(mb_substr($news['contents'], 0, 100, 'UTF-8')) ?><?= mb_strlen($news['contents'], 'UTF-8') > 100 ? '...' : '' ?>
-                            </p>
                             <?php if (!empty($news['thumb_image'])): ?>
                             <figure>
                                 <img src="/uploads/board/<?= $news['thumb_image'] ?>"
@@ -194,11 +217,16 @@
     <div class="no-container-2xl">
         <article>
             <div class="no-main-section-title">
-                <span class="clr-primary-def f-heading-3">PARTNERS</span>
-                <h2 class="f-display-2">Creative Partners</h2>
+                <div class="text-reveal-container">
+                    <span class="clr-primary-def f-heading-3 text-reveal-item">PARTNERS</span>
+                </div>
+                <div class="text-reveal-container">
+                    <h2 class="f-display-2">
+                        <span class="text-reveal-item">Creative</span>
+                        <span class="text-reveal-item">Partners</span>
+                    </h2>
+                </div>
             </div>
-
-
         </article>
     </div>
     <div class="--cnt">
@@ -238,21 +266,6 @@
 <?php end_section() ?>
 
 <?php section('script') ?>
-<script>
-// 메인 페이지 항상 최상단에서 시작
-if (window.history.scrollRestoration) {
-    window.history.scrollRestoration = 'manual';
-}
-window.scrollTo(0, 0);
-
-// Lenis가 있다면 스크롤 위치 초기화
-if (window.lenis) {
-    window.lenis.scrollTo(0, {
-        immediate: true,
-        force: true
-    });
-}
-</script>
 <script src="/resource/js/intro-typing.js?v=<?= date('YmdHis') ?>"></script>
 <script src="/resource/js/spiral-gallery.js?v=<?= date('YmdHis') ?>"></script>
 <?php end_section() ?>

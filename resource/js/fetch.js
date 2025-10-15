@@ -20,7 +20,7 @@ class WorksPortfolio {
     );
 
     categoryButtons.forEach((button) => {
-      button.addEventListener("click", async (e) => {
+      button.addEventListener("click", (e) => {
         const categoryNo = button.dataset.categoryNo
           ? parseInt(button.dataset.categoryNo)
           : null;
@@ -28,10 +28,25 @@ class WorksPortfolio {
         this.currentCategory = categoryNo;
         this.currentPage = 1;
 
-        await this.loadWorks(categoryNo, 1);
+        // 디바운스 적용: 0.5초 후에 마지막 요청만 실행
+        this.debouncedLoadWorks(categoryNo, 1);
       });
     });
   }
+
+  // ES6 디바운스 함수
+  debounce = (func, delay) => {
+    let timeoutId;
+    return (...args) => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => func.apply(this, args), delay);
+    };
+  };
+
+  // 디바운스된 로드 함수
+  debouncedLoadWorks = this.debounce((categoryNo, page) => {
+    this.loadWorks(categoryNo, page);
+  }, 1000);
 
   async loadWorks(categoryNo = null, page = 1) {
     try {
@@ -85,7 +100,7 @@ class WorksPortfolio {
     this.container.innerHTML = works
       .map(
         (work) => `
-      <li class="no-sub-works-portfolio-item">
+      <li class="no-sub-works-portfolio-item fade-up">
         <a href="/works/${work.no || ""}">
           <figure>
             <img src="${work.image_url || ""}" alt="${this.escapeHtml(
@@ -105,6 +120,9 @@ class WorksPortfolio {
     `
       )
       .join("");
+
+    // 동적으로 생성된 요소들에 fade-up 애니메이션 적용
+    this.applyFadeUpAnimation();
   }
 
   truncateText(text, maxLength) {
@@ -120,6 +138,56 @@ class WorksPortfolio {
     const div = document.createElement("div");
     div.textContent = text;
     return div.innerHTML;
+  }
+
+  applyFadeUpAnimation() {
+    // GSAP이 로드되었는지 확인
+    if (typeof gsap === "undefined") {
+      console.warn("GSAP not loaded");
+      return;
+    }
+
+    // 현재 컨테이너 내의 fade-up 요소들만 선택
+    const fadeUpElements = this.container.querySelectorAll(".fade-up");
+
+    if (!fadeUpElements.length) return;
+
+    fadeUpElements.forEach((element, index) => {
+      // 초기 상태 설정
+      gsap.set(element, {
+        y: 50,
+        opacity: 0,
+      });
+
+      // Intersection Observer 설정
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              // 요소가 보이면 애니메이션 실행
+              gsap.to(element, {
+                y: 0,
+                opacity: 1,
+                duration: 0.8,
+                delay: index * 0.1, // 각 요소마다 0.1초씩 차이
+                ease: "power2.out",
+                onComplete: () => {
+                  // 애니메이션 완료 후 observer 해제
+                  observer.unobserve(element);
+                },
+              });
+            }
+          });
+        },
+        {
+          threshold: 0.1, // 10% 보이면 트리거
+          rootMargin: "0px 0px -50px 0px", // 하단에서 50px 여유
+        }
+      );
+
+      // 요소 관찰 시작
+      observer.observe(element);
+    });
   }
 
   showLoading() {
@@ -238,7 +306,7 @@ class WorksPortfolio {
     const pageLinks = this.paginationContainer.querySelectorAll("a[data-page]");
 
     pageLinks.forEach((link) => {
-      link.addEventListener("click", async (e) => {
+      link.addEventListener("click", (e) => {
         e.preventDefault();
 
         if (link.hasAttribute("disabled")) return;
@@ -247,7 +315,9 @@ class WorksPortfolio {
 
         if (page && page !== this.currentPage) {
           this.currentPage = page;
-          await this.loadWorks(this.currentCategory, page);
+
+          // 디바운스 적용: 0.5초 후에 마지막 요청만 실행
+          this.debouncedLoadWorks(this.currentCategory, page);
 
           // 페이지 최상단으로 스크롤
           window.scrollTo({

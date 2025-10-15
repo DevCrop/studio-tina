@@ -8,6 +8,12 @@
   position: relative;
   margin: 0 auto;
   overflow: hidden;
+  @include mq(md) {
+    height: 50vh !important;
+  }
+  @include mq(sm) {
+    height: 76vh !important;
+  }
 }
 
 .spiral-gallery {
@@ -33,6 +39,7 @@
   -webkit-user-select: none; // 웹킷 텍스트 선택 방지
   -moz-user-select: none; // 파이어폭스 텍스트 선택 방지
   -ms-user-select: none; // IE 텍스트 선택 방지
+  text-align: center;
   cursor: pointer;
   &:hover {
     .spiral-gallery-item-txt {
@@ -46,7 +53,9 @@
     gap: fluid(4, 8);
     position: absolute;
     top: 50%;
+    padding: 0 fluid(16, 24);
     left: 50%;
+    text-align: center;
     transform: translate(-50%, -50%);
     width: 100%;
     height: 100%;
@@ -132,14 +141,14 @@
 
   .close-btn {
     position: absolute;
-    top: -40px;
-    right: 0;
+    top: fluid(32, 108);
+    right: fluid(32, 108);
     background: rgba(255, 255, 255, 0.2);
     border: none;
     color: white;
-    font-size: 24px;
-    width: 40px;
-    height: 40px;
+    font-size: fluid(17, 32);
+    width: fluid(40, 64);
+    height: fluid(40, 64);
     border-radius: 50%;
     cursor: pointer;
     display: flex;
@@ -152,8 +161,8 @@
     }
   }
 
-  .plyr {
+  iframe {
     width: 100%;
-    height: 450px;
+    aspect-ratio: 16 / 9;
   }
 }

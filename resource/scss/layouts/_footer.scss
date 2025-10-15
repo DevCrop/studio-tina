@@ -4,6 +4,9 @@
   background: #000;
   padding: fluid(64, 128) 0 fluid(64, 80);
   position: relative;
+  @include mq(md) {
+    padding-bottom: fluid(128, 140);
+  }
   * {
     color: var(--clr-text-title);
   }
@@ -12,9 +15,9 @@
     position: fixed;
     bottom: fluid(32, 48);
     right: fluid(20, 40);
-    width: fluid(56, 72);
-    height: fluid(56, 72);
-    background: var(--clr-primary-def);
+    width: fluid(48, 72);
+    height: fluid(48, 72);
+    background: #fff;
     border: none;
     border-radius: 50%;
     display: flex;
@@ -25,13 +28,14 @@
     cursor: pointer;
     transition: all 0.3s ease;
     z-index: 1000;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
     opacity: 0;
     visibility: hidden;
     transform: translateY(20px);
-
+    color: #000;
     i {
-      font-size: fluid(15, 19);
+      font-size: fluid(16, 24);
+      color: inherit;
     }
     &.show {
       opacity: 1;
@@ -46,11 +50,6 @@
 
     &:active {
       transform: translateY(-2px);
-    }
-
-    @include mq(md) {
-      width: fluid(48, 56);
-      height: fluid(48, 56);
     }
   }
   &-logo {

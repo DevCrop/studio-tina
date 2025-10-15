@@ -18,4 +18,4 @@ define('DEFAULT_LOCALE', 'ko');
 /**
  * Change mode here
  */
-define('ENV', ENV_PRODUCTION);
+define('ENV', ENV_DEVELOPMENT);

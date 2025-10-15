@@ -4,6 +4,7 @@ $(document).ready(function () {
   initHeader();
   initLenis();
   initScrollToTop();
+  initScrollReset(); // 메인 페이지 스크롤 초기화
   customCursor();
 
   gsap.registerPlugin(ScrollTrigger);
@@ -14,6 +15,9 @@ $(document).ready(function () {
   subRotateAnimation();
   subHistoryAnimation();
   categoryAnimation();
+  textRevealAnimation();
+  fadeUpAnimation();
+  cleanEmptyHtmlDivs();
 });
 
 function categoryAnimation() {
@@ -167,6 +171,13 @@ function initHeader() {
       root.classList.remove("is-scrolled");
     }
 
+    // 맨 위에 있을 때 is-top 클래스
+    if (currentScrollY === 0) {
+      root.classList.add("is-top");
+    } else {
+      root.classList.remove("is-top");
+    }
+
     // 스크롤 방향 감지 (최소 5px 이상 이동 시에만 방향 변경)
     if (Math.abs(currentScrollY - lastScrollY) > 5) {
       if (currentScrollY > lastScrollY) {
@@ -184,14 +195,36 @@ function initHeader() {
 
   window.addEventListener("scroll", handleScroll);
   handleScroll();
+
+  // Fixed 요소에 헤더 상태 클래스 추가
+  const fixedElement = document.querySelector(".no-sub-about-history-fixed");
+  console.log("Fixed element:", fixedElement);
+  console.log("Header root:", root);
+
+  if (fixedElement) {
+    // 스크롤 이벤트에 fixed 요소 업데이트 추가
+    window.addEventListener("scroll", () => {
+      const isDirectionDown = root.classList.contains("direction-down");
+      console.log("Is direction down:", isDirectionDown);
+
+      if (isDirectionDown) {
+        fixedElement.classList.add("header-down");
+        console.log("Added header-down class");
+      } else {
+        fixedElement.classList.remove("header-down");
+        console.log("Removed header-down class");
+      }
+    });
+  }
 }
+
 function subRotateAnimation() {
   const section = document.querySelector(".no-sub-about-rotate");
   if (!section) return;
 
   const circleContainer = section.querySelector(".ripple-circle");
   const items = section.querySelectorAll(".ripple-circle-item");
-  const textItems = section.querySelectorAll(".no-sub-about-rotate-text-item");
+  const circleTextItems = section.querySelectorAll(".circle-text-item");
   const numElement = section.querySelector("#current-num .f-heading-3"); // 첫 번째 span (숫자)
 
   if (!circleContainer || !items.length) return;
@@ -220,14 +253,16 @@ function subRotateAnimation() {
       }
     });
 
-    // rotate-text-item current 클래스 업데이트
-    textItems.forEach((item, index) => {
-      if (index === currentStage) {
-        item.classList.add("current");
-      } else {
-        item.classList.remove("current");
-      }
-    });
+    // circle-text-item current 클래스 업데이트
+    if (circleTextItems.length) {
+      circleTextItems.forEach((item, index) => {
+        if (index === currentStage) {
+          item.classList.add("current");
+        } else {
+          item.classList.remove("current");
+        }
+      });
+    }
 
     // 컨테이너 회전 애니메이션 (90도씩 snap)
     gsap.to(circleContainer, {
@@ -449,10 +484,20 @@ function subHistoryAnimation() {
       start: "top center",
       end: "bottom center",
       onEnter: () => {
+        // 모든 아이템에서 active 클래스 제거
+        historyItems.forEach((el) => el.classList.remove("active"));
+        // 현재 아이템에 active 클래스 추가
+        item.classList.add("active");
+
         animateNumber(fixedYear, year);
         animateNumber(fixedMonth, month);
       },
       onEnterBack: () => {
+        // 모든 아이템에서 active 클래스 제거
+        historyItems.forEach((el) => el.classList.remove("active"));
+        // 현재 아이템에 active 클래스 추가
+        item.classList.add("active");
+
         animateNumber(fixedYear, year);
         animateNumber(fixedMonth, month);
       },
@@ -510,10 +555,13 @@ window.initMainSwiper = function () {
         const controls = swiperContainer.querySelector(
           ".no-main-visual-controls"
         );
+
         // 슬라이드가 1개면 컨트롤 숨김 및 진행바 초기화
         if (slideCount <= 1 && controls) {
-          controls.style.display = "none";
+          controls.classList.remove("show");
           if (progressBar) progressBar.style.width = "0%";
+        } else if (slideCount > 1 && controls) {
+          controls.classList.add("show");
         }
       },
       autoplayTimeLeft(s, time, progress) {
@@ -571,11 +619,9 @@ function initScrollToTop() {
   // 통합 스크롤 핸들러
   const handleScroll = () => {
     const scrollY = window.scrollY || window.pageYOffset;
-    const doc = document.documentElement;
-    const maxScroll = doc.scrollHeight - window.innerHeight;
 
-    // 버튼 표시/숨김
-    scrollToTopBtn.classList.toggle("show", scrollY > 300);
+    // 스크롤했으면 show, 아니면 hide
+    scrollToTopBtn.classList.toggle("show", scrollY > 0);
   };
 
   // Lenis 사용 시
@@ -608,8 +654,8 @@ function mainAboutAnimation() {
     scrollEnd: "+=600%",
     textDuration: 2.5,
     textFadeDuration: 0.8,
-    imageDuration: 3,
-    imageStartDelay: 0.3,
+    imageDuration: 5,
+    imageStartDelay: 0.5,
     bgScaleType: "shrink",
     bgScaleFrom: 1,
     bgScaleTo: 1.3,
@@ -618,12 +664,22 @@ function mainAboutAnimation() {
   const textSequences = [
     { start: 0, imageIndices: [0, 1] },
     { start: 3, imageIndices: [2, 3] },
-    { start: 6, imageIndices: [4] },
+    { start: 6, imageIndices: [4, 5, 6] },
   ];
 
   const textItems = gsap.utils.toArray(".txt-reveal-item");
   const images = gsap.utils.toArray(".no-main-about-img .image");
   const bgImage = document.querySelector(".no-main-about-bg img");
+
+  // 이미지 초기 설정 - 모두 위쪽으로 이동, blur와 rotate 제거
+  images.forEach((img) => {
+    gsap.set(img, {
+      y: "150vh",
+      opacity: 0,
+      filter: "blur(0px)",
+      rotation: 0,
+    });
+  });
 
   const timeline = gsap.timeline({
     scrollTrigger: {
@@ -631,7 +687,7 @@ function mainAboutAnimation() {
       start: "top top",
       end: config.scrollEnd,
       scrub: true,
-      pin: about,
+      pin: about, // About 섹션에서 pin 애니메이션 필요
       // markers: true,
     },
   });
@@ -660,14 +716,18 @@ function mainAboutAnimation() {
       const img = images[imgIndex];
       const delay = startTime + config.imageStartDelay * (i + 1);
 
+      // 이미지별 x 위치 분산 (골고루 배치)
+      const xPositions = [-20, 0, 20, -15, 15, -10, 10]; // 7개 이미지용 x 위치
+      const xPosition = xPositions[imgIndex] || 0;
+
       timeline.to(
         img,
         {
           y: "-150vh",
+          x: `${xPosition}vw`,
           opacity: 1,
-          filter: "blur(0px)",
           duration: config.imageDuration,
-          ease: "power2.inOut",
+          ease: "power1.out",
         },
         delay
       );
@@ -730,6 +790,10 @@ function marqueeLogos() {
 
   if (!marquees.length) return;
 
+  let currentScroll = 0;
+  let isScrollingDown = true;
+  let marqueeTweens = [];
+
   marquees.forEach((marquee) => {
     const duration = parseInt(marquee.getAttribute("duration"), 10) || 60;
     const direction = marquee.getAttribute("direction") || "left";
@@ -755,7 +819,6 @@ function marqueeLogos() {
       // 방향에 따라 애니메이션 설정
       if (direction === "right") {
         // 오른쪽에서 왼쪽 (역방향)
-        // 초기 위치를 0에서 시작하도록 설정
         gsap.set(marqueeContent, { x: 0 });
         gsap.set(marqueeContentClone, { x: -distanceToTranslate });
 
@@ -791,6 +854,7 @@ function marqueeLogos() {
       }
 
       tween.progress(progress);
+      marqueeTweens.push(tween);
     };
 
     playMarquee();
@@ -805,6 +869,26 @@ function marqueeLogos() {
 
     window.addEventListener("resize", debounce(playMarquee));
   });
+
+  // 스크롤 방향에 따른 마퀴 속도 조절
+  window.addEventListener("scroll", function () {
+    if (window.pageYOffset > currentScroll) {
+      isScrollingDown = true;
+    } else {
+      isScrollingDown = false;
+    }
+
+    // 모든 마퀴 트윈에 스크롤 방향 적용
+    marqueeTweens.forEach((tween) => {
+      if (tween) {
+        gsap.to(tween, {
+          timeScale: isScrollingDown ? 1 : -1,
+        });
+      }
+    });
+
+    currentScroll = window.pageYOffset;
+  });
 }
 
 function customCursor() {
@@ -814,5 +898,159 @@ function customCursor() {
       "-pointer": "a, button",
       "-hidden": "input, textarea, select",
     },
+  });
+}
+
+// 메인 페이지 스크롤 초기화 함수
+function initScrollReset() {
+  // 메인 페이지에서만 실행
+  if (!document.body.classList.contains("main-page")) return;
+
+  // 브라우저 히스토리 스크롤 복원 비활성화
+  if (window.history.scrollRestoration) {
+    window.history.scrollRestoration = "manual";
+  }
+
+  // 네이티브 스크롤 초기화
+  window.scrollTo(0, 0);
+
+  // Lenis 스크롤 초기화 (Lenis가 로드된 후)
+  const resetLenisScroll = () => {
+    if (window.lenis) {
+      window.lenis.scrollTo(0, {
+        immediate: true,
+        force: true,
+      });
+    }
+  };
+
+  // Lenis가 이미 로드되어 있으면 즉시 실행, 아니면 DOMContentLoaded 후 실행
+  if (window.lenis) {
+    resetLenisScroll();
+  } else {
+    document.addEventListener("DOMContentLoaded", resetLenisScroll);
+  }
+}
+
+function textRevealAnimation() {
+  const textRevealItems = document.querySelectorAll(".text-reveal-item");
+
+  if (!textRevealItems.length) return;
+
+  textRevealItems.forEach((element, index) => {
+    // 초기 상태 설정
+    gsap.set(element, {
+      y: "100%",
+      opacity: 0,
+    });
+
+    // Intersection Observer 설정
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // 요소가 보이면 애니메이션 실행
+            gsap.to(element, {
+              y: "0%",
+              opacity: 1,
+              duration: 0.1,
+              delay: index * 0.05, // 각 요소마다 0.05초씩 차이 (더 빠르게)
+              ease: "power2.out",
+              onComplete: () => {
+                // 애니메이션 완료 후 observer 해제
+                observer.unobserve(element);
+              },
+            });
+          }
+        });
+      },
+      {
+        threshold: 0, // 요소가 1픽셀이라도 보이면 트리거
+        rootMargin: "0px 0px -50px 0px", // 요소가 뷰포트에 도달하기 50px 전에 미리 트리거
+      }
+    );
+
+    // 요소 관찰 시작
+    observer.observe(element);
+  });
+}
+
+// FADE-UP 애니메이션 함수
+function fadeUpAnimation() {
+  // GSAP이 로드되었는지 확인
+  if (typeof gsap === "undefined") {
+    console.warn("GSAP not loaded");
+    return;
+  }
+
+  // fade-up 클래스를 가진 요소들 선택
+  const fadeUpElements = document.querySelectorAll(".fade-up");
+
+  if (!fadeUpElements.length) return;
+
+  fadeUpElements.forEach((element, index) => {
+    // 초기 상태 설정
+    gsap.set(element, {
+      y: 50,
+      opacity: 0,
+    });
+
+    // Intersection Observer 설정
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // 요소가 보이면 애니메이션 실행
+            gsap.to(element, {
+              y: 0,
+              opacity: 1,
+              duration: 0.6,
+              delay: index * 0.1, // 각 요소마다 0.1초씩 차이
+              ease: "power2.out",
+              onComplete: () => {
+                // 애니메이션 완료 후 observer 해제
+                observer.unobserve(element);
+              },
+            });
+          }
+        });
+      },
+      {
+        threshold: 0, // 요소가 1픽셀이라도 보이면 트리거
+        rootMargin: "0px 0px -50px 0px", // 요소가 뷰포트에 도달하기 100px 전에 미리 트리거
+      }
+    );
+
+    // 요소 관찰 시작
+    observer.observe(element);
+  });
+}
+
+// 빈 HTML div 정리 함수
+function cleanEmptyHtmlDivs() {
+  const htmlDivs = document.querySelectorAll(
+    ".no-sub-about-creators-contents-html"
+  );
+  if (!htmlDivs.length) return;
+
+  htmlDivs.forEach((htmlDiv) => {
+    // 모든 div 요소들을 찾아서 처리
+    const allDivs = htmlDiv.querySelectorAll("div");
+
+    allDivs.forEach((div) => {
+      // div의 텍스트 내용을 확인 (공백, 줄바꿈 제거)
+      const textContent = div.textContent.trim();
+
+      // 텍스트가 없거나 공백만 있으면 div 제거하고 자식 요소들을 부모로 이동
+      if (!textContent || textContent === "") {
+        // 자식 요소들을 부모로 이동
+        const parent = div.parentNode;
+        while (div.firstChild) {
+          parent.insertBefore(div.firstChild, div);
+        }
+        // 빈 div 제거
+        div.remove();
+      }
+    });
   });
 }

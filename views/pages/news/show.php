@@ -144,7 +144,15 @@ $labelList = (app()->getLocale() === 'en') ? 'List'     : 'Go to List';
                 </span>
                 <div>
                     <span class="no-view-top__title f-heading-3 --fm-ko"><?= e($post['title'] ?? '') ?></span>
-                    <a href="<?= $post['direct_url'] ?>" class="no-btn-cta">
+                    <?php
+                    $directUrl = $post['direct_url'];
+                    // URL에 프로토콜이 없으면 https:// 추가
+                    if (!empty($directUrl) && !preg_match('/^https?:\/\//', $directUrl)) {
+                        $directUrl = 'https://' . $directUrl;
+                    }
+                    ?>
+                    <a href="<?= htmlspecialchars($directUrl) ?>" class="no-btn-cta" target="_blank"
+                        rel="noopener noreferrer">
                         <p>뉴스 원본 보기</p>
                         <div>
                             <i class="fa-regular fa-arrow-right-long" aria-hidden="true"></i>

@@ -18,6 +18,7 @@ class SpiralGallery {
 
     // 자동 회전 관련 변수
     this.rotationSpeed = 0.1; // 회전 속도 (조절 가능)
+    this.isInitialAnimationComplete = false; // 초기 애니메이션 완료 여부
 
     // 드래그 관련 변수
     this.isDragging = false;
@@ -42,6 +43,7 @@ class SpiralGallery {
     await this.loadData();
     this.createGallery();
     this.setupDragEvents();
+    this.setupScrollTrigger();
     this.startAutoRotation();
   }
 
@@ -54,13 +56,18 @@ class SpiralGallery {
         // API 데이터를 imageData 형식으로 변환하고 3배로 복제
         const originalData = data.data.map((work) => ({
           image: work.image_url,
-          video: work.direct_url || work.link_url.split("/").pop(), // direct_url 우선 사용
+          video: work.direct_url || "", // direct_url 직접 사용
           category: "Portfolio", // 기본 카테고리
           title: work.title,
         }));
 
-        // 데이터를 3배로 복제
-        this.imageData = [...originalData, ...originalData, ...originalData];
+        // 데이터를 4배로 복제
+        this.imageData = [
+          ...originalData,
+          ...originalData,
+          ...originalData,
+          ...originalData,
+        ];
       } else {
         // 데이터가 없을 경우 기본 데이터 사용
         this.imageData = [
@@ -92,27 +99,27 @@ class SpiralGallery {
       .map(
         (itemData, index) =>
           `
-          <div class="spiral-gallery-item" data-image-url="${itemData.image}" data-video-id="${itemData.video}">
-            <a href="#" class="gallery-link">
-              <figure>
-                <img src="${itemData.image}" alt="${itemData.image}">
-              </figure>
-              <div class="spiral-gallery-item-txt">
-                <span>${itemData.category}</span>
-                <h3>${itemData.title}</h3>
-              </div>
-            </a>
-          </div>
-          `
+            <div class="spiral-gallery-item" data-image-url="${itemData.image}" data-direct-url="${itemData.video}">
+              <a href="#" class="gallery-link">
+                <figure>
+                  <img src="${itemData.image}" alt="${itemData.image}">
+                </figure>
+                <div class="spiral-gallery-item-txt">
+                  <span>${itemData.category}</span>
+                  <h3>${itemData.title}</h3>
+                </div>
+              </a>
+            </div>
+            `
       )
       .join("");
 
     // 전체 갤러리 HTML 구조
     const galleryHTML = `
-      <div class="spiral-gallery">
-        ${galleryItems}
-      </div>
-    `;
+        <div class="spiral-gallery">
+          ${galleryItems}
+        </div>
+      `;
 
     // 컨테이너에 HTML 삽입
     this.container.innerHTML = galleryHTML;
@@ -138,7 +145,7 @@ class SpiralGallery {
         e.preventDefault();
         // 드래그 중이 아닐 때만 팝오버 열기
         if (!this.isDragging) {
-          const directUrl = item.getAttribute("data-video-id");
+          const directUrl = item.getAttribute("data-direct-url");
           // Popover 객체의 handleClick 메서드 호출 (direct_url 값 그대로 전달)
           if (window.popover) {
             window.popover.handleClick(directUrl);
@@ -146,6 +153,54 @@ class SpiralGallery {
         }
       });
     });
+  }
+
+  setupScrollTrigger() {
+    // GSAP이 로드되었는지 확인
+    if (typeof gsap === "undefined") {
+      console.warn("GSAP not loaded");
+      return;
+    }
+
+    // 데스크톱: 기존 z값 애니메이션 유지
+    this.currentAngle = 2000;
+    this.gallery.style.transform = `translateZ(0px) translateY(0px) rotateY(2000deg) scale(1)`;
+
+    // Intersection Observer 설정
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !this.isInitialAnimationComplete) {
+            // DOM에 도달하면 2000도에서 0도로 애니메이션
+            gsap.to(this.gallery, {
+              rotationY: 0,
+              duration: 2.0,
+              ease: "power2.out",
+              onUpdate: () => {
+                // 애니메이션 진행 중 currentAngle 업데이트
+                this.currentAngle = gsap.getProperty(this.gallery, "rotationY");
+              },
+              onComplete: () => {
+                // 애니메이션 완료 후 자동 회전 시작
+                this.currentAngle = 0;
+                this.isInitialAnimationComplete = true;
+                console.log("Spiral Gallery 초기 회전 애니메이션 완료");
+              },
+            });
+
+            // 한 번만 실행되도록 observer 해제
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.3, // 30% 보이면 트리거
+        rootMargin: "0px 0px -100px 0px", // 하단에서 100px 여유
+      }
+    );
+
+    // 컨테이너 관찰 시작
+    observer.observe(this.container);
   }
 
   resetParameters() {
@@ -214,8 +269,9 @@ class SpiralGallery {
       maxY = Math.max(maxY, itemBottom);
     }
 
-    // 여백 추가 (상하 100px씩)
-    const padding = 100;
+    // 반응형에 따른 여백 조정
+    const w = window.innerWidth || document.documentElement.clientWidth;
+    const padding = w <= 768 ? 20 : 100; // 모바일에서는 20px, 데스크톱에서는 100px
     const requiredHeight = maxY - minY + padding * 2;
 
     // 컨테이너 높이 설정
@@ -251,22 +307,43 @@ class SpiralGallery {
     };
 
     this.handleTouchStart = (e) => {
-      e.preventDefault(); // 기본 터치 동작 방지
-      this.isDragging = true;
-      this.lastMouseX = e.touches[0].clientX;
+      // 모바일이 아니면 터치 이벤트 무시
+      if (window.innerWidth > 768) return;
+
+      // 드래그 시작점 저장
+      this.touchStartX = e.touches[0].clientX;
+      this.touchStartY = e.touches[0].clientY;
+      this.touchStartTime = Date.now();
+      this.isDragging = false; // 아직 드래그 상태가 아님
     };
 
     this.handleTouchMove = (e) => {
-      if (this.isDragging) {
-        e.preventDefault();
-        const deltaX = e.touches[0].clientX - this.lastMouseX;
-        const deltaAngle = deltaX * this.dragSensitivity;
+      // 모바일이 아니면 터치 이벤트 무시
+      if (window.innerWidth > 768) return;
 
-        // 관성 속도 계산 (드래그 속도에 비례) - 더 민감하게
-        this.velocity = deltaAngle * 0.3; // 드래그 속도를 관성으로 변환 (0.1 → 0.3)
+      if (!this.touchStartX) return;
 
-        this.currentAngle += deltaAngle;
-        this.lastMouseX = e.touches[0].clientX;
+      const deltaX = e.touches[0].clientX - this.touchStartX;
+      const deltaY = e.touches[0].clientY - this.touchStartY;
+      const deltaTime = Date.now() - this.touchStartTime;
+
+      // 수평 움직임이 수직 움직임보다 크고, 충분한 움직임이 있을 때만 드래그로 인식
+      if (
+        Math.abs(deltaX) > Math.abs(deltaY) &&
+        Math.abs(deltaX) > 10 &&
+        deltaTime > 100
+      ) {
+        if (!this.isDragging) {
+          this.isDragging = true;
+          e.preventDefault(); // 드래그로 인식된 후에만 preventDefault
+        }
+
+        if (this.isDragging) {
+          const deltaAngle = deltaX * (this.dragSensitivity * 1.5);
+          this.velocity = deltaAngle * 0.3;
+          this.currentAngle += deltaAngle;
+          this.touchStartX = e.touches[0].clientX;
+        }
       }
     };
 
@@ -278,14 +355,23 @@ class SpiralGallery {
     this.container.addEventListener("mousedown", this.handleMouseDown);
     document.addEventListener("mousemove", this.handleMouseMove);
     document.addEventListener("mouseup", this.handleMouseUp);
-    this.container.addEventListener("touchstart", this.handleTouchStart);
-    document.addEventListener("touchmove", this.handleTouchMove);
+
+    // 터치 이벤트 - touchstart는 passive: true로 설정 (클릭 허용)
+    this.container.addEventListener("touchstart", this.handleTouchStart, {
+      passive: true,
+    });
+    // touchmove는 조건부로 passive 설정
+    document.addEventListener("touchmove", this.handleTouchMove, {
+      passive: false,
+    });
     document.addEventListener("touchend", this.handleTouchEnd);
 
     // 갤러리 아이템들에도 동일한 이벤트 추가
     this.gallery.querySelectorAll(".spiral-gallery-item").forEach((item) => {
       item.addEventListener("mousedown", this.handleMouseDown);
-      item.addEventListener("touchstart", this.handleTouchStart);
+      item.addEventListener("touchstart", this.handleTouchStart, {
+        passive: true, // 클릭 이벤트 허용
+      });
     });
 
     // 커서 스타일 설정
@@ -296,13 +382,22 @@ class SpiralGallery {
     const getResponsiveConfig = () => {
       const w = window.innerWidth || document.documentElement.clientWidth;
       if (w <= 768) {
-        return { z: 0, radius: 400, itemShift: 36, scale: 0.9 };
+        return { z: 0, radius: 480, itemShift: 24, scale: 0.8 };
       }
       if (w <= 1320) {
-        return { z: -100, radius: 520, itemShift: 42, scale: 0.95 };
+        return { z: -100, radius: 560, itemShift: 42, scale: 0.9 };
       }
       return { z: -200, radius: 640, itemShift: 48, scale: 1 };
     };
+
+    // 모바일에서는 z값 애니메이션 제거
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+      console.log("모바일 - z값 애니메이션 제거");
+      this.currentAngle = 0;
+      this.gallery.style.transform = `translateZ(0px) translateY(0px) rotateY(0deg) scale(1)`;
+      this.isInitialAnimationComplete = true;
+    }
 
     let {
       z: currentZ,
@@ -310,6 +405,17 @@ class SpiralGallery {
       itemShift: currentShift,
       scale: currentScale,
     } = getResponsiveConfig();
+
+    // 초기 로드 시에도 반응형 설정 적용
+    this.RADIUS = currentRadius;
+    this.ITEM_SHIFT = currentShift;
+
+    // 초기 설정 적용
+    this.resetParameters();
+    if (this.gallery) {
+      this.positionItems();
+      this.adjustContainerHeight();
+    }
 
     // 컨테이너 오버플로우 방지
     if (this.container) {
@@ -346,8 +452,8 @@ class SpiralGallery {
           this.currentAngle += this.velocity;
           this.velocity *= currentFriction; // 팝업 상태에 따른 마찰 적용
         } else {
-          // 관성이 없을 때는 팝업이 닫혀있을 때만 자동 회전
-          if (!this.isPopupOpen) {
+          // 관성이 없을 때는 팝업이 닫혀있고 초기 애니메이션이 완료된 경우에만 자동 회전
+          if (!this.isPopupOpen && this.isInitialAnimationComplete) {
             this.currentAngle += this.rotationSpeed;
           }
         }
@@ -429,17 +535,19 @@ class SpiralGallery {
 
 document.addEventListener("DOMContentLoaded", async () => {
   let container = document.getElementById("spiral-gallery-container");
-  if (!container) return;
+  console.log(container);
+  // 컨테이너가 이미 존재하면 기존 것을 사용
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "spiral-gallery-container";
+    container.className = "container my-4";
 
-  container = document.createElement("div");
-  container.id = "spiral-gallery-container";
-  container.className = "container my-4";
-
-  const mainContent =
-    document.querySelector("main") ||
-    document.querySelector(".main") ||
-    document.body;
-  mainContent.appendChild(container);
+    const mainContent =
+      document.querySelector("main") ||
+      document.querySelector(".main") ||
+      document.body;
+    mainContent.appendChild(container);
+  }
 
   const spiralGallery = new SpiralGallery("spiral-gallery-container");
 

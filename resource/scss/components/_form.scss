@@ -156,6 +156,9 @@ textarea {
     border-radius: 5rem;
     border: 1px solid var(--clr-border-white-strong);
     transition: ease all 0.3s;
+    @include mq(md) {
+      width: 100%;
+    }
     &:hover {
       color: #000;
       background: #fff;

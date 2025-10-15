@@ -10,7 +10,7 @@ try {
 
     $db = \DB::getInstance();
     $stmt = $db->prepare("
-        SELECT no, title, thumb_image, regdate
+        SELECT no, title, thumb_image, regdate, direct_url
         FROM nb_board
         WHERE board_no = :board_no
         ORDER BY no DESC

@@ -10,6 +10,7 @@ header {
   z-index: var(--header-z-index);
   transition: ease all 0.3s;
   padding: 0 fluid(20, 24);
+  background: transparent;
   &.is-scrolled {
     border-bottom: 1px solid var(--clr-border-white-week);
     background: #000;
@@ -21,6 +22,9 @@ header {
   }
   &.direction-down {
     top: calc(var(--header-height) * -1);
+  }
+  &.is-top {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.64));
   }
 
   .no-header {
@@ -269,13 +273,42 @@ header {
           a {
             opacity: 0.4;
             transition: ease all 0.3s;
+            position: relative;
+            @include mq(md) {
+              opacity: 0.48;
+            }
+            &::before {
+              content: "";
+              position: absolute;
+              bottom: 0;
+              left: 0;
+              transition: ease all 0.3s;
+              height: 1px;
+              background: #fff;
+              width: 0;
+            }
             &:hover {
               opacity: 1;
+              &::before {
+                width: 100%;
+              }
             }
           }
         }
         > a {
           display: block;
+          transition: ease all 0.3s;
+          opacity: 0.64;
+          @include mq(md) {
+            opacity: 1;
+          }
+          &:hover {
+            opacity: 1;
+          }
+        }
+
+        &:hover > a {
+          opacity: 1;
         }
         &:last-child {
           padding-bottom: 0;
@@ -289,6 +322,8 @@ header {
       visibility: hidden;
       transition: ease all 0.3s;
       @include mq(md) {
+        opacity: 1;
+        visibility: visible;
       }
     }
   }

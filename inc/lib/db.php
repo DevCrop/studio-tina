@@ -2,9 +2,9 @@
 
 if (isProduction()) {
     define('DB_HOST', '127.0.0.1'); // 'localhost' 대신 '127.0.0.1' 사용
-    define('DB_NAME', 'dbupalette1128');
-    define('DB_USER', 'dbupalette1128');
-    define('DB_PASS', '!#PALe1060T!e');
+    define('DB_NAME', 'dbtina1820');
+    define('DB_USER', 'dbtina1820');
+    define('DB_PASS', 'dbtina1021@!');
     define('DB_PORT', 3306);
     define('DB_CHAR', 'utf8mb4');
 } else { 

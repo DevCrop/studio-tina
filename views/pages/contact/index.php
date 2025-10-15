@@ -27,8 +27,22 @@
 <div class="no-sub-contact-bg-wrap">
     <section class="no-sub-contact-visual">
         <div class="no-container-2xl">
-            <h2 class="f-display-1 --semibold --tal">Contact With Me</h2>
-            <h2 class="f-display-1 --semibold --tar">Have a Project?</h2>
+            <div class="no-main-section-title">
+                <div class="text-reveal-container">
+                    <h2 class="f-display-1 --semibold --tal">
+                        <span class="text-reveal-item">Contact</span>
+                        <span class="text-reveal-item">With</span>
+                        <span class="text-reveal-item">Me</span>
+                    </h2>
+                </div>
+                <div class="text-reveal-container">
+                    <h2 class="f-display-1 --semibold --tar">
+                        <span class="text-reveal-item">Have</span>
+                        <span class="text-reveal-item">a</span>
+                        <span class="text-reveal-item">Project?</span>
+                    </h2>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -36,7 +50,7 @@
         <div class="no-container-2xl">
             <fieldset class="no-sub-contact-form-fieldset">
                 <legend class="--blind">Contact Form</legend>
-                <form id="contactForm" action="" method="post">
+                <form id="contactForm" action="" method="post" class="fade-up">
                     <div class="no-form-container">
                         <div class="no-form-control">
                             <input type="text" name="name" id="name" required>
@@ -65,21 +79,21 @@
                 </form>
                 <div class="no-sub-contact-info">
                     <ul>
-                        <li>
+                        <li class="fade-up">
                             <span class="f-body-3">Email</span>
-                            <p class="f-body-1">tina@studiotina.co.kr</p>
+                            <p class="f-body-1"><?= $siteinfo['contact_email'] ?? 'tina@studiotina.co.kr' ?></p>
                         </li>
-                        <li>
+                        <li class="fade-up">
                             <span class="f-body-3">Phone</span>
-                            <p class="f-body-1">+82 2 517 8080</p>
+                            <p class="f-body-1"><?= $siteinfo['contact_phone'] ?? '+82 2 517 8080' ?></p>
                         </li>
-                        <li>
+                        <li class="fade-up">
                             <span class="f-body-3">Fax</span>
-                            <p class="f-body-1">+82 2 517 8080</p>
+                            <p class="f-body-1"><?= $siteinfo['contact_fax'] ?? '+82 2 517 8080' ?></p>
                         </li>
-                        <li>
+                        <li class="fade-up">
                             <span class="f-body-3">Address</span>
-                            <p class="f-body-1">서울시 강남구 강남대로 636 두원빌딩 6층</p>
+                            <p class="f-body-1"><?= $siteinfo['address'] ?? '서울시 강남구 강남대로 636 두원빌딩 6층' ?></p>
                         </li>
                     </ul>
                 </div>
@@ -91,8 +105,10 @@
     </div>
 </div>
 <section class="no-sub-contact-map ">
-    <div id="daumRoughmapContainer1760408745989" class="root_daum_roughmap root_daum_roughmap_landing"
-        data-lenis-prevent></div>
+    <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6329.112028619603!2d127.02902966216423!3d37.51838850669684!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357ca3e9f00636a1%3A0x954c12531ec7ccc9!2z65GQ7JuQ67mM65Sp!5e0!3m2!1sko!2skr!4v1760518208184!5m2!1sko!2skr"
+        width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"></iframe>
 </section>
 
 
